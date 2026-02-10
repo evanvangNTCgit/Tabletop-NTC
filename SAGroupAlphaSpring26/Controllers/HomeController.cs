@@ -15,6 +15,8 @@ namespace SAGroupAlphaSpring26.Controllers
 
         public IActionResult Index()
         {
+            ViewBag.ApplicationName = "SA Group Alpha Spring 2026";
+
             return View();
         }
 
