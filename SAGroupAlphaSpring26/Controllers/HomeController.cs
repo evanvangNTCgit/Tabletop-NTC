@@ -25,6 +25,21 @@ namespace SAGroupAlphaSpring26.Controllers
             return View();
         }
 
+        public IActionResult Store() 
+        {
+            ViewBag.ApplicationName = "SA Group Alpha Spring 2026";
+
+            Piece Evan = new Piece
+            {
+                Id = 1,
+                Name = "Evan",
+                Description = "A piece of Evan.",
+                Price = 19.99m
+            };
+
+            return View(Evan);
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

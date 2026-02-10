@@ -1,0 +1,16 @@
+﻿@using SAGroupAlphaSpring26.Models;
+
+@model SAGroupAlphaSpring26.Models.Piece;
+
+@{
+    ViewData["Title"] = "Store Page";
+}
+
+<div class="text-center">
+    <h1>Welcome to @ViewBag.ApplicationName !</h1>
+
+    <br />
+
+    <h1>ID: @Model.Id <br /> @Model.Name </h1>
+    <p> @Model.Description  <br /> Price: @Model.Price</p>
+</div>
