@@ -7,10 +7,10 @@
         public int Id { get; set; }
 
         // Name of the piece.
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = "Default Name";
 
         // Description of the piece.
-        public string Description { get; set; } = string.Empty;
+        public string Description { get; set; } = "Default Description";
 
         // Default price is set to 0.00, for now.
         public decimal Price { get; set; } = 0.00m;
