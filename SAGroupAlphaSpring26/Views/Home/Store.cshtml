@@ -1,16 +1,40 @@
-﻿@using SAGroupAlphaSpring26.Models;
-
-@model SAGroupAlphaSpring26.Models.Piece;
+﻿@model IEnumerable<SAGroupAlphaSpring26.Models.Piece>
 
 @{
     ViewData["Title"] = "Store Page";
 }
 
 <div class="text-center">
-    <h1>Welcome to @ViewBag.ApplicationName !</h1>
+    <h1>Welcome to @ViewBag.ApplicationName!</h1>
 
-    <br />
-
-    <h1>ID: @Model.Id <br /> @Model.Name </h1>
-    <p> @Model.Description  <br /> Price: @Model.Price</p>
+    @foreach (var typeGroup in Model.GroupBy(p => p.PieceTypeID))
+    {
+        <h2>@GetTypeName(typeGroup.Key)</h2>
+        <div class="store-grid">
+            @foreach (var piece in typeGroup)
+            {
+                <div class="store-item">
+                    <img src="@piece.ImagePath" alt="@piece.Name" />
+                    <h3>@piece.Name</h3>
+                    <p>@piece.Description</p>
+                    <p>Price: $@piece.Price</p>
+                    <button class="buy-button button-primary">Buy</button>
+                </div>
+            }
+        </div>
+    }
 </div>
+
+@functions {
+    private string GetTypeName(int typeId)
+    {
+        return typeId switch
+        {
+            1 => "Enemies",
+            2 => "Maps",
+            3 => "Characters",
+            4 => "Shops & Interactables",
+            _ => "Misc"
+        };
+    }
+}

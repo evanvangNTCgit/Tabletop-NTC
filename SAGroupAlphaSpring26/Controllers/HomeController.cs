@@ -40,7 +40,10 @@ namespace SAGroupAlphaSpring26.Controllers
         {
             ViewBag.ApplicationName = "SA Group Alpha Spring 2026";
 
-            return View();
+            // Pull all pieces from the static StoreData
+            var pieces = Models.StoreData.Pieces;
+
+            return View(pieces); // pass the list to the view
         }
 
         // Gets a specific piece by ID.

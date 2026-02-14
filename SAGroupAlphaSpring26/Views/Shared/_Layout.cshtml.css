@@ -1,48 +1,96 @@
-﻿/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-for details on configuring this project to bundle and minify static web assets. */
-
-a.navbar-brand {
-  white-space: normal;
-  text-align: center;
-  word-break: break-all;
+﻿/* =========================
+   GLOBAL
+========================= */
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-a {
-  color: #0077cc;
+main {
+    flex: 1; /* push footer down */
+    padding-top: 80px; /* space from sticky navbar */
+    padding-bottom: 80px; /* space for footer */
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+
+/* Sidebar */
+.sidebar {
+    width: 190px;
+    background-color: #1f2937;
+    color: #ffffff;
+    padding: 2rem 1rem;
+    position: fixed; /* sticky on scroll */
+    top: 0; /* sticks to top of viewport */
+    align-self: flex-start; /* keeps sidebar aligned to top of content */
+    /* remove height: 100vh to prevent it adding extra page height */
+    display: flex;
+    flex-direction: column;
 }
 
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+/* Main content */
+.main-content {
+    flex: 1; /* takes remaining space */
+    padding: 2rem;
+    background-color: #f4f6f9;
 }
 
-.border-top {
-  border-top: 1px solid #e5e5e5;
-}
-.border-bottom {
-  border-bottom: 1px solid #e5e5e5;
+/* =========================
+   NAVBAR
+========================= */
+
+nav {
+    position: sticky; /* stick to viewport */
+    top: 0; /* stick to top */
+    z-index: 1000; /* stay above content */
+    padding: 1rem 2rem;
 }
 
-.box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    padding: 1rem 2rem;
 }
 
-button.accept-policy {
-  font-size: 1rem;
-  line-height: inherit;
+/* Brand on the left */
+.navbar-brand {
+    font-size: 1.5rem;
 }
 
+/* Nav buttons on the right */
+.navbar-nav {
+    display: flex;
+    gap: 1rem;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #0077cc;
+    padding: 0.5rem 1rem; /* padding around buttons */
+    border-radius: 6px;
+}
+
+    .nav-link:hover {
+        color: #ffffff;
+        background-color: #2563eb;
+    }
+
+/* =========================
+   FOOTER
+========================= */
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px;
+    background-color: #1f2937;
+    color: white;
+    text-align: left;
+    padding: 20px;
+    width: 100%;
+    margin-top: auto; /* push to bottom */
+    position: fixed;
+    bottom: 0;
+    z-index: 2000;
 }

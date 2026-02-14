@@ -9,27 +9,30 @@
     <link rel="stylesheet" href="~/SAGroupAlphaSpring26.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <nav>
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">NTC Tabletop Map</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-				<ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Store">Store</a>
-					</li>
-                </ul>
-    </nav>
-    <div class="container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                NTC Tabletop Map
+            </a>
+
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Store">Store</a>
+                </li>
+            </ul>
+        </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="footer text-muted">
         <div class="container">
             &copy; @DateTime.Now.Year - SAGroupAlphaSpring26 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
