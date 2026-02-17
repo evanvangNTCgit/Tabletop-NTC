@@ -1,4 +1,6 @@
-﻿namespace SAGroupAlphaSpring26.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace SAGroupAlphaSpring26.Models
 {
     public class Set
     {
@@ -9,10 +11,11 @@
         public string Name { get; set; } = string.Empty;
 
         // Price of the Set.
+        [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; } = 0.00m;
 
 
         // Collection of pieces in the set.
-        public virtual ICollection<Piece> Pieces { get; set; }
+        public virtual ICollection<Piece> Pieces { get; set; } = new List<Piece>();
     }
 }

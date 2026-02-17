@@ -203,18 +203,26 @@ body {
     display: block;
 }
 
+.map-board {
+    flex-grow: 1;
+    position: relative;
+    background-color: #2c3e50;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    min-height: 700px;
+    border: 2px dashed #444;
+}
+
 /* Piece Bar */
 .piece-bar {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 90px;
+    min-width: 90px;
+    min-height: 100vh;
     background-color: #111827;
-    padding: 1rem 0.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding-top: 20px;
 }
 
 .map-piece {

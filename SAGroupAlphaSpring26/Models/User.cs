@@ -16,6 +16,6 @@
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         //
-        public virtual ICollection<Session> Sessions { get; set; }
+        public virtual ICollection<Session> Sessions { get; set; } = new List<Session>();
     }
 }

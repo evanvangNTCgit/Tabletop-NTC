@@ -15,7 +15,7 @@
         public int zIndex { get; set; }
 
         // Name of the token, defaults to piece name, but can be changed by user.
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         // sets if the token is visible on the map in the popout view, defaults to true.
         public bool IsVisible { get; set; } = true;
@@ -30,10 +30,10 @@
         // public Image image { get; set; }
 
         // Links Session to tokens.
-        public virtual Session Session { get; set; }
+        public virtual Session? Session { get; set; } 
 
         // Links Piece to tokens.
-        public virtual Piece Piece { get; set; }
+        public virtual Piece? Piece { get; set; }
 
         
     }

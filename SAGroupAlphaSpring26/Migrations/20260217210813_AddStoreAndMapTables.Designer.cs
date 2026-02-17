@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SAGroupAlphaSpring26.Data;
 
@@ -11,9 +12,11 @@ using SAGroupAlphaSpring26.Data;
 namespace SAGroupAlphaSpring26.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260217210813_AddStoreAndMapTables")]
+    partial class AddStoreAndMapTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,38 +77,6 @@ namespace SAGroupAlphaSpring26.Migrations
                     b.HasIndex("SetID");
 
                     b.ToTable("Pieces");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Default Description",
-                            ImagePath = "/images/default.png",
-                            Name = "Default Dungeon",
-                            PieceTypeID = 2,
-                            Price = 0.00m,
-                            SetID = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Default Description",
-                            ImagePath = "/images/goblin.png",
-                            Name = "Goblin",
-                            PieceTypeID = 1,
-                            Price = 0.00m,
-                            SetID = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Default Description",
-                            ImagePath = "/images/hero-knight.png",
-                            Name = "Orc",
-                            PieceTypeID = 1,
-                            Price = 0.00m,
-                            SetID = 1
-                        });
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.PieceType", b =>
@@ -123,18 +94,6 @@ namespace SAGroupAlphaSpring26.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PieceTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Enemy"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Map"
-                        });
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Purchase", b =>
@@ -221,15 +180,6 @@ namespace SAGroupAlphaSpring26.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Sessions");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            LastUpdated = new DateTime(2026, 2, 17, 16, 23, 44, 913, DateTimeKind.Local).AddTicks(1827),
-                            Notes = "Initial Test Session",
-                            UserId = 1
-                        });
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Set", b =>
@@ -250,14 +200,6 @@ namespace SAGroupAlphaSpring26.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Sets");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Base Set",
-                            Price = 0.00m
-                        });
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Store", b =>
@@ -316,41 +258,6 @@ namespace SAGroupAlphaSpring26.Migrations
                     b.HasIndex("SessionID");
 
                     b.ToTable("Tokens");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            IsVisible = true,
-                            Name = "Active Map",
-                            PieceID = 1,
-                            SessionID = 1,
-                            X = 0.0,
-                            Y = 0.0,
-                            zIndex = 0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            IsVisible = true,
-                            Name = "Goblin",
-                            PieceID = 2,
-                            SessionID = 1,
-                            X = 50.0,
-                            Y = 5.0,
-                            zIndex = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            IsVisible = true,
-                            Name = "Knight",
-                            PieceID = 3,
-                            SessionID = 1,
-                            X = 50.0,
-                            Y = 10.0,
-                            zIndex = 2
-                        });
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.User", b =>
@@ -375,15 +282,6 @@ namespace SAGroupAlphaSpring26.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2026, 2, 17, 16, 23, 44, 913, DateTimeKind.Local).AddTicks(1787),
-                            Email = "tjackson@students.ntc.edu",
-                            Username = "Fred"
-                        });
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Piece", b =>

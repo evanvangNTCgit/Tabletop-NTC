@@ -15,10 +15,11 @@ namespace SAGroupAlphaSpring26.Controllers
 
         private readonly DataService _dataService;
 
-        public HomeController(IOptions<AppConfig> appConfigWrapper)
+        public HomeController(IOptions<AppConfig> appConfigWrapper, ILogger<HomeController> logger)
         {
             _appConfig = appConfigWrapper.Value;
             _dataService = new DataService();
+            _logger = logger;
         }
 
         [Route("")]

@@ -16,6 +16,6 @@
         public int UserId { get; set; }
 
         // Stores tokens for the session.
-        public virtual ICollection<Token> Tokens { get; set; }
+        public virtual ICollection<Token> Tokens { get; set; } = new List<Token>();
     }
 }

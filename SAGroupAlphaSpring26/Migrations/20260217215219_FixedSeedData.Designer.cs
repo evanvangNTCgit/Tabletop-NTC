@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SAGroupAlphaSpring26.Data;
 
@@ -11,9 +12,11 @@ using SAGroupAlphaSpring26.Data;
 namespace SAGroupAlphaSpring26.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260217215219_FixedSeedData")]
+    partial class FixedSeedData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -226,7 +229,7 @@ namespace SAGroupAlphaSpring26.Migrations
                         new
                         {
                             Id = 1,
-                            LastUpdated = new DateTime(2026, 2, 17, 16, 23, 44, 913, DateTimeKind.Local).AddTicks(1827),
+                            LastUpdated = new DateTime(2026, 2, 17, 15, 52, 19, 283, DateTimeKind.Local).AddTicks(5154),
                             Notes = "Initial Test Session",
                             UserId = 1
                         });
@@ -380,7 +383,7 @@ namespace SAGroupAlphaSpring26.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 2, 17, 16, 23, 44, 913, DateTimeKind.Local).AddTicks(1787),
+                            CreatedAt = new DateTime(2026, 2, 17, 15, 52, 19, 283, DateTimeKind.Local).AddTicks(5084),
                             Email = "tjackson@students.ntc.edu",
                             Username = "Fred"
                         });
