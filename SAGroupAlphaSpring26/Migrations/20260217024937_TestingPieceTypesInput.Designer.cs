@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SAGroupAlphaSpring26.Data;
 
@@ -10,9 +11,11 @@ using SAGroupAlphaSpring26.Data;
 namespace SAGroupAlphaSpring26.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260217024937_TestingPieceTypesInput")]
+    partial class TestingPieceTypesInput
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,18 +39,6 @@ namespace SAGroupAlphaSpring26.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PieceTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Enemy"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Map"
-                        });
                 });
 #pragma warning restore 612, 618
         }
