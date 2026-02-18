@@ -12,7 +12,7 @@ builder.Services.Configure<AppConfig>(builder.Configuration.GetSection("AppConfi
 
 // Adding the database for the EF core, and connecting it to the connection string in the appsettings.json file.
 // This is the DB that our C# classes will be stored in, and we will use EF core to interact with it.
-builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DatabaseConnection")));
 
 var app = builder.Build();
 
