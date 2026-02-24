@@ -48,43 +48,7 @@ namespace SAGroupAlphaSpring26.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            //        // I will make some test piece types then comment it out...
-            //        modelBuilder.Entity<PieceType>().HasData(
-            //            new PieceType { Id = 1, Name = "Enemy" },
-            //            new PieceType { Id = 2, Name = "Map" }
-            //        );
-
-            //        //user
-            //        modelBuilder.Entity<User>().HasData(
-            //        new User { Id = 1, Username = "Fred", CreatedAt = DateTime.Now, Email = "tjackson@students.ntc.edu",}
-            //);
-
-            //        // sets
-            //        modelBuilder.Entity<Set>().HasData(
-            //        new Set { Id = 1, Name = "Base Set", Price = 0.00m,}
-            //);
-
-            //        // pieces
-            //        modelBuilder.Entity<Piece>().HasData(
-            //        new Piece { Id = 1, PieceTypeID = 2, SetID = 1,  Name = "Default Dungeon", ImagePath = "/images/default.png", Price = 0.00m },
-            //        new Piece { Id = 2, PieceTypeID = 1, SetID = 1, Name = "Goblin", ImagePath = "/images/goblin.png", Price = 0.00m },
-            //        new Piece { Id = 3, PieceTypeID = 1, SetID = 1, Name = "Orc", ImagePath = "/images/hero-knight.png", Price = 0.00m },
-            //        new Piece { Id = 4, PieceTypeID = 1, SetID = 1, Name = "Knight", ImagePath = "/images/hero-knight.png", Price = 0.00m }
-            //);
-
-            //        // Session
-            //        modelBuilder.Entity<Session>().HasData(
-            //        new Session { Id = 1, UserId = 1, Notes = "Initial Test Session", LastUpdated = DateTime.Now,}
-            //);
-            //        // initial tokens for the session.
-            //        modelBuilder.Entity<Token>().HasData(
-            //        new Token { Id = 1, SessionID = 1, PieceID = 2, Name = "Active Map", X = 0, Y = 0, },
-            //        new Token { Id = 2, SessionID = 1, PieceID = 1, Name = "Goblin", X = 50, Y = 5, zIndex = 1, IsVisible = true },
-            //        new Token { Id = 3, SessionID = 1, PieceID = 1, Name = "Knight", X = 50, Y = 10, zIndex = 2, IsVisible = true, }
-            //);
-
             // Production Data:
-
             modelBuilder.Entity<PieceType>().HasData(
             new PieceType { Id = 1, Name = "Player" },
             new PieceType { Id = 2, Name = "Map" },

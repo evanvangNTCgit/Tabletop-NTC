@@ -43,6 +43,12 @@
 
         @section Scripts {
         <script>
+
+            document.onload((=> {
+                const footer = document.getElementById('Footer');
+                footer.style.display = 'none';
+            }) )
+
         const mapBoard = document.getElementById('map-board');
 
             // Logic for dragging tokens from collection to map and for moving them around the map.
