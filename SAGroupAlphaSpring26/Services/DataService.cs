@@ -1,13 +1,19 @@
-﻿namespace SAGroupAlphaSpring26.Services
+﻿using SAGroupAlphaSpring26.Data;
+
+namespace SAGroupAlphaSpring26.Services
 {
     public class DataService
     {
+        private DataContext _dataContext;
+
         public List<Piece> pieces;
 
         public List<Session> sessions;
 
-        public DataService()
+        public DataService(DataContext dataContext)
         {
+            this._dataContext = dataContext;
+
             sessions = new List<Session>();
             sessions.Add(new Session { Id = 1, UserId = 1, Notes = "This is a session note.", LastUpdated = DateTime.Now });
 
@@ -18,7 +24,7 @@
         // Returns a list of all pieces in the data service.
         public List<Piece> GetPieces()
         {
-            return pieces;
+            return this._dataContext.Pieces.ToList();
         }
 
         // Returns a piece with the 

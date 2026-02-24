@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.Models;
 using SAGroupAlphaSpring26.Services;
 using System.Diagnostics;
@@ -15,10 +16,10 @@ namespace SAGroupAlphaSpring26.Controllers
 
         private readonly DataService _dataService;
 
-        public HomeController(IOptions<AppConfig> appConfigWrapper, ILogger<HomeController> logger)
+        public HomeController(IOptions<AppConfig> appConfigWrapper, ILogger<HomeController> logger, DataContext dataContext)
         {
             _appConfig = appConfigWrapper.Value;
-            _dataService = new DataService();
+            _dataService = new(dataContext);
             _logger = logger;
         }
 
@@ -42,7 +43,7 @@ namespace SAGroupAlphaSpring26.Controllers
             ViewBag.ApplicationName = "SA Group Alpha Spring 2026";
 
             // Pull all pieces from the static StoreData
-            var pieces = Models.StoreData.Pieces;
+            var pieces = this._dataService.GetPieces();
 
             return View(pieces); // pass the list to the view
         }

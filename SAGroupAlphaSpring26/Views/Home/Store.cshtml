@@ -16,7 +16,7 @@
                 <!-- Updated the img src tag to include the /images folder. Added onerror so that the imagepath defaults to our placeholder image.-->
                 <div class="store-item">
                     <!-- Sets the image path. | "onerror" sets image to default.png | this.onerror=null prevents infinite looping. -->
-                    <img src="/images/@piece.ImagePath" alt="@piece.Name" 
+                    <img src="@piece.ImagePath" alt="@piece.Name" 
                     onerror="this.onerror=null; this.src='/images/default.png';" />
 
                     <h3>@piece.Name</h3>
