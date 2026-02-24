@@ -31,6 +31,6 @@ namespace SAGroupAlphaSpring26.Models
         public virtual Set? Set { get; set; }
 
         // gets image ID to access the image path. 
-        public string ImagePath { get; set; } = string.Empty;
+        public string ImagePath { get; set; } = "/images/default.png";
     }
 }
