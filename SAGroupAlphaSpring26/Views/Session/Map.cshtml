@@ -43,11 +43,10 @@
 
         @section Scripts {
         <script>
-
-            document.onload((=> {
+            document.addEventListener("DOMContentLoaded", () => {
                 const footer = document.getElementById('Footer');
                 footer.style.display = 'none';
-            }) )
+            })
 
         const mapBoard = document.getElementById('map-board');
 
