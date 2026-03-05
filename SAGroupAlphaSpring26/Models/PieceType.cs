@@ -4,7 +4,7 @@
     public class PieceType
     {
         // id for piecetype
-        public int Id { get; set; }
+        public int PieceTypeId { get; set; }
         // name of piecetype
         public string Name { get; set; } = string.Empty;
     }

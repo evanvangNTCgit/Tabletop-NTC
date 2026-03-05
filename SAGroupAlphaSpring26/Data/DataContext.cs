@@ -48,49 +48,51 @@ namespace SAGroupAlphaSpring26.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Production Data:
-            modelBuilder.Entity<PieceType>().HasData(
-            new PieceType { Id = 1, Name = "Player" },
-            new PieceType { Id = 2, Name = "Map" },
-            new PieceType { Id = 3, Name = "Structure" },
-            new PieceType { Id = 4, Name = "Object" },
-            new PieceType { Id = 5, Name = "Goblin" },
-            new PieceType { Id = 6, Name = "Orc" },
-            new PieceType { Id = 7, Name = "Shop" }
-        );
+    //        // Production Data:
+    //        modelBuilder.Entity<PieceType>().HasData(
+    //        new PieceType { Id = 1, Name = "Player" },
+    //        new PieceType { Id = 2, Name = "Map" },
+    //        new PieceType { Id = 3, Name = "Structure" },
+    //        new PieceType { Id = 4, Name = "Object" },
+    //        new PieceType { Id = 5, Name = "Goblin" },
+    //        new PieceType { Id = 6, Name = "Orc" },
+    //        new PieceType { Id = 7, Name = "Shop" }
+    //    );
 
-            //user
-            modelBuilder.Entity<User>().HasData(
-            new User { Id = 1, Username = "Tristan", CreatedAt = DateTime.Now, Email = "tjackson@students.ntc.edu", }
-    );
+    //        //user
+    //        modelBuilder.Entity<User>().HasData(
+    //        new User { Id = 1, Username = "Tristan", CreatedAt = DateTime.Now, Email = "tjackson@students.ntc.edu", }
+    //);
 
-            // sets
-            modelBuilder.Entity<Set>().HasData(
-            new Set { Id = 1, Name = "Base Set", Price = 0.00m, },
-            new Set { Id = 2, Name = "Expansion 1", Price = 4.99m, }
-    );
+    //        // sets
+    //        modelBuilder.Entity<Set>().HasData(
+    //        new Set { Id = 1, Name = "Base Set", Price = 0.00m, },
+    //        new Set { Id = 2, Name = "Expansion 1", Price = 4.99m, }
+    //);
 
-            // pieces
-            modelBuilder.Entity<Piece>().HasData(
-            new Piece { Id = 1, PieceTypeID = 1, SetID = 1, Name = "Cleric", ImagePath = "/images/Cleric.png", Price = 0.00m },
-            new Piece { Id = 2, PieceTypeID = 2, SetID = 1, Name = "Default Dungeon", ImagePath = "/images/testMap.png", Price = 0.00m },
-            new Piece { Id = 3, PieceTypeID = 1, SetID = 1, Name = "Goblin Chief", ImagePath = "/images/GoblinChief.png", Price = 0.00m },
-            new Piece { Id = 4, PieceTypeID = 1, SetID = 1, Name = "Basic Chest", ImagePath = "/images/chest.png", Price = 0.00m }
-    );
+    //        // pieces
+    //        modelBuilder.Entity<Piece>().HasData(
+    //        new Piece { Id = 1, PieceTypeID = 1, SetID = 1, Name = "Cleric", ImagePath = "/images/Cleric.png", Price = 0.00m },
+    //        new Piece { Id = 2, PieceTypeID = 2, SetID = 1, Name = "Default Dungeon", ImagePath = "/images/testMap.png", Price = 0.00m },
+    //        new Piece { Id = 3, PieceTypeID = 1, SetID = 1, Name = "Goblin Chief", ImagePath = "/images/GoblinChief.png", Price = 0.00m },
+    //        new Piece { Id = 4, PieceTypeID = 1, SetID = 1, Name = "Basic Chest", ImagePath = "/images/chest.png", Price = 0.00m }
+    //);
 
-            // Session
-            modelBuilder.Entity<Session>().HasData(
-            new Session { Id = 1, UserId = 1, Notes = "Production Test Session", LastUpdated = DateTime.Now, }
-    );
-            // initial tokens for the test session.
-            modelBuilder.Entity<Token>().HasData(
-            new Token { Id = 4, SessionID = 1, PieceID = 1, Name = "Cleric", X = 50, Y = 15, zIndex = 3, IsVisible = true, },
-            new Token { Id = 5, SessionID = 1, PieceID = 1, Name = "Cleric", X = 50, Y = 20, zIndex = 4, IsVisible = true, },
+    //        // Session
+    //        modelBuilder.Entity<Session>().HasData(
+    //        new Session { Id = 1, UserId = 1, Notes = "Production Test Session", LastUpdated = DateTime.Now, }
+    //);
+    //        // initial tokens for the test session.
+    //        modelBuilder.Entity<Token>().HasData(
+    //        new Token { Id = 4, SessionID = 1, PieceID = 1, Name = "Cleric", X = 50, Y = 15, zIndex = 3, IsVisible = true, },
+    //        new Token { Id = 5, SessionID = 1, PieceID = 1, Name = "Cleric", X = 50, Y = 20, zIndex = 4, IsVisible = true, },
 
-            new Token { Id = 1, SessionID = 1, PieceID = 2, Name = "Default Dungeon", X = 0, Y = 0, },
-            new Token { Id = 2, SessionID = 1, PieceID = 3, Name = "Goblin Chief", X = 50, Y = 5, zIndex = 1, IsVisible = true },
-            new Token { Id = 3, SessionID = 1, PieceID = 4, Name = "Basic Chest", X = 50, Y = 10, zIndex = 2, IsVisible = false, }
-    );
+    //        new Token { Id = 1, SessionID = 1, PieceID = 2, Name = "Default Dungeon", X = 0, Y = 0, },
+    //        new Token { Id = 2, SessionID = 1, PieceID = 3, Name = "Goblin Chief", X = 50, Y = 5, zIndex = 1, IsVisible = true },
+    //        new Token { Id = 3, SessionID = 1, PieceID = 4, Name = "Basic Chest", X = 50, Y = 10, zIndex = 2, IsVisible = false, }
+    //);
+
+
         }
     }
 }

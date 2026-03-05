@@ -14,8 +14,7 @@ namespace SAGroupAlphaSpring26.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; } = 0.00m;
 
-
-        // Collection of pieces in the set.
-        public virtual ICollection<Piece> Pieces { get; set; } = new List<Piece>();
+        // Many to many for pieces and sets since a piece can be in many sets, and a set can have many pieces. We will need to create a join table for this relationship.
+        public List<Piece> PiecesList { get; set; } = new List<Piece>();
     }
 }

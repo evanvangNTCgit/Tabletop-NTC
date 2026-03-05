@@ -6,7 +6,7 @@ namespace SAGroupAlphaSpring26.Models
     public class Piece
     {
         // Piece ID.
-        public int Id { get; set; }
+        public int PieceId { get; set; }
 
         // Name of the piece.
         public string Name { get; set; } = "Default Name";
@@ -18,19 +18,16 @@ namespace SAGroupAlphaSpring26.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; } = 0.00m;
 
+        // gets image ID to access the image path. 
+        public string ImagePath { get; set; } = "/images/default.png";
+
         // Type ID for a piece, used to link pieces to piece types.
         public int PieceTypeID { get; set; }
 
         // Type of a piece, examples: "Player", "Skeleton", "Goblin", "Map", "Structure", etc.
         public virtual PieceType? PieceType { get; set; }
 
-        // SetID for a piece, used to link pieces to sets.
-        public int SetID { get; set; }
-
-        // used to get the Set.Name for the piece.
-        public virtual Set? Set { get; set; }
-
-        // gets image ID to access the image path. 
-        public string ImagePath { get; set; } = "/images/default.png";
+        // This is a many to many start since a piece can be in many sets, and a set can have many pieces. We will need to create a join table for this relationship.
+        public List<Set> Sets { get; set; } = new();
     }
 }
