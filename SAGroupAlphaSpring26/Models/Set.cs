@@ -5,13 +5,15 @@ namespace SAGroupAlphaSpring26.Models
     public class Set
     {
         // ID for the sets. Used to group pieces for the marketplace and collections.
-        public int Id { get; set; }
+        public int SetId { get; set; }
 
         // name of set.
-        public string Name { get; set; } = string.Empty;
+        [MinLength(1, ErrorMessage = "Name of set must be at least 1 characters long")]
+        public required string Name { get; set; }
 
         // Price of the Set.
         [Column(TypeName = "decimal(18,2)")]
+        [Required]
         public decimal Price { get; set; } = 0.00m;
 
         // Many to many for pieces and sets since a piece can be in many sets, and a set can have many pieces. We will need to create a join table for this relationship.

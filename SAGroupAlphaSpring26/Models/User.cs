@@ -7,7 +7,8 @@
         public int UserId { get; set; }
 
         // Username of the user
-        public string Username { get; set; } = string.Empty;
+        [Required]
+        public required string Username { get; set; }
 
         // Email address of the user.
         public string Email { get; set; } = string.Empty;

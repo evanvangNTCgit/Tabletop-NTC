@@ -13,6 +13,7 @@
         public DateTime LastUpdated { get; set; } = DateTime.Now;
 
         // User ID, used to link sessions to users.
+        [Required]
         public int UserId { get; set; }
 
         // The navigation property for user in session.

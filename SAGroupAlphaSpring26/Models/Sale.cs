@@ -6,6 +6,7 @@
         public int SaleID { get; set; }
 
         // The ID of the user on the sale.
+        [Required]
         public int UserID { get; set; }
 
         // The navigation property to the user.

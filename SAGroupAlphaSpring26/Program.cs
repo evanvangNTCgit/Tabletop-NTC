@@ -1,5 +1,6 @@
 global using SAGroupAlphaSpring26;
 global using SAGroupAlphaSpring26.Models;
+global using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
 

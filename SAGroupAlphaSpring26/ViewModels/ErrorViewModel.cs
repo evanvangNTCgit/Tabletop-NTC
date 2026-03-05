@@ -1,4 +1,4 @@
-namespace SAGroupAlphaSpring26.Models
+namespace SAGroupAlphaSpring26.ViewModels
 {
     public class ErrorViewModel
     {
