@@ -13,12 +13,6 @@ namespace SAGroupAlphaSpring26.Services
         public DataService(DataContext dataContext)
         {
             this._dataContext = dataContext;
-
-            sessions = new List<Session>();
-            sessions.Add(new Session { Id = 1, UserId = 1, Notes = "This is a session note.", LastUpdated = DateTime.Now });
-
-            pieces = new List<Piece>();
-            pieces.Add(new Piece { Id = 1, PieceTypeID = 1, SetID = 1, Name = "Evan", Description = "Evan is fast.", Price = 1.00m, });
         }
 
         // Returns a list of all pieces in the data service.
@@ -30,20 +24,40 @@ namespace SAGroupAlphaSpring26.Services
         // Returns a piece with the 
         public Piece GetPiece(int id)
         {
-            return pieces.FirstOrDefault(p => p.Id == id);
+            try
+            {
+                return pieces.FirstOrDefault(p => p.PieceId == id)!;
+            }
+            catch
+            {
+                throw new Exception($"Piece of {id} not found");
+            }
         }
 
         // Gets a session. by session id.
         public Session GetSession(int sessionId)
         {
-            return sessions.FirstOrDefault(s => s.Id == sessionId);
+            try
+            {
+                return sessions.FirstOrDefault(s => s.SessionId == sessionId)!;
+            }
+            catch
+            {
+                throw new Exception($"Session of {sessionId} not found.");
+            }
         }
 
         // Get multiple sessions by user id.
-        public List<Session> GetSessions(int userId) { 
-
-            return sessions.Where(s => s.UserId == userId).ToList();
+        public List<Session> GetSessions(int userId)
+        {
+            try
+            {
+                return sessions.Where(s => s.UserId == userId).ToList();
+            }
+            catch
+            {
+                throw new Exception($"Failed to get session for User: {userId}");
+            }
         }
-
     }
 }

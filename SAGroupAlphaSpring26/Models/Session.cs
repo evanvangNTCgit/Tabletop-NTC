@@ -15,6 +15,9 @@
         // User ID, used to link sessions to users.
         public int UserId { get; set; }
 
+        // The navigation property for user in session.
+        public required User User { get; set; }
+
         // Stores tokens for the session.
         public List<Token> Tokens { get; set; } = new List<Token>();
     }

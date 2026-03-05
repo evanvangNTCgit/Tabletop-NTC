@@ -1,4 +1,4 @@
-﻿@model SAGroupAlphaSpring26.Models.MapScreenViewModel
+﻿@model SAGroupAlphaSpring26.ViewModels.MapScreenViewModel
 
 <div class="map-container" style="display: flex; height: 90vh;">
 
@@ -10,7 +10,7 @@
                 <img src="@(string.IsNullOrEmpty(piece.ImagePath))"
                      class="map-piece sidebar-piece"
                      draggable="true"
-                     data-pieceid="@piece.Id"
+                     data-pieceid="@piece.PieceId"
                      alt="@piece.Name"
                      onerror="this.onerror=null; this.src='/images/default.png';" />
             }
@@ -31,8 +31,8 @@
                 <img src="@(string.IsNullOrEmpty(token.Piece?.ImagePath) ? "/images/default.png" : token.Piece.ImagePath)"
                      class="map-piece draggable-token"
                      style="position: absolute; left: @(token.X)px; top: @(token.Y)px;"
-                     id="token-placed-@token.Id"
-                     data-tokenid="@token.Id"
+                     id="token-placed-@token.TokenId"
+                     data-tokenid="@token.TokenId"
                      onerror="this.onerror=null; this.src='/images/default.png';" />
             }
         </div>

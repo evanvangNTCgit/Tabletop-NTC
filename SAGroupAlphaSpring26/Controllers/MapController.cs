@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
-using SAGroupAlphaSpring26.Models;
-using System.Linq;
+using SAGroupAlphaSpring26.ViewModels;
 
 namespace SAGroupAlphaSpring26.Controllers
 {
@@ -26,9 +25,9 @@ namespace SAGroupAlphaSpring26.Controllers
                 var token = _context.Tokens.Find(update.Id);
                 if (token != null)
                 {
-                    token.X = update.X;
-                    token.Y = update.Y;
-                    token.zIndex = update.zIndex;
+                    token.X = (decimal)update.X;
+                    token.Y = (decimal)update.Y;
+                    token.ZIndex = update.zIndex;
                 }
             }
             _context.SaveChanges();
@@ -58,7 +57,7 @@ namespace SAGroupAlphaSpring26.Controllers
             var mapToken = _context.Tokens
                 .Include(t => t.Piece)
                 .ThenInclude(p => p.PieceType)
-                .FirstOrDefault(t => t.SessionID == sessionId && t.Piece.PieceType.Name == "Map");
+                .FirstOrDefault(t => t.SessionId == sessionId && t.Piece.PieceType.Name == "Map");
 
             var viewModel = new MapScreenViewModel()
             {
@@ -68,7 +67,7 @@ namespace SAGroupAlphaSpring26.Controllers
                 // For now we are getting all tokens that are not maps, but later on we may want to include maps for quick switching of maps during a session.
                 Tokens = _context.Tokens
                     .Include(t => t.Piece)
-                    .Where(t => t.SessionID == sessionId && t.Piece.PieceType.Name != "Map")
+                    .Where(t => t.SessionId == sessionId && t.Piece.PieceType.Name != "Map")
                     .ToList()
             };
 

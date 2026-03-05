@@ -5,6 +5,9 @@
         // Id of the token.
         public int TokenId { get; set; }
 
+        // Name of token.
+        public string Name { get; set; }
+
         // The ID of the piece this token is based on.
         public int PieceID { get; set; }
 

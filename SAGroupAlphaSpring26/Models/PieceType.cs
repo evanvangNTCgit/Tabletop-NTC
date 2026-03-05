@@ -7,5 +7,8 @@
         public int PieceTypeId { get; set; }
         // name of piecetype
         public string Name { get; set; } = string.Empty;
+
+        // The list of pieces a piecetype can have.
+        public ICollection<Piece> Pieces { get; set; }
     }
 }

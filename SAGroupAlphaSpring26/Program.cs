@@ -26,18 +26,13 @@ using (var scope = app.Services.CreateScope())
 
     if (!context.Users.Any(u => u.Username == "AzureDemoDM"))
     {
-        var azureUser = new User { Username = "AzureDemoDM", Email = "demo@live.com", CreatedAt = DateTime.Now };
+        var azureUser = new User { Username = "AzureDemoDM", Email = "demo@live.com" };
         context.Users.Add(azureUser);
         context.SaveChanges();
 
-        var azureSession = new Session { UserId = azureUser.Id, Notes = "Live Azure Production Map", LastUpdated = DateTime.Now };
+        // var azureSession = new Session { UserId = azureUser.UserId, Notes = "Live Azure Production Map", LastUpdated = DateTime.Now };
+        var azureSession = new Session { UserId = azureUser.UserId, Notes = string.Empty, LastUpdated = DateTime.Now, SessionId = 0, User = azureUser };
         context.Sessions.Add(azureSession);
-        context.SaveChanges();
-
-        context.Tokens.AddRange(
-            new Token { SessionID = azureSession.Id, PieceID = 1, Name = "Production Map", X = 0, Y = 0, zIndex = 0, IsVisible = true },
-            new Token { SessionID = azureSession.Id, PieceID = 2, Name = "Production Goblin", X = 200, Y = 200, zIndex = 1, IsVisible = true }
-        );
         context.SaveChanges();
     }
 }
