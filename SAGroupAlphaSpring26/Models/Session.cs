@@ -4,7 +4,7 @@
     public class Session
     {
         // Session ID, used to link sessions to users and pieces.
-        public int Id { get; set; }
+        public int SessionId { get; set; }
 
         // session notes, for user to store their own notes.
         public string Notes { get; set; } = string.Empty;
@@ -16,6 +16,6 @@
         public int UserId { get; set; }
 
         // Stores tokens for the session.
-        public virtual ICollection<Token> Tokens { get; set; } = new List<Token>();
+        public List<Token> Tokens { get; set; } = new List<Token>();
     }
 }

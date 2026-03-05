@@ -3,19 +3,17 @@
     // User class, used to store user information.
     public class User
     {
-        //
-        public int Id { get; set; }
+        // ID of the user.
+        public int UserId { get; set; }
 
-        //
+        // Username of the user
         public string Username { get; set; } = string.Empty;
 
-        //
+        // Email address of the user.
         public string Email { get; set; } = string.Empty;
 
-        //
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-
-        //
-        public virtual ICollection<Session> Sessions { get; set; } = new List<Session>();
+        // The pieces currently owned by the user.
+        // Many to many relationship since a user can own many pieces, and a piece can be owned by many users.
+        public List<Piece> OwnedPieces { get; set; } = new List<Piece>();
     }
 }
