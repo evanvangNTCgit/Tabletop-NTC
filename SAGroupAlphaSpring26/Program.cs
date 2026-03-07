@@ -1,6 +1,5 @@
 global using SAGroupAlphaSpring26;
 global using SAGroupAlphaSpring26.Models;
-global using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
 
@@ -23,17 +22,22 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<DataContext>();
 
     // Should run migrations for mock data.
-    context.Database.Migrate();
+    //context.Database.Migrate();
 
     if (!context.Users.Any(u => u.Username == "AzureDemoDM"))
     {
-        var azureUser = new User { Username = "AzureDemoDM", Email = "demo@live.com" };
+        var azureUser = new User { Username = "AzureDemoDM", Email = "demo@live.com"};
         context.Users.Add(azureUser);
         context.SaveChanges();
 
-        // var azureSession = new Session { UserId = azureUser.UserId, Notes = "Live Azure Production Map", LastUpdated = DateTime.Now };
-        var azureSession = new Session { UserId = azureUser.UserId, Notes = string.Empty, LastUpdated = DateTime.Now, SessionId = 0, User = azureUser };
+        var azureSession = new Session { UserId = azureUser.UserId, Notes = "Live Azure Production Map", LastUpdated = DateTime.Now };
         context.Sessions.Add(azureSession);
+        context.SaveChanges();
+
+        context.Tokens.AddRange(
+            new Token { SessionId = azureSession.SessionId, PieceID = 1, Name = "Production Map", X = 0, Y = 0, ZIndex = 0, Visibility = true },
+            new Token { SessionId = azureSession.SessionId, PieceID = 2, Name = "Production Goblin", X = 200, Y = 200, ZIndex = 1, Visibility = true }
+        );
         context.SaveChanges();
     }
 }

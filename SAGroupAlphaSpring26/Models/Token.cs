@@ -18,22 +18,22 @@ namespace SAGroupAlphaSpring26.Models
         public int PieceID { get; set; }
 
         // Navigation property to the piece this token is based on.
-        public required Piece Piece { get; set; }
+        public Piece? Piece { get; set; }
 
         // The current session this token is in.
         [Required]
         public int SessionId { get; set; }
 
         // The navigation property to the session this token is in.
-        public required Session Session { get; set; }
+        public Session? Session { get; set; }
 
         // Current X coordinate of the token on the map, defaults to 0.00.
         [Column(TypeName = "decimal(18,2)")]
-        public decimal X { get; set; } = 0.00m;
+        public double X { get; set; } = 0.00;
 
         // Current Y coordinate of the token on the map, defaults to 0.00.
         [Column(TypeName = "decimal(18,2)")]
-        public decimal Y { get; set; } = 0.00m;
+        public double Y { get; set; } = 0.00;
 
         // The layer that the token is on. Defaults to 0, so bottom layer.
         [Column(TypeName = "decimal(18,2)")]

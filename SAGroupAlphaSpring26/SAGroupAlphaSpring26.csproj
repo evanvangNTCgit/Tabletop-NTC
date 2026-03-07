@@ -27,6 +27,7 @@
     <Content Update="wwwroot\images\default.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
+	  <Using Include="System.ComponentModel.DataAnnotations" />
   </ItemGroup>
 
 </Project>
