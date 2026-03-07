@@ -1,5 +1,6 @@
 global using SAGroupAlphaSpring26;
 global using SAGroupAlphaSpring26.Models;
+global using SAGroupAlphaSpring26.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
 

@@ -34,6 +34,17 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
+        public List<PieceType> GetPieceTypes() 
+        {
+            try
+            {
+                return this._dataContext.PieceTypes.ToList();
+            } catch (Exception e)
+            {
+                throw new Exception($"Failed to get piece types {e.Message}");
+            }
+        }
+
         // Gets a session. by session id.
         public Session GetSession(int sessionId)
         {
@@ -57,6 +68,20 @@ namespace SAGroupAlphaSpring26.Services
             catch
             {
                 throw new Exception($"Failed to get session for User: {userId}");
+            }
+        }
+
+        public Piece AddPiece (Piece p) 
+        {
+            try
+            {
+                this._dataContext.Add(p);
+                this._dataContext.SaveChanges();
+                return p;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error in adding piece {e.Message}");
             }
         }
     }
