@@ -28,7 +28,7 @@ namespace SAGroupAlphaSpring26.Models
         [Required]
         public int PieceTypeID { get; set; }
 
-        public required PieceType PieceType { get; set; }
+        public PieceType? PieceType { get; set; }
 
         // This is a many to many start since a piece can be in many sets, and a set can have many pieces. We will need to create a join table for this relationship.
         public List<Set> Sets { get; set; } = new();
