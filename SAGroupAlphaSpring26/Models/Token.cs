@@ -5,7 +5,7 @@ namespace SAGroupAlphaSpring26.Models
     public class Token
     {
         // Id of the token.
-        public int TokenId { get; set; }
+        public int Id { get; set; }
 
         // Name of token.
         // I am thinking that this name can be overwritten by the DM if they wish to (Like naming a skeleton to 'Bob')

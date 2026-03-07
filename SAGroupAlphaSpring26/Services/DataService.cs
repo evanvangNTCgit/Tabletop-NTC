@@ -26,7 +26,7 @@ namespace SAGroupAlphaSpring26.Services
         {
             try
             {
-                return pieces.FirstOrDefault(p => p.PieceId == id)!;
+                return pieces.FirstOrDefault(p => p.Id == id)!;
             }
             catch
             {
@@ -39,7 +39,7 @@ namespace SAGroupAlphaSpring26.Services
         {
             try
             {
-                return sessions.FirstOrDefault(s => s.SessionId == sessionId)!;
+                return sessions.FirstOrDefault(s => s.Id == sessionId)!;
             }
             catch
             {

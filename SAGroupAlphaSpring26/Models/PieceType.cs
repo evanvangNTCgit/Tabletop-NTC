@@ -4,7 +4,7 @@
     public class PieceType
     {
         // id for piecetype
-        public int PieceTypeId { get; set; }
+        public int Id { get; set; }
         // name of piecetype
 
         [MinLength(4, ErrorMessage = "Name of PieceType must be atleast 4 charcters long")]

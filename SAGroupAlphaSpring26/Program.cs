@@ -30,7 +30,8 @@ using (var scope = app.Services.CreateScope())
         context.Users.Add(azureUser);
         context.SaveChanges();
 
-        var azureSession = new Session { UserId = azureUser.UserId, Notes = "Live Azure Production Map", LastUpdated = DateTime.Now };
+        // var azureSession = new Session { UserId = azureUser.UserId, Notes = "Live Azure Production Map", LastUpdated = DateTime.Now };
+        var azureSession = new Session { UserId = azureUser.Id, Notes = string.Empty, LastUpdated = DateTime.Now, Id = 0, User = azureUser };
         context.Sessions.Add(azureSession);
         context.SaveChanges();
 

@@ -3,7 +3,7 @@
     public class Sale
     {
         // The ID Of the sale from user.
-        public int SaleID { get; set; }
+        public int Id { get; set; }
 
         // The ID of the user on the sale.
         [Required]

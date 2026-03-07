@@ -6,7 +6,7 @@ namespace SAGroupAlphaSpring26.Models
     public class Piece
     {
         // Piece ID.
-        public int PieceId { get; set; }
+        public int Id { get; set; }
 
         // Name of the piece.
         [MinLength(4, ErrorMessage = "Name of piece must be atleast 5 characters long")]
