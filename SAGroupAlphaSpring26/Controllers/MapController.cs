@@ -51,30 +51,55 @@ namespace SAGroupAlphaSpring26.Controllers
             public string Name { get; set; } = string.Empty;
         }
 
-        public IActionResult Map(int sessionId)
+        public IActionResult MapTest() 
         {
-            // gets the session from the database using the session ID.
-            var session = _context.Sessions.Find(sessionId);
+            var session = _context.Sessions.First();
 
             // Creates the map token for displaying the map on the screen.
+            // The nullability of this is already handles by just setting it to a test map...
             var mapToken = _context.Tokens
                 .Include(t => t.Piece)
                 .ThenInclude(p => p!.PieceType)
-                .FirstOrDefault(t => t.SessionId == sessionId && t.Piece!.PieceType.Name == "Map");
+                .FirstOrDefault(t=> t.Piece!.PieceType!.Name == "Map");
 
             var viewModel = new MapScreenViewModel()
             {
                 CurrentSession = session,
                 MapImagePath = mapToken != null ? mapToken.Piece!.ImagePath : "/images/testMap.png",
 
-                // For now we are getting all tokens that are not maps, but later on we may want to include maps for quick switching of maps during a session.
                 Tokens = _context.Tokens
                     .Include(t => t.Piece)
-                    .Where(t => t.SessionId == sessionId && t.Piece!.PieceType.Name != "Map")
+                    .Where(t => t.SessionId == session.Id)
                     .ToList()
             };
 
-            return View("~/Views/Session/Map.cshtml", viewModel);
+            return View("~/Views/Map/Map.cshtml", viewModel);
+        }
+
+        public IActionResult Map(int sessionId)
+        {
+            // gets the session from the database using the session ID.
+            var session = _context.Sessions.FirstOrDefault(s => s.Id == sessionId);
+
+            // Creates the map token for displaying the map on the screen.
+            // The nullability of this is already handles by just setting it to a test map...
+            var mapToken = _context.Tokens
+                .Include(t => t.Piece)
+                .ThenInclude(p => p!.PieceType)
+                .FirstOrDefault(t => t.SessionId == sessionId && t.Piece!.PieceType!.Name == "Map");
+
+            var viewModel = new MapScreenViewModel()
+            {
+                CurrentSession = session,
+                MapImagePath = mapToken != null ? mapToken.Piece!.ImagePath : "/images/testMap.png",
+
+                Tokens = _context.Tokens
+                    .Include(t => t.Piece)
+                    .Where(t => t.SessionId == sessionId)
+                    .ToList()
+            };
+
+            return View(viewModel);
         }
     }
 }
