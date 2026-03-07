@@ -4,7 +4,7 @@
     public class Session
     {
         // Session ID, used to link sessions to users and pieces.
-        public int SessionId { get; set; }
+        public int Id { get; set; }
 
         // session notes, for user to store their own notes.
         public string Notes { get; set; } = string.Empty;

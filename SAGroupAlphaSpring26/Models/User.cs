@@ -4,7 +4,7 @@
     public class User
     {
         // ID of the user.
-        public int UserId { get; set; }
+        public int Id { get; set; }
 
         // Username of the user
         [Required]

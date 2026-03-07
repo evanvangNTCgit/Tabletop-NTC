@@ -5,7 +5,7 @@ namespace SAGroupAlphaSpring26.Models
     public class Set
     {
         // ID for the sets. Used to group pieces for the marketplace and collections.
-        public int SetId { get; set; }
+        public int Id { get; set; }
 
         // name of set.
         [MinLength(1, ErrorMessage = "Name of set must be at least 1 characters long")]
