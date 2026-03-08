@@ -98,5 +98,33 @@ namespace SAGroupAlphaSpring26.Controllers
             // However not here currently so just index
             return RedirectToAction("Index", "Home");
         }
+
+        [HttpGet("AddPieceType")]
+        public IActionResult AddPieceType() 
+        {
+            return View();
+        }
+
+        [HttpPost("AddPieceType")]
+        public IActionResult AddPieceType(PieceType pt) 
+        {
+            // If what is posted does not meet validation...
+            if (!ModelState.IsValid) 
+            {
+                // return them back to the view...
+                return View();
+            }
+
+            try
+            {
+                this._dataService.AddPieceType(pt);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Failed to add piece type: {e.Message}");
+            }
+        }
     }
 }

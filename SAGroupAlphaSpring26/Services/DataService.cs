@@ -34,12 +34,13 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
-        public List<PieceType> GetPieceTypes() 
+        public List<PieceType> GetPieceTypes()
         {
             try
             {
                 return this._dataContext.PieceTypes.ToList();
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 throw new Exception($"Failed to get piece types {e.Message}");
             }
@@ -71,7 +72,7 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
-        public Piece AddPiece (Piece p) 
+        public Piece AddPiece(Piece p)
         {
             try
             {
@@ -82,6 +83,20 @@ namespace SAGroupAlphaSpring26.Services
             catch (Exception e)
             {
                 throw new Exception($"Error in adding piece {e.Message}");
+            }
+        }
+
+        public PieceType AddPieceType(PieceType pt)
+        {
+            try
+            {
+                this._dataContext.Add(pt);
+                this._dataContext.SaveChanges();
+                return pt;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error in adding piece type {e.Message}");
             }
         }
     }
