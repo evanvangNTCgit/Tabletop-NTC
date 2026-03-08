@@ -8,4 +8,7 @@ public class PieceViewModel
     public Piece? Piece { get; set; }
 
     public List<PieceType> PieceTypes { get; set; } = new();
+
+    // The list of current image paths available
+    public List<string> ImagePaths { get; set; } = new();
 }

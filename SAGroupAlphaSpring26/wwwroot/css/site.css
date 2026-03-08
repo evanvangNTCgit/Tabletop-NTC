@@ -237,3 +237,24 @@ body {
     .map-piece:hover {
         transform: scale(1.08);
     }
+
+/* Add piece css*/
+
+.add-piece-image{
+    height: 200px;
+    width: 200px;
+    margin: 10px;
+    background-color: black;
+}
+
+.add-piece-div-image{
+    display: inline-flex;
+    margin: 10px;
+    background-color: purple;
+    padding: 5px;
+}
+
+    .add-piece-div-image:hover {
+        box-shadow: 10px 10px;
+        transition: .5s;
+    }

@@ -16,6 +16,8 @@ builder.Services.Configure<AppConfig>(builder.Configuration.GetSection("AppConfi
 // Using MySQL for local development
 builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DatabaseConnection")));
 
+builder.Services.AddSingleton<IWebHostEnvironment>(builder.Environment);
+
 var app = builder.Build();
 
 // Creates mock data for production only if it doesn't already exist.
