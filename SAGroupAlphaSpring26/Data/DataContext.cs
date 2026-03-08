@@ -59,6 +59,39 @@ namespace SAGroupAlphaSpring26.Data
                 .WithOne(sl => sl.Sale)
                 .HasForeignKey(sl => sl.SaleID);
 
+            // Initial piece types
+            modelBuilder.Entity<PieceType>().HasData(
+                                new PieceType { Id = 1, Name = "Player" },
+                new PieceType { Id = 2, Name = "Map" },
+                new PieceType { Id = 3, Name = "Structure" },
+                new PieceType { Id = 4, Name = "Object" },
+                new PieceType { Id = 5, Name = "Goblin" },
+                new PieceType { Id = 6, Name = "Orc" },
+                new PieceType { Id = 7, Name = "Shop" }
+                );
+
+            // Initial Piece
+            modelBuilder.Entity<Piece>().HasData(
+                                new Piece { Id=1, PieceTypeID = 2, Name = "Default Dungeon", ImagePath = "/images/testMap.png", Price = 0.00m },
+                new Piece { Id = 2, PieceTypeID = 1, Name = "Cleric", ImagePath = "/images/Cleric.png", Price = 0.00m },
+                new Piece { Id = 3, PieceTypeID = 5, Name = "Goblin Chief", ImagePath = "/images/GoblinChief.png", Price = 0.00m },
+                new Piece { Id = 4, PieceTypeID = 4, Name = "Basic Chest", ImagePath = "/images/chest.png", Price = 0.00m },
+                new Piece { Id = 5, PieceTypeID = 1, Name = "Bard", ImagePath = "/images/bardTest.png", Price = 0.00m }
+                );
+
+            // Seed User
+            modelBuilder.Entity<User>().HasData(
+                new User { Id = 1, Username = "LocalDM", Email = "local@demo.com" });
+
+            // A seed session
+            modelBuilder.Entity<Session>().HasData(
+                new Session { Id = 1, UserId = 1, Notes = "Local Test Session", LastUpdated = DateTime.Now });
+
+            modelBuilder.Entity<Token>().HasData(
+                                new Token { Id = 1, SessionId = 1, PieceID = 2, Name = "Default Dungeon", X = 0, Y = 0, ZIndex = 0, Visibility = true },
+                new Token { Id = 2, SessionId = 1, PieceID = 1, Name = "Cleric", X = 50, Y = 15, ZIndex = 3, Visibility = true },
+                new Token { Id = 3, SessionId = 1, PieceID = 5, Name = "Goblin Chief", X = 50, Y = 5, ZIndex = 1, Visibility = true },
+                new Token { Id = 4, SessionId = 1, PieceID = 4, Name = "Basic Chest", X = 50, Y = 10, ZIndex = 2, Visibility = false });
 
             // Test Data:
 
