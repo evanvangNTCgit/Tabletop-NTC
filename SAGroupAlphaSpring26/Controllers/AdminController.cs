@@ -39,7 +39,7 @@ namespace SAGroupAlphaSpring26.Controllers
         }
 
         [HttpPost("AddPiece")]
-        public IActionResult AddPiece(PieceViewModel pvm)
+        public async Task<IActionResult> AddPiece(PieceViewModel pvm)
         {
             // If the model provided is not valid send them back to the view
             // HOWEVER REMEMBER it needs the view model to see the list of piece types.
@@ -58,13 +58,36 @@ namespace SAGroupAlphaSpring26.Controllers
 
             try
             {
-                // I do this because it just reads the file name like Cleric.png
-                // However for it to work on the JS it needs to add /images/ to the beginning of it.
-                pvm.Piece!.ImagePath = $"/images/{pvm.Piece.ImagePath}";
+                // https://stackoverflow.com/questions/52399086/image-file-upload-and-usage-asp-net-core-2-0
+
+                // Okay so we check first if they did a customer image upload.
+                if (pvm.UserImageUpload != null)
+                {
+                    // Get the file name and copy it to the wwwroot folder.
+                    var fileName = Path.GetFileName(pvm.UserImageUpload.FileName);
+                    var filePath = Path.Combine(this._webHostEnvironment.WebRootPath, "images/", fileName);
+
+                    // Initializing a new file stream that directs to the wwwroot/image, then filemode.create says to essentially create a new file in it.
+                    using (var filestream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await pvm.UserImageUpload.CopyToAsync(filestream);
+                    }
+
+                    // Now set the piece image to that name...
+                    pvm.Piece!.ImagePath = fileName;
+                }
+                // Okay so they did not upload something... They chose an already provided image..
+                // And if they did not select one its set to default in the model to use placeholder image.
+                else
+                {
+                    // I do this because it just reads the file name like Cleric.png
+                    // However for it to work on the JS it needs to add /images/ to the beginning of it.
+                    pvm.Piece!.ImagePath = $"/images/{pvm.Piece.ImagePath}";
+                }
 
                 this._dataService.AddPiece(pvm.Piece!);
             }
-            catch 
+            catch
             {
                 // Dont add it and simply redirect.
                 // Goes to index action in home controller.

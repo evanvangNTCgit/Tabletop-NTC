@@ -1,7 +1,7 @@
 ﻿@model PieceViewModel
 <h2>Add Piece</h2>
 <div class="form-horizontal">
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label asp-for="Piece.Name"> Name Of Piece </label>
             <input asp-for="Piece.Name" />
@@ -37,6 +37,10 @@
                     <input asp-for="Piece.ImagePath" value="@imagename" type="radio"/>
                 </div>
                 }
+            </div>
+            <div class="form-group">
+            <label asp-for="UserImageUpload">Not Required: Custom Image For Piece </label>
+            <input asp-for="UserImageUpload" type="file"/>
             </div>
         <div asp-validation-summary="All"></div>
         <p>

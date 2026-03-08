@@ -11,4 +11,8 @@ public class PieceViewModel
 
     // The list of current image paths available
     public List<string> ImagePaths { get; set; } = new();
+
+    // Allow the user to add a custom image if they desire to.
+    // Nullable since if they dont wish to just use our aleady used images.
+    public IFormFile? UserImageUpload { get; set; }
 }
