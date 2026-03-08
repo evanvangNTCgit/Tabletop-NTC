@@ -74,7 +74,7 @@ namespace SAGroupAlphaSpring26.Controllers
                     }
 
                     // Now set the piece image to that name...
-                    pvm.Piece!.ImagePath = fileName;
+                    pvm.Piece!.ImagePath = $"/images/{fileName}";
                 }
                 // Okay so they did not upload something... They chose an already provided image..
                 // And if they did not select one its set to default in the model to use placeholder image.
