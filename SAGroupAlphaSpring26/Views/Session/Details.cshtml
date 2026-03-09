@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Session Details";
+}
+<body>
+    <div b-pbe4b1c5lp class="main-content">
+
+        <div class="text-center mb-5">
+                    <h1 class="mb-0">Session Details</h1>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-5">
+                        <p class="lead">Session Notes</p>
+                        <div class="p-3 border rounded bg-light" style="min-height: 150px;">
+                            @if (string.IsNullOrEmpty(Model.Notes))
+                            {
+                                <p class="text-muted"><em>No notes recorded for this session yet.</em></p>
+                            }
+                            else
+                            {
+                                <p>@Model.Notes</p>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="text-center mb-5">
+                        <h5>Current Map Preview</h5>
+                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px; width: 100%;">
+                            <p>Map Preview Area</p>
+                        </div>
+                    </div>
+                    <!-- Use current Session ID To Launch Session-->
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                        <a asp-controller="Map"
+                        asp-action="MapTest"
+                        asp-route-id="@Model.Id" 
+                        class="btn btn-success btn-lg">
+                        Launch Session </a>
+                    </div>
+                </div>
+                <div class="card-footer text-muted">
+                    Last Updated: @Model.LastUpdated.ToString("f")
+                </div>
+            </div>
+
+</body>

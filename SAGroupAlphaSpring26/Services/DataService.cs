@@ -1,4 +1,5 @@
-﻿using SAGroupAlphaSpring26.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SAGroupAlphaSpring26.Data;
 
 namespace SAGroupAlphaSpring26.Services
 {
@@ -6,9 +7,8 @@ namespace SAGroupAlphaSpring26.Services
     {
         private DataContext _dataContext;
 
-        public List<Piece> pieces;
-
-        public List<Session> sessions;
+        // public List<Piece> pieces;
+        // public List<Session> sessions;
 
         public DataService(DataContext dataContext)
         {
@@ -26,7 +26,14 @@ namespace SAGroupAlphaSpring26.Services
         {
             try
             {
-                return pieces.FirstOrDefault(p => p.Id == id)!;
+                var piece = _dataContext.Pieces.FirstOrDefault(p => p.Id == id);
+
+                if (piece == null)
+                {
+                    throw new Exception();
+                }
+
+                return piece;
             }
             catch
             {
@@ -51,7 +58,17 @@ namespace SAGroupAlphaSpring26.Services
         {
             try
             {
-                return sessions.FirstOrDefault(s => s.Id == sessionId)!;
+                var session = _dataContext.Sessions
+                .Include(s => s.Tokens)
+                    .ThenInclude(t => t.Piece)
+                .FirstOrDefault(s => s.Id == sessionId);
+
+                if (session == null)
+                {
+                    throw new Exception();
+                }
+
+                return session;
             }
             catch
             {
@@ -64,7 +81,10 @@ namespace SAGroupAlphaSpring26.Services
         {
             try
             {
-                return sessions.Where(s => s.UserId == userId).ToList();
+                return _dataContext.Sessions
+                    .Where(s => s.UserId == userId)
+                    .OrderByDescending(s => s.LastUpdated)
+                    .ToList();
             }
             catch
             {
@@ -76,8 +96,8 @@ namespace SAGroupAlphaSpring26.Services
         {
             try
             {
-                this._dataContext.Add(p);
-                this._dataContext.SaveChanges();
+                _dataContext.Add(p);
+                _dataContext.SaveChanges();
                 return p;
             }
             catch (Exception e)
@@ -98,6 +118,14 @@ namespace SAGroupAlphaSpring26.Services
             {
                 throw new Exception($"Error in adding piece type {e.Message}");
             }
+        }
+
+
+        public Session AddSession(Session s)
+        {
+            _dataContext.Sessions.Add(s);
+            _dataContext.SaveChanges();
+            return s;
         }
     }
 }

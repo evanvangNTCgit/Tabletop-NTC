@@ -16,10 +16,10 @@ namespace SAGroupAlphaSpring26.Controllers
 
         private readonly DataService _dataService;
 
-        public HomeController(IOptions<AppConfig> appConfigWrapper, ILogger<HomeController> logger, DataContext dataContext)
+        public HomeController(IOptions<AppConfig> appConfigWrapper, ILogger<HomeController> logger, DataService dataService)
         {
             _appConfig = appConfigWrapper.Value;
-            _dataService = new(dataContext);
+            _dataService = dataService;
             _logger = logger;
         }
 
@@ -28,7 +28,10 @@ namespace SAGroupAlphaSpring26.Controllers
         {
             ViewBag.ApplicationName = "SA Group Alpha Spring 2026";
 
-            return View();
+            int userId = 1;
+            var model = _dataService.GetSessions(userId);
+
+            return View(model);
         }
 
         [Route("Privacy")]

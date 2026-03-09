@@ -85,13 +85,22 @@ namespace SAGroupAlphaSpring26.Data
 
             // A seed session
             modelBuilder.Entity<Session>().HasData(
-                new Session { Id = 1, UserId = 1, Notes = "Local Test Session", LastUpdated = DateTime.Now });
+                new Session { Id = 1, UserId = 1, Notes = "Local Test Session", LastUpdated = DateTime.Now, },
+                new Session { Id = 2, UserId = 1, Notes = "Local Test Session 2", LastUpdated = DateTime.Now, });
 
             modelBuilder.Entity<Token>().HasData(
-                                new Token { Id = 1, SessionId = 1, PieceID = 2, Name = "Default Dungeon", X = 0, Y = 0, ZIndex = 0, Visibility = true },
-                new Token { Id = 2, SessionId = 1, PieceID = 1, Name = "Cleric", X = 50, Y = 15, ZIndex = 3, Visibility = true },
-                new Token { Id = 3, SessionId = 1, PieceID = 5, Name = "Goblin Chief", X = 50, Y = 5, ZIndex = 1, Visibility = true },
-                new Token { Id = 4, SessionId = 1, PieceID = 4, Name = "Basic Chest", X = 50, Y = 10, ZIndex = 2, Visibility = false });
+                // Session 1 Token Seed Data.
+                new Token { Id = 1, SessionId = 1, PieceID = 1, Name = "Default Dungeon", X = 0, Y = 0, ZIndex = 0, Visibility = true },
+                new Token { Id = 2, SessionId = 1, PieceID = 2, Name = "Cleric", X = 50, Y = 15, ZIndex = 3, Visibility = true },
+                new Token { Id = 3, SessionId = 1, PieceID = 3, Name = "Goblin Chief", X = 50, Y = 5, ZIndex = 1, Visibility = true },
+                new Token { Id = 4, SessionId = 1, PieceID = 4, Name = "Basic Chest", X = 50, Y = 10, ZIndex = 2, Visibility = false },
+
+                // Token Seed Data for 2nd Session testing.
+                new Token { Id = 5, SessionId = 2, PieceID = 1, Name = "Default Dungeon", X = 0, Y = 0, ZIndex = 0, Visibility = true },
+                new Token { Id = 6, SessionId = 2, PieceID = 2, Name = "Cleric", X = 50, Y = 15, ZIndex = 3, Visibility = true },
+                new Token { Id = 7, SessionId = 2, PieceID = 2, Name = "Cleric", X = 50, Y = 5, ZIndex = 1, Visibility = true },
+                new Token { Id = 8, SessionId = 2, PieceID = 2, Name = "Cleric", X = 50, Y = 10, ZIndex = 2, Visibility = true },
+                new Token { Id = 9, SessionId = 2, PieceID = 3, Name = "Goblin Chief", X = 50, Y = 5, ZIndex = 1, Visibility = true });
 
             // Test Data:
 

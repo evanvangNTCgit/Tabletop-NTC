@@ -8,6 +8,7 @@ using SAGroupAlphaSpring26.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddScoped<SAGroupAlphaSpring26.Services.DataService>();
 builder.Services.AddControllersWithViews();
 builder.Services.Configure<AppConfig>(builder.Configuration.GetSection("AppConfig"));
 
