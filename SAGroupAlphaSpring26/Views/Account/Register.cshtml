@@ -1,0 +1,75 @@
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<!-- Registration Form Container - Centered on page with Bootstrap grid -->
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <!-- Card Header - Blue background with white text -->
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0">Create an Account</h2>
+            </div>
+            
+            <!-- Card Body - Contains the registration form -->
+            <div class="card-body">
+                <!-- Form submits to the Register action in AccountController via POST -->
+                <form asp-action="Register" method="post">
+                    <!-- Displays all model validation errors (except property-specific) -->
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <!-- First Name and Last Name in a row (2 columns on medium+ screens) -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <!-- Label uses Display Name attribute from ViewModel -->
+                            <label asp-for="FirstName" class="form-label"></label>
+                            <!-- Input binds to FirstName property, with client-side validation -->
+                            <input asp-for="FirstName" class="form-control" placeholder="Enter your first name" />
+                            <!-- Displays validation error message for FirstName -->
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="LastName" class="form-label"></label>
+                            <input asp-for="LastName" class="form-control" placeholder="Enter your last name" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+
+                    <!-- Email Address field with email type for browser validation -->
+                    <div class="mb-3">
+                        <label asp-for="EmailAddress" class="form-label"></label>
+                        <input asp-for="EmailAddress" type="email" class="form-control" placeholder="Enter your email address" />
+                        <span asp-validation-for="EmailAddress" class="text-danger"></span>
+                    </div>
+
+                    <!-- Password field - type="password" hides characters -->
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label"></label>
+                        <input asp-for="Password" type="password" class="form-control" placeholder="Enter your password" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <!-- Confirm Password field - must match Password -->
+                    <div class="mb-3">
+                        <label asp-for="PasswordConfirm" class="form-label"></label>
+                        <input asp-for="PasswordConfirm" type="password" class="form-control" placeholder="Confirm your password" />
+                        <span asp-validation-for="PasswordConfirm" class="text-danger"></span>
+                    </div>
+
+                    <!-- Submit button - full width via d-grid gap-2 -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">Register</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Card Footer - Link to login page for existing users -->
+            <div class="card-footer text-center">
+                <p class="mb-0">Already have an account? <a asp-action="Login">Sign in here</a></p>
+            </div>
+    </div>
+
+<!-- Scripts section - renders client-side validation scripts -->
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
