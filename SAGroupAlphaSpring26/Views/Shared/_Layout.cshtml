@@ -17,11 +17,39 @@
 
             <ul class="navbar-nav">
                 <li class="nav-item">
+                <a class="navbar-brand" asp-area="" asp-controller="Account" asp-action="sign-in">
+                    Sign in
+                </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Store">Store</a>
                 </li>
+                <li class="nav-item">
+                <a asp-controller="Account" asp-action="Logout" class="nav-link" role="button">Logout</a>
+		</li>
+
+                <!-- If user is logged in and is an admin...-->
+            @if(User.Identity!.IsAuthenticated && User.IsInRole("Admin"))
+                {
+                    <p>Hello!, @User.Identity.Name</p>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Admin
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="adminDropdown">
+                        <li>
+                            <a asp-controller="Admin" asp-action="AddPiece" class="dropdown-item" role="button">Add a piece</a>
+                        </li>
+                        <li>
+                            <a asp-controller="Admin" asp-action="AddPieceType" class="dropdown-item" role="button">Add a piece type</a>
+                        </li>
+                    </ul>
+                </li>
+                }
             </ul>
         </nav>
 
