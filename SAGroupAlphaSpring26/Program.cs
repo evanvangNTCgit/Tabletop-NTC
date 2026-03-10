@@ -2,6 +2,7 @@ global using SAGroupAlphaSpring26;
 global using SAGroupAlphaSpring26.Models;
 global using SAGroupAlphaSpring26.ViewModels;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
 
@@ -96,7 +97,7 @@ using (var scope = app.Services.CreateScope())
         // Seed local user if not exists
         if (!context.Users.Any(u => u.FirstName == "Local"))
         {
-            var localUser = new User { FirstName = "Local", LastName = "DM", Email = "local@demo.com", PasswordHash = "TestAccount1"};
+            var localUser = new User { Id = 1, FirstName = "Local", LastName = "DM", PasswordHash = passwordHasher.HashPassword(null!, "Password123"), Email = "local@demo.com", IsAdmin = true };
             context.Users.Add(localUser);
             context.SaveChanges();
 
@@ -122,12 +123,12 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-    // Production seed data (Azure)
+    // Production seed data (Evan)
     if (!app.Environment.IsDevelopment())
     {
-        if (!context.Users.Any(u => u.FirstName == "AzureDemo"))
+        if (!context.Users.Any(u => u.FirstName == "Evan"))
         {
-            var azureUser = new User { FirstName = "AzureDemo",LastName= "DM", Email = "demo@live.com", PasswordHash = "TestAccount2"};
+            var azureUser = new User { Id = 2, FirstName = "Evan", LastName = "Vang", PasswordHash = passwordHasher.HashPassword(null!, "EvanPassword123"), Email = "evankvang@gmail.com", IsAdmin = false };
             context.Users.Add(azureUser);
             context.SaveChanges();
 
