@@ -34,6 +34,7 @@
                             <input asp-for="LastName" class="form-control" placeholder="Enter your last name" />
                             <span asp-validation-for="LastName" class="text-danger"></span>
                         </div>
+                    </div>
 
                     <!-- Email Address field with email type for browser validation -->
                     <div class="mb-3">
@@ -67,7 +68,9 @@
             <div class="card-footer text-center">
                 <p class="mb-0">Already have an account? <a asp-action="Login">Sign in here</a></p>
             </div>
+        </div>
     </div>
+</div>
 
 <!-- Scripts section - renders client-side validation scripts -->
 @section Scripts {

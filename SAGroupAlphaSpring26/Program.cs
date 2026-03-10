@@ -94,9 +94,9 @@ using (var scope = app.Services.CreateScope())
         }
 
         // Seed local user if not exists
-        if (!context.Users.Any(u => u.Username == "LocalDM"))
+        if (!context.Users.Any(u => u.FirstName == "Local"))
         {
-            var localUser = new User { Username = "LocalDM", Email = "local@demo.com" };
+            var localUser = new User { FirstName = "Local", LastName = "DM", Email = "local@demo.com", PasswordHash = "TestAccount1"};
             context.Users.Add(localUser);
             context.SaveChanges();
 
@@ -125,9 +125,9 @@ using (var scope = app.Services.CreateScope())
     // Production seed data (Azure)
     if (!app.Environment.IsDevelopment())
     {
-        if (!context.Users.Any(u => u.Username == "AzureDemoDM"))
+        if (!context.Users.Any(u => u.FirstName == "AzureDemo"))
         {
-            var azureUser = new User { Username = "AzureDemoDM", Email = "demo@live.com"};
+            var azureUser = new User { FirstName = "AzureDemo",LastName= "DM", Email = "demo@live.com", PasswordHash = "TestAccount2"};
             context.Users.Add(azureUser);
             context.SaveChanges();
 
