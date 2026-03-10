@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.Services;
 
 namespace SAGroupAlphaSpring26.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Route("Admin")]
     public class AdminController : Controller
     {
@@ -100,16 +102,16 @@ namespace SAGroupAlphaSpring26.Controllers
         }
 
         [HttpGet("AddPieceType")]
-        public IActionResult AddPieceType() 
+        public IActionResult AddPieceType()
         {
             return View();
         }
 
         [HttpPost("AddPieceType")]
-        public IActionResult AddPieceType(PieceType pt) 
+        public IActionResult AddPieceType(PieceType pt)
         {
             // If what is posted does not meet validation...
-            if (!ModelState.IsValid) 
+            if (!ModelState.IsValid)
             {
                 // return them back to the view...
                 return View();

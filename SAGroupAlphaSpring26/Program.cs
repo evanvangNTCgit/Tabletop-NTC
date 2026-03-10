@@ -1,6 +1,7 @@
 global using SAGroupAlphaSpring26;
 global using SAGroupAlphaSpring26.Models;
 global using SAGroupAlphaSpring26.ViewModels;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
 
@@ -17,6 +18,34 @@ builder.Services.Configure<AppConfig>(builder.Configuration.GetSection("AppConfi
 // Using MySQL for local development
 builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DatabaseConnection")));
 
+// Adding cookie authentication...
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        // The LoginPath property informs the middleware that it should change an outgoing 401 Unauthorized status code into a 302 redirection onto the given login path.
+        options.LoginPath = "/account/sign-in";
+
+        // If the LogoutPath is provided the middleware then a request to that path will redirect based on the ReturnUrlParameter.
+        options.LogoutPath = "/account/sign-out";
+
+        // The AccessDeniedPath property informs the middleware that it should change an outgoing 403 Forbidden status code into a 302 redirection onto the given path.
+        options.AccessDeniedPath = "/account/access-denied";
+
+        // Determines the cookie name used to persist the identity.
+        // The default value is ".AspNetCore.Cookies".
+        // This value should be changed if you change the name of the AuthenticationScheme, especially if your system uses the cookie authentication middleware multiple times.
+        options.Cookie.Name = "UserAuth";
+
+        // Controls how much time the cookie will remain valid from the point it is created
+        // COOKIE IS IGNORED when expired
+        options.ExpireTimeSpan = TimeSpan.FromDays(2);
+
+        // set to true to instruct the middleware to re-issue a new cookie with
+        // a new expiration time any time it processes a request which is more than halfway through the expiration window.
+        options.SlidingExpiration = true;
+    });
+
+// This is required for my custom image uploading.
 builder.Services.AddSingleton<IWebHostEnvironment>(builder.Environment);
 
 var app = builder.Build();
@@ -130,7 +159,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

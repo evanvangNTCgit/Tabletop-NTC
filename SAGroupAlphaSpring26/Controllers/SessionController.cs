@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SAGroupAlphaSpring26.Models;
 using SAGroupAlphaSpring26.Services;
 
 namespace SAGroupAlphaSpring26.Controllers
 {
+    // For now allow anonymous change if needed or wanted.
+    [AllowAnonymous]
     [Route("session")]
     public class SessionController : Controller
     {

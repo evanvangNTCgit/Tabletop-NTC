@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.Models;
@@ -9,7 +10,8 @@ using System.Linq;
 
 namespace SAGroupAlphaSpring26.Controllers
 {
-
+    // Fow now allow anonymous change if needed or desired.
+    [AllowAnonymous]
     public class MapController : Controller
     {
         private readonly DataService _dataService;

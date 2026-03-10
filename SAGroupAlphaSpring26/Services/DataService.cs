@@ -127,5 +127,34 @@ namespace SAGroupAlphaSpring26.Services
             _dataContext.SaveChanges();
             return s;
         }
+
+        // Get a user by their email address.
+        public User GetUser(string email)
+        {
+            try
+            {
+
+                var user = this._dataContext.Users.FirstOrDefault(u => u.Email == email);
+                return user!;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Could not find user of email {email}, {e.Message}");
+            }
+        }
+
+        public User AddUser(User user)
+        {
+            try
+            {
+                this._dataContext.Add(user);
+                this._dataContext.SaveChanges();
+                return user;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Failed to add user {user.FirstName}, {e.Message}");
+            }
+        }
     }
 }
