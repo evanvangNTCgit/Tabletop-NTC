@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace SAGroupAlphaSpring26.Data
 {
@@ -79,9 +80,13 @@ namespace SAGroupAlphaSpring26.Data
                 new Piece { Id = 5, PieceTypeID = 1, Name = "Bard", ImagePath = "/images/bardTest.png", Price = 0.00m }
                 );
 
+            // A password hasher 
+            PasswordHasher<string> passwordHasher = new();
             // Seed User
             modelBuilder.Entity<User>().HasData(
-                new User { Id = 1, Username = "LocalDM", Email = "local@demo.com" });
+                new User { Id = 1, FirstName = "Local", LastName = "DM", PasswordHash = passwordHasher.HashPassword(null!, "Password123"), Email = "local@demo.com", IsAdmin = true },
+                new User { Id = 2, FirstName = "Evan", LastName = "Vang", PasswordHash = passwordHasher.HashPassword(null!, "EvanPassword123"), Email = "evankvang@gmail.com", IsAdmin = false}
+                );
 
             // A seed session
             modelBuilder.Entity<Session>().HasData(
