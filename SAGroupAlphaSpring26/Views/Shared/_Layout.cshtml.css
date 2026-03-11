@@ -18,23 +18,178 @@ main {
 
 /* Sidebar */
 .sidebar {
-    width: 190px;
-    background-color: #1f2937;
+    width: 220px;
+    background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
     color: #ffffff;
     padding: 2rem 1rem;
-    position: fixed; /* sticky on scroll */
-    top: 0; /* sticks to top of viewport */
-    align-self: flex-start; /* keeps sidebar aligned to top of content */
-    /* remove height: 100vh to prevent it adding extra page height */
+    position: fixed;
+    top: 0;
+    align-self: flex-start;
     display: flex;
     flex-direction: column;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+
+/* Sidebar brand/title */
+.sidebar .brand {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #60a5fa;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1.5rem;
+    text-decoration: none;
+    border-bottom: 1px solid #374151;
+    padding-bottom: 1rem;
+}
+
+.sidebar .brand:hover {
+    color: #93c5fd;
 }
 
 /* Main content */
 .main-content {
-    flex: 1; /* takes remaining space */
+    flex: 1;
     padding: 2rem;
     background-color: #f4f6f9;
+    margin-left: 220px;
+}
+
+/* =========================
+   NAVIGATION BUTTONS
+========================= */
+
+.nav-button {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background-color: transparent;
+    border: 1px solid #374151;
+    border-radius: 8px;
+    color: #d1d5db;
+    text-decoration: none;
+    font-weight: 500;
+    text-align: left;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.nav-button:hover {
+    background-color: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+    transform: translateX(4px);
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+}
+
+.nav-button.active {
+    background-color: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+}
+
+/* Sign in button - special styling */
+.nav-button.signin {
+    background-color: #059669;
+    border-color: #059669;
+    color: #ffffff;
+    text-align: center;
+}
+
+.nav-button.signin:hover {
+    background-color: #047857;
+    border-color: #047857;
+    transform: translateX(4px);
+}
+
+/* Logout button */
+.nav-button.logout {
+    background-color: #dc2626;
+    border-color: #dc2626;
+    color: #ffffff;
+}
+
+.nav-button.logout:hover {
+    background-color: #b91c1c;
+    border-color: #b91c1c;
+    transform: translateX(4px);
+}
+
+/* =========================
+   ADMIN DROPDOWN
+========================= */
+
+.admin-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #374151;
+}
+
+.admin-dropdown {
+    position: relative;
+}
+
+.admin-toggle {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background-color: #7c3aed;
+    border: 1px solid #7c3aed;
+    border-radius: 8px;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    text-align: left;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.admin-toggle:hover {
+    background-color: #6d28d9;
+    border-color: #6d28d9;
+    transform: translateX(4px);
+}
+
+.admin-toggle::after {
+    content: "▼";
+    float: right;
+    font-size: 0.7rem;
+    margin-top: 4px;
+}
+
+.admin-menu {
+    display: none;
+    padding-left: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+.admin-dropdown.open .admin-menu {
+    display: block;
+}
+
+.admin-menu .nav-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.25rem;
+    background-color: #374151;
+    border-color: #4b5563;
+}
+
+.admin-menu .nav-button:hover {
+    background-color: #2563eb;
+    border-color: #2563eb;
+}
+
+/* User greeting */
+.user-greeting {
+    color: #9ca3af;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid #374151;
+    padding-bottom: 0.75rem;
 }
 
 /* =========================
@@ -42,9 +197,9 @@ main {
 ========================= */
 
 nav {
-    position: sticky; /* stick to viewport */
-    top: 0; /* stick to top */
-    z-index: 1000; /* stay above content */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
     padding: 1rem 2rem;
 }
 
@@ -57,12 +212,10 @@ nav {
     padding: 1rem 2rem;
 }
 
-/* Brand on the left */
 .navbar-brand {
     font-size: 1.5rem;
 }
 
-/* Nav buttons on the right */
 .navbar-nav {
     display: flex;
     gap: 1rem;
@@ -71,7 +224,7 @@ nav {
 .nav-link {
     text-decoration: none;
     color: #0077cc;
-    padding: 0.5rem 1rem; /* padding around buttons */
+    padding: 0.5rem 1rem;
     border-radius: 6px;
 }
 
@@ -89,7 +242,7 @@ nav {
     text-align: left;
     padding: 20px;
     width: 100%;
-    margin-top: auto; /* push to bottom */
+    margin-top: auto;
     position: fixed;
     bottom: 0;
     z-index: 2000;
