@@ -6,12 +6,13 @@ using SAGroupAlphaSpring26.Models;
 using SAGroupAlphaSpring26.Services;
 using SAGroupAlphaSpring26.ViewModels;
 using System.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 
 namespace SAGroupAlphaSpring26.Controllers
 {
     // Fow now allow anonymous change if needed or desired.
-    [AllowAnonymous]
+    [Authorize]//[AllowAnonymous]
     public class MapController : Controller
     {
         private readonly DataService _dataService;
@@ -24,9 +25,12 @@ namespace SAGroupAlphaSpring26.Controllers
         }
 
         // Stores positions of Tokens on the map.
+        [HttpPost]
         public IActionResult SavePositions([FromBody] List<TokenUpdateModel> updates)
         {
             if (updates == null || !updates.Any()) return BadRequest("No token updates provided.");
+
+            var sessionIds = updates.Select(u => u.SessionID).Distinct().ToList();
 
             foreach (var update in updates)
             {
@@ -36,6 +40,9 @@ namespace SAGroupAlphaSpring26.Controllers
                     token.X = update.X;
                     token.Y = update.Y;
                     token.ZIndex = update.zIndex;
+                    
+                    var session = _dataService.GetSession(token.SessionId);
+                    session.LastUpdated = DateTime.Now;
                 }
             }
             _context.SaveChanges();

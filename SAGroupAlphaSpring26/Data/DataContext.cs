@@ -90,8 +90,8 @@ namespace SAGroupAlphaSpring26.Data
 
             // A seed session
             modelBuilder.Entity<Session>().HasData(
-                new Session { Id = 1, UserId = 1, Notes = "Local Test Session", LastUpdated = DateTime.Now, },
-                new Session { Id = 2, UserId = 1, Notes = "Local Test Session 2", LastUpdated = DateTime.Now, });
+                new Session { Id = 1, UserId = 1, Name = "Test Session", Notes = "Local Test Session", LastUpdated = DateTime.Now, },
+                new Session { Id = 2, UserId = 1, Name = "Test Session 2", Notes = "Local Test Session 2", LastUpdated = DateTime.Now, });
 
             modelBuilder.Entity<Token>().HasData(
                 // Session 1 Token Seed Data.
@@ -106,6 +106,10 @@ namespace SAGroupAlphaSpring26.Data
                 new Token { Id = 7, SessionId = 2, PieceID = 2, Name = "Cleric", X = 50, Y = 5, ZIndex = 1, Visibility = true },
                 new Token { Id = 8, SessionId = 2, PieceID = 2, Name = "Cleric", X = 50, Y = 10, ZIndex = 2, Visibility = true },
                 new Token { Id = 9, SessionId = 2, PieceID = 3, Name = "Goblin Chief", X = 50, Y = 5, ZIndex = 1, Visibility = true });
+
+
+
+
 
             // Test Data:
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
+using System.Security.Claims;
 
 namespace SAGroupAlphaSpring26.Services
 {
@@ -79,17 +80,19 @@ namespace SAGroupAlphaSpring26.Services
         // Get multiple sessions by user id.
         public List<Session> GetSessions(int userId)
         {
-            try
-            {
                 return _dataContext.Sessions
                     .Where(s => s.UserId == userId)
                     .OrderByDescending(s => s.LastUpdated)
                     .ToList();
-            }
-            catch
-            {
-                throw new Exception($"Failed to get session for User: {userId}");
-            }
+        }
+
+        // Update sessions.
+        public void UpdateSession(Session session)
+        {
+            // Tracks if sessions are updated in the data context.
+            _dataContext.Sessions.Update(session);
+
+            _dataContext.SaveChanges();
         }
 
         public Piece AddPiece(Piece p)
@@ -119,7 +122,6 @@ namespace SAGroupAlphaSpring26.Services
                 throw new Exception($"Error in adding piece type {e.Message}");
             }
         }
-
 
         public Session AddSession(Session s)
         {
@@ -156,5 +158,14 @@ namespace SAGroupAlphaSpring26.Services
                 throw new Exception($"Failed to add user {user.FirstName}, {e.Message}");
             }
         }
+
+        // Gets the user's id.
+        public int GetUserId(ClaimsPrincipal user)
+        {
+            var userIdString = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            return int.TryParse(userIdString, out int userId) ? userId : 0;
+        }
     }
 }
+
+

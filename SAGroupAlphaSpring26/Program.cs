@@ -40,6 +40,14 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         // This value should be changed if you change the name of the AuthenticationScheme, especially if your system uses the cookie authentication middleware multiple times.
         options.Cookie.Name = "UserAuth";
 
+        // Helps prevent XXS attacks by only allowing cookies to be accessed in http requests.
+        // Remove if it breaks something.
+        options.Cookie.HttpOnly = true;
+
+        // Forces the use of cookies regardless of browser settings.
+        // Remove if it breaks something.
+        options.Cookie.IsEssential = true;
+
         // Controls how much time the cookie will remain valid from the point it is created
         // COOKIE IS IGNORED when expired
         options.ExpireTimeSpan = TimeSpan.FromDays(2);

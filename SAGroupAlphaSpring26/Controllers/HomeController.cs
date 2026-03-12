@@ -5,6 +5,7 @@ using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.Models;
 using SAGroupAlphaSpring26.Services;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace SAGroupAlphaSpring26.Controllers
 {
@@ -30,10 +31,29 @@ namespace SAGroupAlphaSpring26.Controllers
         {
             ViewBag.ApplicationName = "SA Group Alpha Spring 2026";
 
-            int userId = 1;
-            var model = _dataService.GetSessions(userId);
+            //-------------------------------------------------------------------------
+            // Removed the hardcoded userId and replaced with dynamic userID retrieval.
+            //int userId = 1;
+            //-------------------------------------------------------------------------
 
-            return View(model);
+            // Checks if user is authenticated, if not redirects them to sign in.
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("sign-in", "Account");
+            }
+
+            // Gets user ID from cookies as a string.
+            var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            // Check if user id exists and parse to an integer.
+            if (int.TryParse(userIdString, out int userId))
+            {
+                var model = _dataService.GetSessions(userId);
+                return View(model);
+            }
+
+            // if User ID is not found redirect to the sign in page.
+            return RedirectToAction("sign-in", "Account");
         }
 
         [Route("Privacy")]

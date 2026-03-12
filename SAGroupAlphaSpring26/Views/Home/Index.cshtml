@@ -5,7 +5,7 @@
 
 <div class="text-center mb-5">
     <h1>Welcome to @ViewBag.ApplicationName!</h1>
-    <p class="lead">Select a session below to resume your adventure.</p>
+    <p class="lead">Select a session below to resume.</p>
 </div>
 
 <div class="container">
@@ -21,7 +21,7 @@
                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-4">
 
                         <div>
-                            <h5 class="mb-1 text-primary">@item.Notes</h5>
+                            <h5 class="mb-1 text-primary">@item.Name</h5>
                             <small class="text-muted">Last Updated: @item.LastUpdated.ToShortDateString()</small>
                         </div>
 
@@ -30,6 +30,13 @@
                 }
             </div>
 
+
+                <a asp-controller="Session" asp-action="Create"
+                   class="btn btn-success btn-lg px-5 rounded-pill shadow">
+                    <i class="bi bi-plus-circle me-2"></i> Create New Session
+                </a>
+
+        </div>
             @if (!Model.Any())
             {
                 <div class="alert alert-info mt-4">

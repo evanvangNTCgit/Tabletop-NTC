@@ -2,6 +2,10 @@
 @{
     ViewData["Title"] = "Login";
 }
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
 
 <!-- Login Form Container - Centered on page, slightly narrower than register -->
 <div class="row justify-content-center">

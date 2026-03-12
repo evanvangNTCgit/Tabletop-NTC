@@ -6,6 +6,9 @@
         // Session ID, used to link sessions to users and pieces.
         public int Id { get; set; }
 
+        // name of session.
+        public string Name { get; set; } = string.Empty;
+
         // session notes, for user to store their own notes.
         public string Notes { get; set; } = string.Empty;
 

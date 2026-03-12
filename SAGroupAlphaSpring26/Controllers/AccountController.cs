@@ -9,16 +9,16 @@ using System.Security.Claims;
 
 namespace SAGroupAlphaSpring26.Controllers
 {
-    [Authorize]
+    // [Authorize] Do we need the authorize tag, since most of the routes should be allowed anonymous? We can add Authorize for specific routes if needed right?.
     [Route("Account")]
     [AllowAnonymous]
     public class AccountController : Controller
     {
         private readonly DataService _dataService;
 
-        public AccountController(DataContext dc)
+        public AccountController(DataService dataService)
         {
-            this._dataService = new DataService(dc);
+            _dataService = dataService;
         }
 
         // The routing user goes to when registering.
@@ -65,7 +65,8 @@ namespace SAGroupAlphaSpring26.Controllers
             _dataService.AddUser(user);
 
             // Redirect the user back to the homepage
-            return RedirectToAction("Index", "Home");
+            // Changed to redirect to the Login page instead, since they currently will need to login again after creating an account.
+            return RedirectToAction("sign-in", "Account");
         }
 
         // People that have not been authenticated yet can log in.
