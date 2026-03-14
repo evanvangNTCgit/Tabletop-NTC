@@ -228,7 +228,6 @@ namespace SAGroupAlphaSpring26.Controllers
                 return View(_dataService.GetPieceType(id));
             }
 
-
             [HttpPost("edit-piecetype/{id:int}")]
             public IActionResult EditPieceType(PieceType pt)
             {
@@ -246,41 +245,40 @@ namespace SAGroupAlphaSpring26.Controllers
                 }
             }
 
-        [HttpGet("AddSet")]
-        public IActionResult AddSet()
-        {
-            SetViewModel svm = new();
-            svm.AvailablePieces = this._dataService.GetAllPieces();
-
-            string pathForImages = Path.Combine(this._webHostEnvironment.WebRootPath, "images/");
-            // Note: Images are already in Piece.ImagePath, but list for consistency if needed
-            // svm.ImagePaths = Directory.EnumerateFiles(pathForImages).Select(fn => Path.GetFileName(fn)).ToList();
-
-            return View(svm);
-        }
-
-        [HttpPost("AddSet")]
-        public async Task<IActionResult> AddSet(SetViewModel svm)
-        {
-            if (!ModelState.IsValid || svm.SelectedPieceIds == null || svm.SelectedPieceIds.Count == 0)
+            [HttpGet("AddSet")]
+            public IActionResult AddSet()
             {
+                SetViewModel svm = new();
                 svm.AvailablePieces = this._dataService.GetAllPieces();
+
+                string pathForImages = Path.Combine(this._webHostEnvironment.WebRootPath, "images/");
+                // Note: Images are already in Piece.ImagePath, but list for consistency if needed
+                // svm.ImagePaths = Directory.EnumerateFiles(pathForImages).Select(fn => Path.GetFileName(fn)).ToList();
+
                 return View(svm);
             }
 
-            try
+            [HttpPost("AddSet")]
+            public async Task<IActionResult> AddSet(SetViewModel svm)
             {
-                this._dataService.CreateSet(svm.NewSet!, svm.SelectedPieceIds);
-                return RedirectToAction("Index", "Home");
+                if (!ModelState.IsValid || svm.SelectedPieceIds == null || svm.SelectedPieceIds.Count == 0)
+                {
+                    svm.AvailablePieces = this._dataService.GetAllPieces();
+                    return View(svm);
+                }
+
+                try
+                {
+                    this._dataService.CreateSet(svm.NewSet!, svm.SelectedPieceIds);
+                    return RedirectToAction("Index", "Home");
+                }
+                catch (Exception e)
+                {
+                    ModelState.AddModelError("", e.Message);
+                    svm.AvailablePieces = this._dataService.GetAllPieces();
+                    return View(svm);
+                }
             }
-            catch (Exception e)
-            {
-                ModelState.AddModelError("", e.Message);
-                svm.AvailablePieces = this._dataService.GetAllPieces();
-                return View(svm);
-            }
-        }
     }
 }
 
-     
