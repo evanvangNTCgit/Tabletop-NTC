@@ -199,6 +199,27 @@ namespace SAGroupAlphaSpring26.Services
             var userIdString = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             return int.TryParse(userIdString, out int userId) ? userId : 0;
         }
+
+        // Gets the piece type based on id on parameter.
+        public PieceType GetPieceType(int id) 
+        {
+            try
+            {
+                var pt = this._dataContext.PieceTypes.FirstOrDefault(pt => pt.Id == id);
+                return pt!;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error occured trying to get piece type\n{ex.Message}");
+            }
+        }
+
+        public PieceType UpdatePieceType(PieceType pt) 
+        {
+            this._dataContext.PieceTypes.Update(pt);
+            this._dataContext.SaveChanges();
+            return pt;
+        }
     }
 }
 
