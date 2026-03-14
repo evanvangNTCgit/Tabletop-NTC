@@ -73,7 +73,7 @@ namespace SAGroupAlphaSpring26.Controllers
         {
             var existingSession = _dataService.GetSession(session.Id);
 
-            if(existingSession == null)
+            if (existingSession == null)
             {
                 return NotFound($"Could not find a session with ID {session.Id}");
             }
@@ -112,6 +112,24 @@ namespace SAGroupAlphaSpring26.Controllers
         {
             public int Id { get; set; }
             public string Notes { get; set; } = string.Empty;
+        }
+
+        // Confirms the deletion of the session
+        [HttpPost("delete/{id}"), ActionName("Delete")]
+        public IActionResult DeleteSessionConfirmed(int id)
+        {
+            var session = _dataService.GetSession(id);
+            if (session != null)
+            {
+                // Checks if the user owns the session, just to be safe.
+                if (session.UserId == _dataService.GetUserId(User))
+                {
+                    _dataService.DeleteSession(id);
+                }
+            }
+
+            // Redirect back to user index page.
+            return RedirectToAction("Index", "Home");
         }
     }
 }
