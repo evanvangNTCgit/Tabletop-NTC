@@ -17,6 +17,6 @@ namespace SAGroupAlphaSpring26.Models
         public decimal Price { get; set; } = 0.00m;
 
         // Many to many for pieces and sets since a piece can be in many sets, and a set can have many pieces. We will need to create a join table for this relationship.
-        public List<Piece> PiecesList { get; set; } = new List<Piece>();
+        public List<PieceSets>? PiecesList { get; set; } = new();
     }
 }

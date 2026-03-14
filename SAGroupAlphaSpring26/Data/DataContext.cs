@@ -73,7 +73,7 @@ namespace SAGroupAlphaSpring26.Data
 
             // Initial Piece
             modelBuilder.Entity<Piece>().HasData(
-                                new Piece { Id=1, PieceTypeID = 2, Name = "Default Dungeon", ImagePath = "/images/testMap.png", Price = 0.00m },
+                                new Piece { Id = 1, PieceTypeID = 2, Name = "Default Dungeon", ImagePath = "/images/testMap.png", Price = 0.00m },
                 new Piece { Id = 2, PieceTypeID = 1, Name = "Cleric", ImagePath = "/images/Cleric.png", Price = 0.00m },
                 new Piece { Id = 3, PieceTypeID = 5, Name = "Goblin Chief", ImagePath = "/images/GoblinChief.png", Price = 0.00m },
                 new Piece { Id = 4, PieceTypeID = 4, Name = "Basic Chest", ImagePath = "/images/chest.png", Price = 0.00m },
@@ -85,7 +85,7 @@ namespace SAGroupAlphaSpring26.Data
             // Seed User
             modelBuilder.Entity<User>().HasData(
                 new User { Id = 1, FirstName = "Local", LastName = "DM", PasswordHash = passwordHasher.HashPassword(null!, "Password123"), Email = "local@demo.com", IsAdmin = true },
-                new User { Id = 2, FirstName = "Evan", LastName = "Vang", PasswordHash = passwordHasher.HashPassword(null!, "EvanPassword123"), Email = "evankvang@gmail.com", IsAdmin = false}
+                new User { Id = 2, FirstName = "Evan", LastName = "Vang", PasswordHash = passwordHasher.HashPassword(null!, "EvanPassword123"), Email = "evankvang@gmail.com", IsAdmin = false }
                 );
 
             // A seed session
@@ -107,9 +107,54 @@ namespace SAGroupAlphaSpring26.Data
                 new Token { Id = 8, SessionId = 2, PieceID = 2, Name = "Cleric", X = 50, Y = 10, ZIndex = 2, Visibility = true },
                 new Token { Id = 9, SessionId = 2, PieceID = 3, Name = "Goblin Chief", X = 50, Y = 5, ZIndex = 1, Visibility = true });
 
+            // Making a composite key for the UserPieces.
+            modelBuilder.Entity<UserPieces>()
+                .HasKey(p => new { p.PieceId, p.UserId }); // A composite key of piece ID and User ID.
+
+            modelBuilder.Entity<UserPieces>()
+                .HasOne(up => up.Piece) // Each UserPiece has one Piece
+                .WithMany(p => p.Owners) // Each piece has many owners
+                .HasForeignKey(p => p.PieceId); // Each UserPiece has a foreign key to the piece ID.
+
+            modelBuilder.Entity<UserPieces>()
+                .HasOne(up => up.User) // Each UserPiece has one user
+                .WithMany(u => u.OwnedPieces) // Each user has many owned pieces
+                .HasForeignKey(up => up.UserId); // Each user piece has the foreign key to user ID.
+
+            // Composite key for the PieceSets.
+            modelBuilder.Entity<PieceSets>()
+                .HasKey(p => new { p.PieceId, p.SetId });
+
+            modelBuilder.Entity<PieceSets>()
+                .HasOne(ps => ps.Set) // Each Piece set has one set.
+                .WithMany(s => s.PiecesList) // Each set has many pieces
+                .HasForeignKey(ps => ps.SetId); // Each piece set has the foreign key to set ID.
+
+            modelBuilder.Entity<PieceSets>()
+                .HasOne(ps => ps.Piece) // Each piece set has one piece.
+                .WithMany(p => p.Sets) // Each piece has many sets.
+                .HasForeignKey(ps => ps.PieceId); // Each piece set has the foreign key to piece id.
+
+            // Making one piece set:
+            modelBuilder.Entity<Set>().HasData(
+                new Set { Id=1, Name = "Evans Beginner Pack", Price = 0.00m} // This is a free set for the user c:
+                );
+            // Putting some pieces in my set.
+            modelBuilder.Entity<PieceSets>().HasData(
+                new PieceSets { PieceId = 2, SetId = 1 }, // Cleric
+                new PieceSets { PieceId = 5, SetId = 1} // Bard
+                );
 
 
-
+            // Lets have the local dm own all the seed pieces as of right now.
+            // Currently 5 pieces provided in seed data.
+            modelBuilder.Entity<UserPieces>().HasData(
+                new UserPieces { UserId = 1, PieceId = 1 },
+                new UserPieces { UserId = 1, PieceId = 2 },
+                new UserPieces { UserId = 1, PieceId = 3 },
+                new UserPieces { UserId = 1, PieceId = 4 },
+                new UserPieces { UserId = 1, PieceId = 5 }
+                );
 
             // Test Data:
 

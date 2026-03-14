@@ -129,6 +129,7 @@ namespace SAGroupAlphaSpring26.Controllers
             }
         }
 
+<<<<<<< HEAD
         // Get for editing a piece.
         [HttpGet("EditPiece/{id:int}")]
         public IActionResult EditPiece(int id)
@@ -205,6 +206,43 @@ namespace SAGroupAlphaSpring26.Controllers
                 return RedirectToAction("Index", "Home");
             }
             return View(session);
+=======
+        // Letting the admin see the list of piece types currently.
+        [HttpGet("PieceTypes")]
+        public IActionResult PieceTypes() 
+        {
+            return View(this._dataService.GetPieceTypes());
+        }
+
+        [HttpGet("Pieces")]
+        public IActionResult Pieces() 
+        {
+            return View(this._dataService.GetPieces());
+        }
+
+        // Adding a parameter for ID so we know what piece type to edit.
+        [HttpGet("edit-piecetype/{id:int}")]
+        public IActionResult EditPieceType(int id) 
+        {
+            return View(this._dataService.GetPieceType(id));
+        }
+
+        [HttpPost("edit-piecetype/{id:int}")]
+        public IActionResult EditPieceType(PieceType pt) 
+        {
+            // If not valid send user back to view with the piece type for correction.
+            if (!ModelState.IsValid) 
+            {
+                return View(pt);
+            }
+            else
+            {
+                this._dataService.UpdatePieceType(pt);
+
+                // Send user back to view of piece types to see their changes.
+                return RedirectToAction(nameof(PieceTypes));
+            }
+>>>>>>> 6d9caf0a32ff965cfc9db5489c2090d7b92acd05
         }
     }
 }

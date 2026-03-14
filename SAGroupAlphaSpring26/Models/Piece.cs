@@ -31,9 +31,9 @@ namespace SAGroupAlphaSpring26.Models
         public PieceType? PieceType { get; set; }
 
         // This is a many to many start since a piece can be in many sets, and a set can have many pieces. We will need to create a join table for this relationship.
-        public List<Set> Sets { get; set; } = new();
+        public List<PieceSets>? Sets { get; set; } = new();
 
         // The list of owners that own a this piece. Many to many relationship since a user can own many pieces, and a piece can be owned by many users.
-        public List<User> Owners { get; set; } = new();
+        public List<UserPieces>? Owners { get; set; } = new();
     }
 }

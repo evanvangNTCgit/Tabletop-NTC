@@ -32,7 +32,7 @@
 
         // The pieces currently owned by the user.
         // Many to many relationship since a user can own many pieces, and a piece can be owned by many users.
-        public List<Piece> OwnedPieces { get; set; } = new List<Piece>();
+        public List<UserPieces>? OwnedPieces { get; set; } = new();
 
         // A user can be in many sessions. However since a session only has a DM a session CAN ONLY HAVE ONE USER - NO MANY TO MANY
         public List<Session> Sessions { get; set; } = new();

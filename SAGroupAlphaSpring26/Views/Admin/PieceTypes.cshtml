@@ -1,0 +1,22 @@
+﻿@model IEnumerable<PieceType>
+<div>
+    <p>
+        <a asp-controller="Admin" asp-action="AddPieceType" class="btn-lg btn btn-outline-dark" style="background-color: mediumpurple" role="button">Add a piece type</a>
+    </p>
+    <table class="table">
+        <tr>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>
+                    <!-- Add the ID onto the route of edit piece type so admin controller can pull up from DB what Piece Type to edit. -->
+                    <a asp-controller="admin" asp-action="editpiecetype" asp-route-id="@item.Id">Edit</a>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
