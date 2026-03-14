@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SAGroupAlphaSpring26.Data;
+using SAGroupAlphaSpring26.Models;
 using SAGroupAlphaSpring26.Services;
 using SAGroupAlphaSpring26.ViewModels;
 
@@ -219,6 +220,7 @@ namespace SAGroupAlphaSpring26.Controllers
             public IActionResult Pieces()
             {
                 return View(this._dataService.GetPieces());
+
             }
 
             // Adding a parameter for ID so we know what piece type to edit.
@@ -245,7 +247,6 @@ namespace SAGroupAlphaSpring26.Controllers
                 return RedirectToAction(nameof(PieceTypes));
             }
         }
-    }
 
         [HttpGet("AddSet")]
         public IActionResult AddSet()
@@ -283,10 +284,3 @@ namespace SAGroupAlphaSpring26.Controllers
         }
     }
 }
-
-                    // Send user back to view of piece types to see their changes.
-                    return RedirectToAction(nameof(PieceTypes));
-                }
-            }
-        }
-    }
