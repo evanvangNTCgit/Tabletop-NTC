@@ -167,8 +167,6 @@ namespace SAGroupAlphaSpring26.Services
             return int.TryParse(userIdString, out int userId) ? userId : 0;
         }
 
-<<<<<<< HEAD
-
         // used to update a piece, specifically it's price and description, as name should stay the same.
         public void UpdatePiece(Piece piece)
         {
@@ -202,7 +200,6 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
-=======
         // Gets the piece type based on id on parameter.
         public PieceType GetPieceType(int id) 
         {
@@ -223,7 +220,6 @@ namespace SAGroupAlphaSpring26.Services
             this._dataContext.SaveChanges();
             return pt;
         }
->>>>>>> 6d9caf0a32ff965cfc9db5489c2090d7b92acd05
     }
 }
 
