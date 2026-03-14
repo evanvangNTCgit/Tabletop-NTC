@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SAGroupAlphaSpring26.Data;
-using SAGroupAlphaSpring26.Models;
 using SAGroupAlphaSpring26.Services;
 using SAGroupAlphaSpring26.ViewModels;
 
@@ -220,7 +219,6 @@ namespace SAGroupAlphaSpring26.Controllers
             public IActionResult Pieces()
             {
                 return View(this._dataService.GetPieces());
-
             }
 
         [HttpGet("Sets")]
