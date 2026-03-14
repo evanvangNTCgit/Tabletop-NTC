@@ -144,7 +144,7 @@ using (var scope = app.Services.CreateScope())
             context.SaveChanges();
 
             // var azureSession = new Session { UserId = azureUser.UserId, Notes = "Live Azure Production Map", LastUpdated = DateTime.Now };
-            var azureSession = new Session { UserId = azureUser.Id, Notes = string.Empty, LastUpdated = DateTime.Now, Id = 1, User = azureUser };
+            var azureSession = new Session { UserId = azureUser.Id, Name = "Production Session", Notes = string.Empty, LastUpdated = DateTime.Now, Id = 1, User = azureUser };
             context.Sessions.Add(azureSession);
             context.SaveChanges();
 

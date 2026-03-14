@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SAGroupAlphaSpring26.Data;
 
@@ -11,9 +12,11 @@ using SAGroupAlphaSpring26.Data;
 namespace SAGroupAlphaSpring26.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260314175826_AddPieceSetsDbSet")]
+    partial class AddPieceSetsDbSet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -261,7 +264,7 @@ namespace SAGroupAlphaSpring26.Migrations
                         new
                         {
                             Id = 1,
-                            LastUpdated = new DateTime(2026, 3, 14, 13, 9, 23, 559, DateTimeKind.Local).AddTicks(5287),
+                            LastUpdated = new DateTime(2026, 3, 14, 12, 58, 26, 289, DateTimeKind.Local).AddTicks(3271),
                             Name = "Test Session",
                             Notes = "Local Test Session",
                             UserId = 1
@@ -269,7 +272,7 @@ namespace SAGroupAlphaSpring26.Migrations
                         new
                         {
                             Id = 2,
-                            LastUpdated = new DateTime(2026, 3, 14, 13, 9, 23, 559, DateTimeKind.Local).AddTicks(5291),
+                            LastUpdated = new DateTime(2026, 3, 14, 12, 58, 26, 289, DateTimeKind.Local).AddTicks(3275),
                             Name = "Test Session 2",
                             Notes = "Local Test Session 2",
                             UserId = 1
@@ -283,9 +286,6 @@ namespace SAGroupAlphaSpring26.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Discount")
-                        .HasColumnType("decimal(5,4)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -302,7 +302,6 @@ namespace SAGroupAlphaSpring26.Migrations
                         new
                         {
                             Id = 1,
-                            Discount = 0.1m,
                             Name = "Evans Beginner Pack",
                             Price = 0.00m
                         });
@@ -487,7 +486,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             FirstName = "Local",
                             IsAdmin = true,
                             LastName = "DM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJCSHVaxb/uSkqfu4OlllSg6Atw27lTHuOtuISEGXoSmXge/N5IrWtnAMpJo5FCxXw=="
+                            PasswordHash = "AQAAAAIAAYagAAAAEBIqhBMNHNehv1yW8fXhwC5zzpA6BgmLBbA5GTsHXOpn+WkdIo+gwin7fsEGUfUNDw=="
                         },
                         new
                         {
@@ -496,7 +495,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             FirstName = "Evan",
                             IsAdmin = false,
                             LastName = "Vang",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBLqb5j8Ahz4/izPLiQruwPiE0wOIG7QGoG83i1F7Hx/Kv/KGOKi6atpeBAkqM9t4A=="
+                            PasswordHash = "AQAAAAIAAYagAAAAEIK8C4A7QXgEHz4IC2MPcHEiSOv0EfQHwZ0XQbwqjQdVhUGJY9WQkZW47YRM/Buz1g=="
                         });
                 });
 

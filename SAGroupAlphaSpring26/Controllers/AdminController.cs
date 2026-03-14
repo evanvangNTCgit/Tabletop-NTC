@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.Services;
+using SAGroupAlphaSpring26.ViewModels;
 
 namespace SAGroupAlphaSpring26.Controllers
 {
@@ -239,6 +240,49 @@ namespace SAGroupAlphaSpring26.Controllers
                 else
                 {
                     _dataService.UpdatePieceType(pt);
+
+                // Send user back to view of piece types to see their changes.
+                return RedirectToAction(nameof(PieceTypes));
+            }
+        }
+    }
+
+        [HttpGet("AddSet")]
+        public IActionResult AddSet()
+        {
+            SetViewModel svm = new();
+            svm.AvailablePieces = this._dataService.GetAllPieces();
+
+            string pathForImages = Path.Combine(this._webHostEnvironment.WebRootPath, "images/");
+            // Note: Images are already in Piece.ImagePath, but list for consistency if needed
+            // svm.ImagePaths = Directory.EnumerateFiles(pathForImages).Select(fn => Path.GetFileName(fn)).ToList();
+
+            return View(svm);
+        }
+
+        [HttpPost("AddSet")]
+        public async Task<IActionResult> AddSet(SetViewModel svm)
+        {
+            if (!ModelState.IsValid || svm.SelectedPieceIds == null || svm.SelectedPieceIds.Count == 0)
+            {
+                svm.AvailablePieces = this._dataService.GetAllPieces();
+                return View(svm);
+            }
+
+            try
+            {
+                this._dataService.CreateSet(svm.NewSet!, svm.SelectedPieceIds);
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception e)
+            {
+                ModelState.AddModelError("", e.Message);
+                svm.AvailablePieces = this._dataService.GetAllPieces();
+                return View(svm);
+            }
+        }
+    }
+}
 
                     // Send user back to view of piece types to see their changes.
                     return RedirectToAction(nameof(PieceTypes));
