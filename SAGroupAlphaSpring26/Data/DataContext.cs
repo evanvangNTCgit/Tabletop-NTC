@@ -24,6 +24,7 @@ namespace SAGroupAlphaSpring26.Data
         public DbSet<PieceType> PieceTypes { get; set; }
         public DbSet<Piece> Pieces { get; set; }
         public DbSet<Set> Sets { get; set; }
+        public DbSet<PieceSets> PieceSets { get; set; }
 
         public DbSet<SaleLine> SaleLines { get; set; }
         public DbSet<Sale> Sales { get; set; }
@@ -141,19 +142,19 @@ namespace SAGroupAlphaSpring26.Data
                 );
             // Putting some pieces in my set.
             modelBuilder.Entity<PieceSets>().HasData(
-                new PieceSets { PieceId = 2, SetId = 1 }, // Cleric
-                new PieceSets { PieceId = 5, SetId = 1} // Bard
+                new PieceSets { PieceId = 2, SetId = 1, Piece = null!, Set = null! }, // Cleric
+                new PieceSets { PieceId = 5, SetId = 1, Piece = null!, Set = null! } // Bard
                 );
 
 
             // Lets have the local dm own all the seed pieces as of right now.
             // Currently 5 pieces provided in seed data.
             modelBuilder.Entity<UserPieces>().HasData(
-                new UserPieces { UserId = 1, PieceId = 1 },
-                new UserPieces { UserId = 1, PieceId = 2 },
-                new UserPieces { UserId = 1, PieceId = 3 },
-                new UserPieces { UserId = 1, PieceId = 4 },
-                new UserPieces { UserId = 1, PieceId = 5 }
+                new UserPieces { UserId = 1, PieceId = 1, Piece = null!, User = null! },
+                new UserPieces { UserId = 1, PieceId = 2, Piece = null!, User = null! },
+                new UserPieces { UserId = 1, PieceId = 3, Piece = null!, User = null! },
+                new UserPieces { UserId = 1, PieceId = 4, Piece = null!, User = null! },
+                new UserPieces { UserId = 1, PieceId = 5, Piece = null!, User = null! }
                 );
 
             // Test Data:

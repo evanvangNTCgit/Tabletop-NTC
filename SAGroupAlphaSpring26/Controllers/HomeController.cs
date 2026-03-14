@@ -67,10 +67,13 @@ namespace SAGroupAlphaSpring26.Controllers
         {
             ViewBag.ApplicationName = "SA Group Alpha Spring 2026";
 
-            // Pull all pieces from the static StoreData
-            var pieces = this._dataService.GetPieces();
+            StoreViewModel model = new StoreViewModel
+            {
+                Pieces = this._dataService.GetPieces(),
+                Sets = this._dataService.GetAllSets()
+            };
 
-            return View(pieces); // pass the list to the view
+            return View(model);
         }
 
         // Gets a specific piece by ID.

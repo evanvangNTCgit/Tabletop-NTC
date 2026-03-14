@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SAGroupAlphaSpring26.Models.Piece>
+﻿@model SAGroupAlphaSpring26.ViewModels.StoreViewModel
 
 @{
     ViewData["Title"] = "Store Page";
@@ -7,7 +7,7 @@
 <div class="text-center">
     <h1>Welcome to @ViewBag.ApplicationName!</h1>
 
-    @foreach (var typeGroup in Model.GroupBy(p => p.PieceTypeID))
+    @foreach (var typeGroup in Model.Pieces.GroupBy(p => p.PieceTypeID))
     {
         <h2>@GetTypeName(typeGroup.Key)</h2>
         <div class="store-grid">
@@ -27,6 +27,24 @@
             }
         </div>
     }
+
+    <h1>Sets</h1>
+    <div class="store-grid">
+        @foreach (var set in Model.Sets)
+        {
+            decimal totalPrice = set.PiecesList?.Sum(ps => ps.Piece.Price) ?? 0m;
+            decimal discountedPrice = totalPrice * (1 - set.Discount);
+            <div class="store-item" style="grid-column: span 2;">
+                <h3>@set.Name</h3>
+                <p>Pieces (@(set.PiecesList?.Count ?? 0)): @string.Join(", ", set.PiecesList?.Select(ps => ps.Piece.Name) ?? Enumerable.Empty<string>())</p>
+                <p>Total: $@totalPrice.ToString("F2")</p>
+                <p>Discounted (@((set.Discount * 100).ToString("F1") + "%")): $@discountedPrice.ToString("F2")</p>
+                <!-- Placeholder for owned pieces discount -->
+                <p class="text-muted">Owned pieces discount: $0.00 (TODO)</p>
+                <button class="buy-button button-primary">Buy Set</button>
+            </div>
+        }
+    </div>
 </div>
 
 @functions {
@@ -42,3 +60,4 @@
         };
     }
 }
+

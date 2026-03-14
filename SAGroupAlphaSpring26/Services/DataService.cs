@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
+using SAGroupAlphaSpring26.Models;
 using System.Security.Claims;
 
 namespace SAGroupAlphaSpring26.Services
@@ -123,11 +124,44 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
+        public List<Piece> GetAllPieces()
+        {
+            return this._dataContext.Pieces.Include(p => p.PieceType).ToList();
+        }
+
+        public void CreateSet(Set set, List<int> pieceIds)
+        {
+            try
+            {
+                _dataContext.Sets.Add(set);
+                _dataContext.SaveChanges();
+
+                foreach (int pieceId in pieceIds)
+                {
+                    _dataContext.PieceSets.Add(new PieceSets { PieceId = pieceId, SetId = set.Id });
+                }
+
+                _dataContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error creating set: {e.Message}");
+            }
+        }
+
         public Session AddSession(Session s)
         {
             _dataContext.Sessions.Add(s);
             _dataContext.SaveChanges();
             return s;
+        }
+
+        public List<Set> GetAllSets()
+        {
+            return _dataContext.Sets
+                .Include(s => s.PiecesList)
+                    .ThenInclude(ps => ps.Piece)
+                .ToList();
         }
 
         // Get a user by their email address.
