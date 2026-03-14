@@ -136,6 +136,12 @@ namespace SAGroupAlphaSpring26.Controllers
             return View(this._dataService.GetPieceTypes());
         }
 
+        [HttpGet("Pieces")]
+        public IActionResult Pieces() 
+        {
+            return View(this._dataService.GetPieces());
+        }
+
         // Adding a parameter for ID so we know what piece type to edit.
         [HttpGet("edit-piecetype/{id:int}")]
         public IActionResult EditPieceType(int id) 
