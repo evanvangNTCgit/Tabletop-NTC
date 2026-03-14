@@ -1,0 +1,60 @@
+﻿@model PieceViewModel
+
+<h2>Edit Piece</h2>
+<div class="form-horizontal">
+    <form method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Piece.Id" />
+
+        <div class="form-group">
+            <label asp-for="Piece.Name"> Name Of Piece </label>
+            <input asp-for="Piece.Name" />
+            <span asp-validation-for="Piece.Name" />
+        </div>
+        <br />
+
+        <div class="form-group">
+            <label asp-for="Piece.Description">Not Required: Description Of Piece </label>
+            <input asp-for="Piece.Description" />
+            <span asp-validation-for="Piece.Description" />
+        </div>
+        <br />
+
+        <div class="form-group">
+            <label asp-for="Piece.Price"> Price Of Piece </label>
+            <input asp-for="Piece.Price" />
+            <span asp-validation-for="Piece.Price" />
+        </div>
+        <br />
+
+        <div class="form-group">
+            <label asp-for="Piece.PieceTypeID"> Piece Type </label>
+            <select asp-for="Piece.PieceTypeID"
+                    class="form-control"
+                    asp-items="@(new SelectList(Model.PieceTypes, "Id", "Name"))">
+            </select>
+            <span asp-validation-for="Piece.PieceTypeID" />
+        </div>
+        <br />
+
+        <div class="form-group">
+            @foreach (var imagename in Model.ImagePaths!)
+            {
+                <div class="add-piece-div-image">
+                    <img src="/images/@imagename" class="add-piece-image" />
+                    <input asp-for="Piece.ImagePath" value="@imagename" type="radio" />
+                </div>
+            }
+        </div>
+        <br />
+
+        <div class="form-group">
+            <label asp-for="UserImageUpload">Not Required: Custom Image For Piece </label>
+            <input asp-for="UserImageUpload" type="file" />
+        </div>
+
+        <div asp-validation-summary="All"></div>
+        <p>
+            <button type="submit" class="btn btn-primary" role="button">Save Changes</button>
+        </p>
+    </form>
+</div>

@@ -31,7 +31,7 @@ namespace SAGroupAlphaSpring26.Controllers
         {
             // This needs my piece view models so that it can see the different piece types.
             PieceViewModel pvm = new();
-            pvm.PieceTypes = this._dataService.GetPieceTypes();
+            pvm.PieceTypes = _dataService.GetPieceTypes();
 
             string pathForImages = Path.Combine(this._webHostEnvironment.WebRootPath, "images/");
             pvm.ImagePaths = Directory.EnumerateFiles(pathForImages)
@@ -48,15 +48,15 @@ namespace SAGroupAlphaSpring26.Controllers
             // HOWEVER REMEMBER it needs the view model to see the list of piece types.
             if (!ModelState.IsValid)
             {
-                PieceViewModel p = new();
-                p.PieceTypes = this._dataService.GetPieceTypes();
+                // PieceViewModel p = new(); Do we need to create a new pieceviewmodel here? Shouldn't we get the one from the user?
+                pvm.PieceTypes = _dataService.GetPieceTypes();
 
                 string pathForImages = Path.Combine(this._webHostEnvironment.WebRootPath, "images/");
                 pvm.ImagePaths = Directory.EnumerateFiles(pathForImages)
                     .Select(fn => Path.GetFileName(fn))
                     .ToList();
 
-                return View(p);
+                return View(pvm);
             }
 
             try
@@ -130,37 +130,116 @@ namespace SAGroupAlphaSpring26.Controllers
             }
         }
 
-        // Letting the admin see the list of piece types currently.
-        [HttpGet("PieceTypes")]
-        public IActionResult PieceTypes() 
+        // Get for editing a piece.
+        [HttpGet("EditPiece/{id:int}")]
+        public IActionResult EditPiece(int id)
         {
-            return View(this._dataService.GetPieceTypes());
+            var existingPiece = _dataService.GetPiece(id);
+            if (existingPiece == null) return NotFound();
+
+            // Creates a view model and adds the piece so that the view can populate the form with the existing data.
+            PieceViewModel pvm = new();
+            pvm.Piece = existingPiece;
+            pvm.PieceTypes = _dataService.GetPieceTypes();
+
+            string pathForImages = Path.Combine(_webHostEnvironment.WebRootPath, "images/");
+            pvm.ImagePaths = Directory.EnumerateFiles(pathForImages)
+                .Select(fn => Path.GetFileName(fn)).ToList();
+
+            return View(pvm);
         }
 
-        [HttpGet("Pieces")]
-        public IActionResult Pieces() 
+        // Post for editing a piece.
+        [HttpPost("EditPiece/{id:int}")]
+        public async Task<IActionResult> EditPiece(PieceViewModel pvm)
         {
-            return View(this._dataService.GetPieces());
-        }
-
-        // Adding a parameter for ID so we know what piece type to edit.
-        [HttpGet("edit-piecetype/{id:int}")]
-        public IActionResult EditPieceType(int id) 
-        {
-            return View(this._dataService.GetPieceType(id));
-        }
-
-        [HttpPost("edit-piecetype/{id:int}")]
-        public IActionResult EditPieceType(PieceType pt) 
-        {
-            // If not valid send user back to view with the piece type for correction.
-            if (!ModelState.IsValid) 
+            if (!ModelState.IsValid)
             {
-                return View(pt);
+                pvm.PieceTypes = _dataService.GetPieceTypes();
+                string pathForImages = Path.Combine(this._webHostEnvironment.WebRootPath, "images/");
+                pvm.ImagePaths = Directory.EnumerateFiles(pathForImages).Select(fn => Path.GetFileName(fn)).ToList();
+                return View(pvm);
             }
-            else
+
+            try
             {
-                this._dataService.UpdatePieceType(pt);
+                // Handle new image upload if they provided one
+                if (pvm.UserImageUpload != null)
+                {
+                    var fileName = Path.GetFileName(pvm.UserImageUpload.FileName);
+                    var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images/", fileName);
+                    using (var filestream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await pvm.UserImageUpload.CopyToAsync(filestream);
+                    }
+                    pvm.Piece!.ImagePath = $"/images/{fileName}";
+                }
+                else if (!pvm.Piece!.ImagePath.StartsWith("/images/"))
+                {
+                    pvm.Piece.ImagePath = $"/images/{pvm.Piece.ImagePath}";
+                }
+
+                this._dataService.UpdatePiece(pvm.Piece!);
+                return RedirectToAction("Index", "Home");
+            }
+            catch
+            {
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
+        // Creates a session for a user, this is for admin/testing purposes, users create sessions through the sessioncontroller.
+        [HttpGet("AddSession")]
+        public IActionResult AddSession()
+        {
+            return View();
+        }
+
+        // Posts the created session information.
+        [HttpPost("AddSession")]
+        public IActionResult AddSession(Session session)
+        {
+            if (ModelState.IsValid)
+            {
+                session.LastUpdated = DateTime.Now;
+                this._dataService.AddSession(session);
+                return RedirectToAction("Index", "Home");
+            }
+            return View(session);
+        }
+
+            // Letting the admin see the list of piece types currently.
+            [HttpGet("PieceTypes")]
+            public IActionResult PieceTypes()
+            {
+                return View(this._dataService.GetPieceTypes());
+            }
+
+            [HttpGet("Pieces")]
+            public IActionResult Pieces()
+            {
+                return View(this._dataService.GetPieces());
+            }
+
+            // Adding a parameter for ID so we know what piece type to edit.
+            [HttpGet("edit-piecetype/{id:int}")]
+            public IActionResult EditPieceType(int id)
+            {
+                return View(_dataService.GetPieceType(id));
+            }
+
+
+            [HttpPost("edit-piecetype/{id:int}")]
+            public IActionResult EditPieceType(PieceType pt)
+            {
+                // If not valid send user back to view with the piece type for correction.
+                if (!ModelState.IsValid)
+                {
+                    return View(pt);
+                }
+                else
+                {
+                    _dataService.UpdatePieceType(pt);
 
                 // Send user back to view of piece types to see their changes.
                 return RedirectToAction(nameof(PieceTypes));
@@ -205,3 +284,9 @@ namespace SAGroupAlphaSpring26.Controllers
     }
 }
 
+                    // Send user back to view of piece types to see their changes.
+                    return RedirectToAction(nameof(PieceTypes));
+                }
+            }
+        }
+    }

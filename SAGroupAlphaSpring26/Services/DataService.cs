@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
+using SAGroupAlphaSpring26.Migrations;
 using SAGroupAlphaSpring26.Models;
 using System.Security.Claims;
 
@@ -198,6 +199,39 @@ namespace SAGroupAlphaSpring26.Services
         {
             var userIdString = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             return int.TryParse(userIdString, out int userId) ? userId : 0;
+        }
+
+        // used to update a piece, specifically it's price and description, as name should stay the same.
+        public void UpdatePiece(Piece piece)
+        {
+            try
+            {
+                this._dataContext.Pieces.Update(piece);
+                this._dataContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error updating piece {piece.Id}: {e.Message}");
+            }
+        }
+
+
+        // used to delete a session by it's ID
+        public void DeleteSession(int id)
+        {
+            try
+            {
+                var session = this._dataContext.Sessions.FirstOrDefault(s => s.Id == id);
+                if (session != null)
+                {
+                    this._dataContext.Sessions.Remove(session);
+                    this._dataContext.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error deleting session {id}: {e.Message}");
+            }
         }
 
         // Gets the piece type based on id on parameter.
