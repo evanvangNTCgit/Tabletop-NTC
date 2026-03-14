@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
-using SAGroupAlphaSpring26.Migrations;
-using SAGroupAlphaSpring26.Models;
 using System.Security.Claims;
 
 namespace SAGroupAlphaSpring26.Services
@@ -82,10 +80,10 @@ namespace SAGroupAlphaSpring26.Services
         // Get multiple sessions by user id.
         public List<Session> GetSessions(int userId)
         {
-                return _dataContext.Sessions
-                    .Where(s => s.UserId == userId)
-                    .OrderByDescending(s => s.LastUpdated)
-                    .ToList();
+            return _dataContext.Sessions
+                .Where(s => s.UserId == userId)
+                .OrderByDescending(s => s.LastUpdated)
+                .ToList();
         }
 
         // Update sessions.
@@ -235,7 +233,7 @@ namespace SAGroupAlphaSpring26.Services
         }
 
         // Gets the piece type based on id on parameter.
-        public PieceType GetPieceType(int id) 
+        public PieceType GetPieceType(int id)
         {
             try
             {
@@ -248,7 +246,7 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
-        public PieceType UpdatePieceType(PieceType pt) 
+        public PieceType UpdatePieceType(PieceType pt)
         {
             this._dataContext.PieceTypes.Update(pt);
             this._dataContext.SaveChanges();
