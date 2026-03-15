@@ -2,11 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
-using SAGroupAlphaSpring26.Models;
 using SAGroupAlphaSpring26.Services;
-using SAGroupAlphaSpring26.ViewModels;
-using System.Linq;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Security.Claims;
 
 
 namespace SAGroupAlphaSpring26.Controllers
@@ -90,6 +87,13 @@ namespace SAGroupAlphaSpring26.Controllers
                 .ToList()
             };
 
+            var UserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if(!int.TryParse(UserId, out int UserIdParse)) 
+            {
+                // implement some sort of error handling...
+            }
+
+            viewModel.PlayablePieces = this._dataService.GetUserPieces(UserIdParse);
             return View("~/Views/Map/Map.cshtml", viewModel);
         }
 

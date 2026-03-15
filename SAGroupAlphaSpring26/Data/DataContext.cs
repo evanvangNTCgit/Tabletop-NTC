@@ -26,6 +26,8 @@ namespace SAGroupAlphaSpring26.Data
         public DbSet<Set> Sets { get; set; }
         public DbSet<PieceSets> PieceSets { get; set; }
 
+        public DbSet<UserPieces> UserPieces { get; set; }
+
         public DbSet<SaleLine> SaleLines { get; set; }
         public DbSet<Sale> Sales { get; set; }
 

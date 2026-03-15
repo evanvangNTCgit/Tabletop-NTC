@@ -178,6 +178,21 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
+        // An overload to get the user by an ID
+        public User GetUser(int id)
+        {
+            try
+            {
+
+                var user = this._dataContext.Users.FirstOrDefault(u => u.Id == id);
+                return user!;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Could not find user of Id {id}, {e.Message}");
+            }
+        }
+
         public User AddUser(User user)
         {
             try
@@ -251,6 +266,20 @@ namespace SAGroupAlphaSpring26.Services
             this._dataContext.PieceTypes.Update(pt);
             this._dataContext.SaveChanges();
             return pt;
+        }
+
+        // Gets the Users Pieces based on ID
+        public List<Piece> GetUserPieces(int id)
+        {
+            try
+            {
+                // return this._dataContext.UserPieces.Where(up => up.UserId == id).Select(up => up.Piece).Include(up => up.PieceType).ToList();
+                return this._dataContext.UserPieces.Where(up => up.UserId == id).Include(up => up.Piece).ThenInclude(p => p.PieceType).Select(up => up.Piece).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error occured getting user pieces User likely does not exist, {ex.Message}");
+            }
         }
     }
 }
