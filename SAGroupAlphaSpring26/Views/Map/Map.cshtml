@@ -32,7 +32,8 @@
 
         <div class="map-toolbar" style="padding: 10px; background: #f8f9fa; border-bottom: 1px solid #ddd; display: flex; gap: 10px; justify-content: flex-end;">
             <button id="btn-save" class="button-primary">Save Positions</button>
-            <a asp-controller="Home" asp-action="Index" class="button-danger">Exit</a>
+            <a asp-controller="Home" asp-action="Index" class="button-primary" target="_blank">Exit</a>
+            <a class="button-primary" asp-controller="Map" asp-action="PlayerView" target="_blank">Player View</a>
         </div>
 
         <div class="map-board" id="map-board" style="background-image: url('@Model.MapImagePath');">
