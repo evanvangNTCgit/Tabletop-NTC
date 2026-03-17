@@ -22,6 +22,10 @@ PasswordHasher<string> passwordHasher = new();
 // Using MySQL for local development
 builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DatabaseConnection")));
 
+// My idea here being that you inject a mapscreen viewmodel to be edited when user is clicking onto sessions.
+// So that the player and DM view can just access this singleton that is injected at the start of the application.
+builder.Services.AddSingleton<MapScreenViewModel>();
+
 // Adding cookie authentication...
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
