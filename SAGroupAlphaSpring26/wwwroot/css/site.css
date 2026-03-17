@@ -192,6 +192,8 @@ body {
 
 .map-container {
     position: relative;
+    height: 100vh;
+    display: flex;
     border-radius: 12px;
     overflow: hidden;
     border: 1px solid #d1d5db;
@@ -207,11 +209,20 @@ body {
     flex-grow: 1;
     position: relative;
     background-color: #2c3e50;
-    background-size: contain;
+    background-size: contain !important;
     background-repeat: no-repeat;
     background-position: center;
-    min-height: 700px;
-    border: 2px dashed #444;
+    height: 100vh;
+    width: 100%;
+    border: 2px solid #344;
+    border-radius: 8px;
+    overflow: auto;
+    transition: transform 0.1s ease;
+    --zoom: 1;
+    --pan-x: 0px;
+    --pan-y: 0px;
+    transform: scale(var(--zoom)) translate(var(--pan-x, 0px), var(--pan-y, 0px));
+    transform-origin: 0 0;
 }
 
 /* Piece Bar */
@@ -223,6 +234,45 @@ body {
     flex-direction: column;
     align-items: center;
     padding-top: 20px;
+}
+
+.sidebar-piece {
+    border: 2px solid #4a5568;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.sidebar-piece:hover {
+    border-color: #63b3ed;
+    transform: scale(1.1);
+}
+
+.draggable-token {
+    border: 2px solid #4299e1;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    user-select: none;
+}
+
+.draggable-token:hover {
+    border-color: #3182ce;
+    transform: scale(1.05);
+}
+
+.map-piece:active,
+.map-piece[draggable="true"]:active {
+    opacity: 0.7;
+    border: 3px solid #4299e1 !important;
+    transform: scale(1.1);
+}
+
+/* Drag ghost styling (browser default override) */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .map-piece:-webkit-drag {
+    opacity: 0.8;
+    border: 2px solid #4299e1;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(66, 153, 225, 0.5);
+    transform: rotate(5deg);
+  }
 }
 
 .map-piece {
@@ -237,6 +287,64 @@ body {
     .map-piece:hover {
         transform: scale(1.08);
     }
+
+.map-container {
+    display: flex;
+    height: 90vh;
+}
+
+.map-main-area {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.map-toolbar {
+    padding: 10px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    z-index: 100;
+    position: relative;
+}
+
+.zoom-controls {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.zoom-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 1rem;
+    border: 1px solid #333;
+    background: #f8f9fa;
+    color: #333 !important;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.zoom-btn:hover {
+    background: #e9ecef;
+}
+
+#zoom-level {
+    color: #333 !important;
+    font-weight: 500;
+}
+
+
+.token-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+}
 
 /* Add piece css*/
 

@@ -27,8 +27,6 @@ namespace SAGroupAlphaSpring26.Controllers
         {
             if (updates == null || !updates.Any()) return BadRequest("No token updates provided.");
 
-            var sessionIds = updates.Select(u => u.SessionID).Distinct().ToList();
-
             foreach (var update in updates)
             {
                 var token = _context.Tokens.Find(update.Id);
@@ -52,12 +50,45 @@ namespace SAGroupAlphaSpring26.Controllers
             public int Id { get; set; }
             public double X { get; set; }
             public double Y { get; set; }
-
             public int zIndex { get; set; }
-
             public int SessionID { get; set; }
-
             public string Name { get; set; } = string.Empty;
+        }
+
+        public class TokenCreateModel
+        {
+            public int PieceId { get; set; }
+            public int SessionId { get; set; }
+            public double X { get; set; }
+            public double Y { get; set; }
+        }
+
+        [HttpPost]
+        public IActionResult CreateToken([FromBody] TokenCreateModel model)
+        {
+            if (model == null || model.PieceId == 0 || model.SessionId == 0)
+                return BadRequest("Invalid model.");
+
+            var piece = _context.Pieces.Find(model.PieceId);
+            if (piece == null)
+                return NotFound("Piece not found.");
+
+            var maxZ = _context.Tokens
+                .Where(t => t.SessionId == model.SessionId)
+                .Max(t => (int?)t.ZIndex) ?? 0;
+            var token = new Token
+            {
+                SessionId = model.SessionId,
+                PieceID = model.PieceId,
+                Name = piece.Name,
+                X = model.X,
+                Y = model.Y,
+                ZIndex = maxZ + 1
+            };
+            _context.Tokens.Add(token);
+            _context.SaveChanges();
+
+            return Json(new { id = token.Id });
         }
 
         // Added id to routing.
@@ -122,6 +153,12 @@ namespace SAGroupAlphaSpring26.Controllers
                     .Where(t => t.SessionId == sessionId)
                     .ToList()
             };
+
+            var UserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if(int.TryParse(UserId, out int UserIdParse)) 
+            {
+                viewModel.PlayablePieces = this._dataService.GetUserPieces(UserIdParse);
+            }
 
             return View(viewModel);
         }

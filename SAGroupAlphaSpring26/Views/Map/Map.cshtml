@@ -1,6 +1,6 @@
 ﻿@model SAGroupAlphaSpring26.ViewModels.MapScreenViewModel
 
-<div class="map-container" style="display: flex; height: 90vh;">
+<div class="map-container">
 
     <div class="piece-bar">
         <h4 style="color: white; padding: 10px; font-size: 0.9rem;">Collection</h4>
@@ -21,110 +21,54 @@
                 <img src="@realImagePath"
                      class="map-piece sidebar-piece"
                      draggable="true"
-                     data-pieceid="@piece.Id"
+data-pieceid="@piece.Id.ToString()"
                      alt="@piece.Name"
                      onerror="this.onerror=null; this.src='/images/default.png';" />
             }
         </div>
     </div>
 
-    <div class="map-main-area" style="flex-grow: 1; display: flex; flex-direction: column;">
+    <div class="map-main-area">
 
-        <div class="map-toolbar" style="padding: 10px; background: #f8f9fa; border-bottom: 1px solid #ddd; display: flex; gap: 10px; justify-content: flex-end;">
+        <div class="map-toolbar">
+            <div class="zoom-controls">
+                <button id="zoom-in" class="zoom-btn button-primary">+</button>
+                <button id="zoom-out" class="zoom-btn">-</button>
+                <span id="zoom-level" style="font-size: 0.9rem; margin: 0 10px;">1x</span>
+                <button id="zoom-reset" class="zoom-btn button-primary">1:1</button>
+            </div>
             <button id="btn-save" class="button-primary">Save Positions</button>
             <a asp-controller="Home" asp-action="Index" class="button-danger">Exit</a>
         </div>
 
-        <div class="map-board" id="map-board" style="background-image: url('@Model.MapImagePath');">
+        <div class="map-board" id="map-board" style="background-image: url('@Model.MapImagePath'); background-size: contain; background-position: center;">
 
             @foreach (var token in Model.Tokens.Where(t => t.Piece?.PieceType?.Name != "Map" && (t.X != 0 || t.Y != 0)))
             {
                 <img src="@(string.IsNullOrEmpty(token.Piece?.ImagePath) ? "/images/default.png" : token.Piece.ImagePath)"
                      class="map-piece draggable-token"
-                     style="position: absolute; left: @(token.X)px; top: @(token.Y)px;"
+                     style="position: absolute; left: @(token.X)px; top: @(token.Y)px; z-index: @(token.ZIndex);"
                      id="token-placed-@token.Id"
                      data-tokenid="@token.Id"
                      onerror="this.onerror=null; this.src='/images/default.png';" />
             }
         </div>
     </div>
+    </div>
 </div>
 
 <!-- Scripts start here -->
 
-        @section Scripts {
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                const footer = document.getElementById('Footer');
-                footer.style.display = 'none';
-            })
-
-        const mapBoard = document.getElementById('map-board');
-
-            // Logic for dragging tokens from collection to map and for moving them around the map.
-            document.addEventListener('dragstart', (e) => {
-                                if (e.target.classList.contains('draggable-token')) {
-                                    e.dataTransfer.setData('text/plain', e.target.id);
-                                    e.target.style.opacity = '0.5';
-                                }
-            });
-
-            document.addEventListener('dragend', (e) => {
-                            if (e.target.classList.contains('draggable-token')) {
-                                e.target.style.opacity = '1';
-                            }
-                        });
-
-            mapBoard.addEventListener('dragover', (e) => {
-                        e.preventDefault();
-                    });
-
-                    mapBoard.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    const id = e.dataTransfer.getData('text/plain');
-                    const token = document.getElementById(id);
-
-                    const rect = mapBoard.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-
-                    // Create a new token element to place on the map, sets its positon.
-                    token.style.position = 'absolute';
-                    token.style.left = (x - 30) + 'px';
-                    token.style.top = (y - 30) + 'px';
-
-                    mapBoard.appendChild(token);
-
-                    console.log(`Token dropped at X: ${x}, Y: ${y}`);
-                });
-
-
-
-            // Save Function.
-            document.getElementById('btn-save').addEventListener('click', () => {
-            
-            const placedTokens = document.querySelectorAll('#map-board .draggable-token');
-            const tokenData = Array.from(placedTokens).map(t => {
-                return {
-                    Id: t.getAttribute('data-tokenid'),
-                    X: parseFloat(t.style.left),
-                    Y: parseFloat(t.style.top)
-                };
-            });
-
-            fetch('/Map/SavePositions', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(tokenData)
-            })
-            .then(response => {
-                if (response.ok) {
-                    alert('Map positions saved successfully!');
-                } else {
-                    alert('Error saving positions.');
-                }
-            });
+@section Scripts {
+    <script>
+        window.sessionId = @Json.Serialize(Model.CurrentSession.Id);
+    </script>
+    <script src="~/js/map.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const footer = document.getElementById('Footer');
+            if (footer) footer.style.display = 'none';
         });
-            </script>
-        }
+    </script>
+}
 
