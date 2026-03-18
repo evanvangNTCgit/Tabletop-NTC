@@ -223,6 +223,11 @@ body {
     --pan-y: 0px;
     transform: scale(var(--zoom)) translate(var(--pan-x, 0px), var(--pan-y, 0px));
     transform-origin: 0 0;
+    cursor: grab;
+}
+
+.map-board[draggable] {
+    cursor: grabbing !important;
 }
 
 /* Piece Bar */
@@ -255,6 +260,11 @@ body {
 .draggable-token:hover {
     border-color: #3182ce;
     transform: scale(1.05);
+}
+
+.draggable-token:active,
+.map-board.drag-over {
+    cursor: grabbing !important;
 }
 
 .map-piece:active,
