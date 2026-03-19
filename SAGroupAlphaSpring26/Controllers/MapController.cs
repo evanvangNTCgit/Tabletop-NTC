@@ -149,11 +149,44 @@ namespace SAGroupAlphaSpring26.Controllers
             return View("~/Views/Map/Map.cshtml", viewModel);
         }
 
-        public IActionResult PlayerView() 
+        public IActionResult PlayerView(int sessionID)
         {
-            // return View(this._mapscreenViewModel);
-            // Not implemented yet!!
-            return View();
+            var session = _dataService.GetSession(sessionID);
+
+            if (session == null)
+            {
+                return NotFound("Session not found.");
+            }
+
+            // Use string comparison with OrdinalIgnoreCase to avoid casing bugs (e.g., "map" vs "Map")
+            var mapToken = session.Tokens
+                .FirstOrDefault(t => string.Equals(t.Piece?.PieceType?.Name, "Map", StringComparison.OrdinalIgnoreCase));
+
+            var viewModel = new MapScreenViewModel()
+            {
+                CurrentSession = session,
+                // Fallback to test map if no map token is found
+                MapImagePath = mapToken?.Piece?.ImagePath ?? "/images/testMap.png",
+
+                // Filter out the map itself from the interactive tokens list
+                Tokens = session.Tokens
+                    .Where(t => !string.Equals(t.Piece?.PieceType?.Name, "Map", StringComparison.OrdinalIgnoreCase))
+                    .ToList()
+            };
+
+            // Simplify User ID retrieval
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (int.TryParse(userIdString, out int userId))
+            {
+                viewModel.PlayablePieces = _dataService.GetUserPieces(userId);
+            }
+            else
+            {
+                // Handle guest or unauthenticated user - perhaps an empty list?
+                viewModel.PlayablePieces = new List<Piece>();
+            }
+
+            return View(viewModel);
         }
 
 
