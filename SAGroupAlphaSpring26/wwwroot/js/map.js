@@ -246,8 +246,7 @@ async function saveTokenPositions() {
 // Local Save Token Positions.
 async function updateTokenPositions() {
 
-    tokenPositions = document.querySelectorAll('#map-board .draggable-token[data-tokenid]');
-
+    const tokens = document.querySelectorAll('#map-board .draggable-token[data-tokenid]');
 
     data = Array.from(tokens).map(t => ({
         Id: parseInt(t.dataset.tokenid),
