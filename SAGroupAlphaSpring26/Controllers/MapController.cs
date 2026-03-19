@@ -14,13 +14,11 @@ namespace SAGroupAlphaSpring26.Controllers
     {
         private readonly DataService _dataService;
         private readonly DataContext _context;
-        private MapScreenViewModel _mapscreenViewModel;
 
-        public MapController(DataService dataService, DataContext context, MapScreenViewModel msvm)
+        public MapController(DataService dataService, DataContext context)
         {
             _dataService = dataService;
             _context = context;
-            _mapscreenViewModel = msvm;
         }
 
         // Stores positions of Tokens on the map.
@@ -128,17 +126,14 @@ namespace SAGroupAlphaSpring26.Controllers
 
             viewModel.PlayablePieces = this._dataService.GetUserPieces(UserIdParse);
 
-            this._mapscreenViewModel.MapImagePath = viewModel.MapImagePath;
-            this._mapscreenViewModel.PlayablePieces = viewModel.PlayablePieces;
-            this._mapscreenViewModel.Tokens = viewModel.Tokens;
-            this._mapscreenViewModel.CurrentSession = viewModel.CurrentSession;
-
-            return View("~/Views/Map/Map.cshtml", this._mapscreenViewModel);
+            return View("~/Views/Map/Map.cshtml", viewModel);
         }
 
         public IActionResult PlayerView() 
         {
-            return View(this._mapscreenViewModel);
+            // return View(this._mapscreenViewModel);
+            // Not implemented yet!!
+            return View();
         }
 
 
