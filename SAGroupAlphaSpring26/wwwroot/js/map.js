@@ -4,7 +4,7 @@
 
 const sessionId = window.sessionId; // Set by Razor, stores session ID.
 
-let isDev = true; // Set to false for player view.
+let isPlayerView = false; // Set to true
 let zoomLevel = 1;
 let panX = 0;
 let panY = 0;
@@ -13,20 +13,172 @@ let startX, startY;
 
 let data = []; // For saving token positions
 
-
-const bc = new BroadcastChannel('map_channel');
-
-bc.onmessage = (event) => {
-    console.log("Test");
-    console.table(event.data);
-};
-
-bc.postMessage("Hello world!");
-
 document.addEventListener('DOMContentLoaded', () => {
     const mapBoard = document.getElementById('map-board');
     const sessionId = window.sessionId;
 
+    if (!mapBoard) {
+        return console.error('Map board not found!');
+    }
+
+    const bc = new BroadcastChannel('map_channel');
+
+    bc.postMessage("Hello world!");
+
+    // checks to see what the dataset role is for the map board, if 'player' then isPlayerView is set to true.
+    const playerView = mapBoard.dataset.role;
+
+    if (playerView === 'player') {
+        isPlayerView = true;
+        console.log('Player view set to true.'); 
+    }
+
+    if (isPlayerView === true) {
+
+        // Ensures that the positions of the tokens are updated when the player view is loaded.
+        updateTokenPositions();
+        
+        bc.onmessage = function (event) {
+
+            const tokenData = event.data;
+
+            updateSingleTokenPosition(tokenData);
+
+            // localTokenPositions();
+
+            // playerViewTokenPositions();
+
+            console.log(event.data);
+        };
+    }
+    else {
+        console.log('Currently DM View.');
+
+        // Drag start from sidebar pieces (add new token)
+        document.addEventListener('dragstart', (e) => {
+            if (e.target.classList.contains('sidebar-piece')) {
+                const pieceId = e.target.dataset.pieceid;
+                if (pieceId) {
+                    e.dataTransfer.effectAllowed = 'copy';
+                    e.dataTransfer.setData('text/plain', pieceId);
+                    e.dataTransfer.setDragImage(e.target, 26, 26); // Custom ghost
+                    console.log('Dragging sidebar piece:', pieceId);
+                }
+            } else if (e.target.classList.contains('draggable-token')) {
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', `token-placed-${e.target.dataset.tokenid}`);
+                e.dataTransfer.setDragImage(e.target, 26, 26); // Custom ghost
+                console.log('Dragging existing token');
+            }
+        });
+
+        // Drag end (cleanup)
+        document.addEventListener('dragend', (e) => {
+            if (e.target.classList.contains('map-piece')) {
+                e.target.style.opacity = '1';
+            }
+        });
+
+        // Board dragover
+        mapBoard.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            mapBoard.classList.add('drag-over');
+            e.dataTransfer.dropEffect = 'all';
+        });
+
+        mapBoard.addEventListener('dragleave', (e) => {
+            mapBoard.classList.remove('drag-over');
+        });
+
+        // Drop on board (add new OR move existing)
+        mapBoard.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            const data = e.dataTransfer.getData('text/plain');
+            const rect = mapBoard.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / zoomLevel - 26;
+            const y = (e.clientY - rect.top) / zoomLevel - 26;
+
+            console.log('Drop:', { data, x: x.toFixed(0), y: y.toFixed(0), sessionId });
+
+
+
+            // Skip if dragging existing token (handled in dragend)
+            if (data.startsWith('token-placed-')) {
+                console.log('Moving existing token (visual only)');
+                return;
+            }
+
+            // New piece from sidebar
+            const pieceId = parseInt(data);
+            if (!isNaN(pieceId)) {
+                try {
+                    const response = await fetch('/Map/CreateToken', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ pieceId, sessionId, X: x, Y: y })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    console.log('Token created:', result);
+
+                    if (result.id) {
+                        // Clone sidebar img as new token
+                        const sidebarPiece = document.querySelector(`[data-pieceid="${pieceId}"]`);
+                        if (sidebarPiece) {
+                            const tokenImg = sidebarPiece.cloneNode(true);
+                            tokenImg.id = `token-placed-${result.id}`;
+                            tokenImg.classList.remove('sidebar-piece');
+                            tokenImg.classList.add('draggable-token');
+                            tokenImg.dataset.tokenid = result.id;
+                            tokenImg.draggable = true;
+                            tokenImg.style.position = 'absolute';
+                            tokenImg.style.left = `${x}px`;
+                            tokenImg.style.top = `${y}px`;
+                            tokenImg.style.zIndex = (getMaxZIndex() + 1).toFixed();
+                            mapBoard.appendChild(tokenImg);
+                            makeDraggable(tokenImg); // Enable drag immediately
+                        }
+                    }
+                } catch (error) {
+                    console.error('Create token failed:', error);
+                    alert('Failed to add piece. Check console.');
+                }
+            }
+        });
+
+        // Make single token draggable
+        function makeDraggable(token) {
+            token.draggable = true;
+            token.style.cursor = 'grab';
+            token.addEventListener('dragstart', () => {
+                token.style.opacity = '0.5';
+                token.style.zIndex = (getMaxZIndex() + 1).toString();
+            });
+            token.addEventListener('dragend', (e) => {
+                token.style.opacity = '1';
+                const rect = mapBoard.getBoundingClientRect();
+                const newX = (e.clientX - rect.left) / zoomLevel - 26;
+                const newY = (e.clientY - rect.top) / zoomLevel - 26;
+                token.style.left = `${newX}px`;
+                token.style.top = `${newY}px`;
+                console.log('Token moved:', { tokenid: token.dataset.tokenid, x: newX.toFixed(0), y: newY.toFixed(0) });
+                bc.postMessage({
+                    tokenid: token.dataset.tokenid, x: newX.toFixed(0), y: newY.toFixed(0)
+                });
+            });
+        }
+
+        // Init existing
+        document.querySelectorAll('.draggable-token').forEach(makeDraggable);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Moved Dragging Logic into else block to prevent player view from initializing drag events.
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     if (!mapBoard) {
         console.error('Map board not found!');
         return;
@@ -38,123 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log('Map initialized:', { sessionId });
 
-    // Drag start from sidebar pieces (add new token)
-    document.addEventListener('dragstart', (e) => {
-        if (e.target.classList.contains('sidebar-piece')) {
-            const pieceId = e.target.dataset.pieceid;
-            if (pieceId) {
-                e.dataTransfer.effectAllowed = 'copy';
-                e.dataTransfer.setData('text/plain', pieceId);
-                e.dataTransfer.setDragImage(e.target, 26, 26); // Custom ghost
-                console.log('Dragging sidebar piece:', pieceId);
-            }
-        } else if (e.target.classList.contains('draggable-token')) {
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', `token-placed-${e.target.dataset.tokenid}`);
-            e.dataTransfer.setDragImage(e.target, 26, 26); // Custom ghost
-            console.log('Dragging existing token');
-        }
-    });
-
-    // Drag end (cleanup)
-    document.addEventListener('dragend', (e) => {
-        if (e.target.classList.contains('map-piece')) {
-            e.target.style.opacity = '1';
-        }
-    });
-
-    // Board dragover
-    mapBoard.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        mapBoard.classList.add('drag-over');
-        e.dataTransfer.dropEffect = 'all';
-    });
-
-    mapBoard.addEventListener('dragleave', (e) => {
-        mapBoard.classList.remove('drag-over');
-    });
-
-    // Drop on board (add new OR move existing)
-    mapBoard.addEventListener('drop', async (e) => {
-        e.preventDefault();
-        const data = e.dataTransfer.getData('text/plain');
-        const rect = mapBoard.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / zoomLevel - 26;
-        const y = (e.clientY - rect.top) / zoomLevel - 26;
-
-        console.log('Drop:', { data, x: x.toFixed(0), y: y.toFixed(0), sessionId });
-
-        bc.postMessage("A piece was dropped!");
-
-        // Skip if dragging existing token (handled in dragend)
-        if (data.startsWith('token-placed-')) {
-            console.log('Moving existing token (visual only)');
-            return;
-        }
-
-        // New piece from sidebar
-        const pieceId = parseInt(data);
-        if (!isNaN(pieceId)) {
-            try {
-                const response = await fetch('/Map/CreateToken', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ pieceId, sessionId, X: x, Y: y })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-
-                const result = await response.json();
-                console.log('Token created:', result);
-
-                if (result.id) {
-                    // Clone sidebar img as new token
-                    const sidebarPiece = document.querySelector(`[data-pieceid="${pieceId}"]`);
-                    if (sidebarPiece) {
-                        const tokenImg = sidebarPiece.cloneNode(true);
-                        tokenImg.id = `token-placed-${result.id}`;
-                        tokenImg.classList.remove('sidebar-piece');
-                        tokenImg.classList.add('draggable-token');
-                        tokenImg.dataset.tokenid = result.id;
-                        tokenImg.draggable = true;
-                        tokenImg.style.position = 'absolute';
-                        tokenImg.style.left = `${x}px`;
-                        tokenImg.style.top = `${y}px`;
-                        tokenImg.style.zIndex = (getMaxZIndex() + 1).toFixed();
-                        mapBoard.appendChild(tokenImg);
-                        makeDraggable(tokenImg); // Enable drag immediately
-                    }
-                }
-            } catch (error) {
-                console.error('Create token failed:', error);
-                alert('Failed to add piece. Check console.');
-            }
-        }
-    });
-
-    // Make single token draggable
-    function makeDraggable(token) {
-        token.draggable = true;
-        token.style.cursor = 'grab';
-        token.addEventListener('dragstart', () => {
-            token.style.opacity = '0.5';
-            token.style.zIndex = (getMaxZIndex() + 1).toString();
-        });
-        token.addEventListener('dragend', (e) => {
-            token.style.opacity = '1';
-            const rect = mapBoard.getBoundingClientRect();
-            const newX = (e.clientX - rect.left) / zoomLevel - 26;
-            const newY = (e.clientY - rect.top) / zoomLevel - 26;
-            token.style.left = `${newX}px`;
-            token.style.top = `${newY}px`;
-            console.log('Token moved:', { tokenid: token.dataset.tokenid, x: newX.toFixed(0), y: newY.toFixed(0) });
-        });
-    }
-
-    // Init existing
-    document.querySelectorAll('.draggable-token').forEach(makeDraggable);
 
     // Zoom controls
     document.getElementById('zoom-in')?.addEventListener('click', () => zoomMap(0.1));
@@ -257,3 +292,18 @@ async function updateTokenPositions() {
     }));
 }
 
+async function updateSingleTokenPosition(token) {
+
+    const existingToken = document.getElementById(`token-placed-${token.tokenid}`);
+
+    if (existingToken) {
+        existingToken.style.left = `${token.x}px`;
+        existingToken.style.top = `${token.y}px`;
+    }
+}
+
+async function localTokenPositions(tokens) {
+
+
+
+}
