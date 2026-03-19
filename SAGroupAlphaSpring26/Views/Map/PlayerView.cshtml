@@ -1,6 +1,6 @@
 ﻿@model SAGroupAlphaSpring26.ViewModels.MapScreenViewModel
 
-<div class="map-container" style="display: flex; height: 90vh;">
+<div class="map-container" style="display: flex; height: 90vh;" >
 
     <div class="map-main-area" style="flex-grow: 1; display: flex; flex-direction: column;">
 
@@ -10,7 +10,7 @@
             <a class="button-primary" target="_blank">Player View</a>
         </div>
 
-        <div class="map-board" id="map-board" style="background-image: url('@Model.MapImagePath');">
+        <div class="map-board" id="map-board" style="background-image: url('@Model.MapImagePath');" data-role="player">
 
             @foreach (var token in Model.Tokens.Where(t => t.Piece?.PieceType?.Name != "Map" && (t.X != 0 || t.Y != 0)))
             {
@@ -24,3 +24,16 @@
         </div>
     </div>
 </div>
+
+section Scripts {
+<script>
+    window.sessionId = @Json.Serialize(Model.CurrentSession.Id);
+</script>
+<script src="~/js/map.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const footer = document.getElementById('Footer');
+        if (footer) footer.style.display = 'none';
+    });
+</script>
+}

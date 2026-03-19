@@ -149,6 +149,7 @@ namespace SAGroupAlphaSpring26.Controllers
             return View("~/Views/Map/Map.cshtml", viewModel);
         }
 
+        [Route("Map/PlayerView/{sessionID}")]
         public IActionResult PlayerView(int sessionID)
         {
             var session = _dataService.GetSession(sessionID);
