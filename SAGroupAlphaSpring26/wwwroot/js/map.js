@@ -2,84 +2,80 @@
  * D&D Map JS - Fixed Drag, Drop, Zoom, Pan for Pieces/Tokens
  */
 
-const sessionId = window.sessionId; // Set by Razor, stores session ID.
+const sessionId = window.sessionId;
 
-let isPlayerView = false; // Set to true
+let isPlayerView = false;
 let zoomLevel = 1;
 let panX = 0;
 let panY = 0;
 let isPanning = false;
 let startX, startY;
 
-let data = []; // For saving token positions
+let data = [];
 
+// Wait for the DOM to load before initializing the map logic.
 document.addEventListener('DOMContentLoaded', () => {
     const mapBoard = document.getElementById('map-board');
-    const sessionId = window.sessionId;
+    const currentSessionId = window.sessionId;
 
     if (!mapBoard) {
         return console.error('Map board not found!');
     }
 
     const bc = new BroadcastChannel('map_channel');
-
     bc.postMessage("Hello world!");
 
-    // checks to see what the dataset role is for the map board, if 'player' then isPlayerView is set to true.
     const playerView = mapBoard.dataset.role;
 
     if (playerView === 'player') {
         isPlayerView = true;
-        console.log('Player view set to true.'); 
+        console.log('Player view set to true.');
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    // PLAYER SPECIFIC LOGIC
+    ////////////////////////////////////////////////////////////////////////////
     if (isPlayerView === true) {
-
-        // Ensures that the positions of the tokens are updated when the player view is loaded.
         updateTokenPositions();
-        
+
         bc.onmessage = function (event) {
-
             const tokenData = event.data;
-
-            updateSingleTokenPosition(tokenData);
-
-            // localTokenPositions();
-
-            // playerViewTokenPositions();
-
-            console.log(event.data);
+            if (tokenData.tokenid) { // Ensure we are getting movement data, not "Hello world!"
+                updateSingleTokenPosition(tokenData);
+                console.log("Player View received:", event.data);
+            }
         };
     }
+    //////////////////////////////////////////////////////////////////////////////
+    // DM SPECIFIC LOGIC
+    ////////////////////////////////////////////////////////////////////////////
     else {
         console.log('Currently DM View.');
 
-        // Drag start from sidebar pieces (add new token)
+        // Handle drag start for both sidebar pieces and existing tokens on the map.
         document.addEventListener('dragstart', (e) => {
             if (e.target.classList.contains('sidebar-piece')) {
                 const pieceId = e.target.dataset.pieceid;
                 if (pieceId) {
                     e.dataTransfer.effectAllowed = 'copy';
                     e.dataTransfer.setData('text/plain', pieceId);
-                    e.dataTransfer.setDragImage(e.target, 26, 26); // Custom ghost
+                    e.dataTransfer.setDragImage(e.target, 26, 26);
                     console.log('Dragging sidebar piece:', pieceId);
                 }
             } else if (e.target.classList.contains('draggable-token')) {
                 e.dataTransfer.effectAllowed = 'move';
                 e.dataTransfer.setData('text/plain', `token-placed-${e.target.dataset.tokenid}`);
-                e.dataTransfer.setDragImage(e.target, 26, 26); // Custom ghost
+                e.dataTransfer.setDragImage(e.target, 26, 26);
                 console.log('Dragging existing token');
             }
         });
 
-        // Drag end (cleanup)
         document.addEventListener('dragend', (e) => {
             if (e.target.classList.contains('map-piece')) {
                 e.target.style.opacity = '1';
             }
         });
 
-        // Board dragover
         mapBoard.addEventListener('dragover', (e) => {
             e.preventDefault();
             mapBoard.classList.add('drag-over');
@@ -90,32 +86,30 @@ document.addEventListener('DOMContentLoaded', () => {
             mapBoard.classList.remove('drag-over');
         });
 
-        // Drop on board (add new OR move existing)
+        // Handle dropping both new pieces from the sidebar and moving existing tokens on the map.
         mapBoard.addEventListener('drop', async (e) => {
             e.preventDefault();
+            mapBoard.classList.remove('drag-over'); // Ensure this is removed on drop
             const data = e.dataTransfer.getData('text/plain');
             const rect = mapBoard.getBoundingClientRect();
             const x = (e.clientX - rect.left) / zoomLevel - 26;
             const y = (e.clientY - rect.top) / zoomLevel - 26;
 
-            console.log('Drop:', { data, x: x.toFixed(0), y: y.toFixed(0), sessionId });
+            console.log('Drop:', { data, x: x.toFixed(0), y: y.toFixed(0), currentSessionId });
 
-
-
-            // Skip if dragging existing token (handled in dragend)
             if (data.startsWith('token-placed-')) {
                 console.log('Moving existing token (visual only)');
                 return;
             }
 
-            // New piece from sidebar
+            // Handle new piece dropped from sidebar
             const pieceId = parseInt(data);
             if (!isNaN(pieceId)) {
                 try {
                     const response = await fetch('/Map/CreateToken', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ pieceId, sessionId, X: x, Y: y })
+                        body: JSON.stringify({ pieceId, sessionId: currentSessionId, X: x, Y: y })
                     });
 
                     if (!response.ok) {
@@ -126,7 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.log('Token created:', result);
 
                     if (result.id) {
-                        // Clone sidebar img as new token
                         const sidebarPiece = document.querySelector(`[data-pieceid="${pieceId}"]`);
                         if (sidebarPiece) {
                             const tokenImg = sidebarPiece.cloneNode(true);
@@ -140,7 +133,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             tokenImg.style.top = `${y}px`;
                             tokenImg.style.zIndex = (getMaxZIndex() + 1).toFixed();
                             mapBoard.appendChild(tokenImg);
-                            makeDraggable(tokenImg); // Enable drag immediately
+                            makeDraggable(tokenImg);
+
+                            // Send creation event to player
+                            bc.postMessage({ tokenid: result.id, x: x.toFixed(0), y: y.toFixed(0) });
                         }
                     }
                 } catch (error) {
@@ -150,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Make single token draggable
+        // Makes a token draggable and handles its movement logic.
         function makeDraggable(token) {
             token.draggable = true;
             token.style.cursor = 'grab';
@@ -166,45 +162,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 token.style.left = `${newX}px`;
                 token.style.top = `${newY}px`;
                 console.log('Token moved:', { tokenid: token.dataset.tokenid, x: newX.toFixed(0), y: newY.toFixed(0) });
+
+                // Sends token movement to player view!
                 bc.postMessage({
                     tokenid: token.dataset.tokenid, x: newX.toFixed(0), y: newY.toFixed(0)
                 });
             });
         }
 
-        // Init existing
+        // Init existing tokens for DM
         document.querySelectorAll('.draggable-token').forEach(makeDraggable);
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Moved Dragging Logic into else block to prevent player view from initializing drag events.
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    if (!mapBoard) {
-        console.error('Map board not found!');
-        return;
-    }
-    if (!sessionId) {
-        console.error('No session ID!');
-        return;
-    }
-
-    console.log('Map initialized:', { sessionId });
-
-
-    // Zoom controls
+    ////////////////////////////////////////////////////////////////////////////
+    // SHARED ZOOM & PAN LOGIC (Both DM and Player need this)
+    ////////////////////////////////////////////////////////////////////////////
     document.getElementById('zoom-in')?.addEventListener('click', () => zoomMap(0.1));
     document.getElementById('zoom-out')?.addEventListener('click', () => zoomMap(-0.1));
     document.getElementById('zoom-reset')?.addEventListener('click', resetZoomPan);
 
-    // Wheel zoom
+    // Zoom with mouse wheel
     mapBoard.addEventListener('wheel', (e) => {
         e.preventDefault();
         zoomMap(e.deltaY * -0.001);
     }, { passive: false });
 
-    // Pan (middle mouse)
+    // Start panning on middle mouse button down
     mapBoard.addEventListener('mousedown', (e) => {
-        if (e.button === 1) {
+        if (e.button === 1) { // Middle click to pan
             isPanning = true;
             startX = e.clientX - panX;
             startY = e.clientY - panY;
@@ -212,6 +197,8 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
         }
     });
+
+    // Pan the map on mouse move if panning is active
     document.addEventListener('mousemove', (e) => {
         if (isPanning) {
             panX = e.clientX - startX;
@@ -219,29 +206,39 @@ document.addEventListener('DOMContentLoaded', () => {
             updateTransform();
         }
     });
+
+    // Stop panning on mouse up anywhere in the document
     document.addEventListener('mouseup', () => {
         isPanning = false;
         mapBoard.style.cursor = 'grab';
     });
 
-    // Save button
     document.getElementById('btn-save')?.addEventListener('click', saveTokenPositions);
 
     updateZoomDisplay();
+
 });
 
+
+////////////////////////////////////////////////////////////////////////////
+// HELPER FUNCTIONS
+////////////////////////////////////////////////////////////////////////////
+
+// Gets the highest z-index among tokens to ensure new tokens are on top.
 function getMaxZIndex() {
     const max = [...document.querySelectorAll('#map-board .draggable-token')]
         .reduce((max, t) => Math.max(max, parseInt(t.style.zIndex) || 0), 10);
     return max;
 }
 
+// Adjusts zoom level by a delta and updates the map transform and display.
 function zoomMap(delta) {
     zoomLevel = Math.max(0.3, Math.min(3, zoomLevel + delta));
     updateTransform();
     updateZoomDisplay();
 }
 
+// Resets zoom and pan to default values.
 function resetZoomPan() {
     zoomLevel = 1;
     panX = 0;
@@ -250,20 +247,25 @@ function resetZoomPan() {
     updateZoomDisplay();
 }
 
+// Updates the zoom level display in the UI.
 function updateZoomDisplay() {
-    document.getElementById('zoom-level').textContent = `${zoomLevel.toFixed(1)}x`;
+    const display = document.getElementById('zoom-level');
+    if (display) {
+        display.textContent = `${zoomLevel.toFixed(1)}x`;
+    }
 }
 
+// Applies the current zoom and pan to the map board.
 function updateTransform() {
     const mapBoard = document.getElementById('map-board');
-    mapBoard.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+    if (mapBoard) {
+        mapBoard.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+    }
 }
 
-// Calls the update token positions and then posts Token Positions.
+// Saves token positions to the server.
 async function saveTokenPositions() {
-
     updateTokenPositions();
-
     try {
         const res = await fetch('/Map/SavePositions', {
             method: 'POST',
@@ -278,11 +280,9 @@ async function saveTokenPositions() {
     }
 }
 
-// Local Save Token Positions.
-async function updateTokenPositions() {
-
+// updates token positions.
+function updateTokenPositions() {
     const tokens = document.querySelectorAll('#map-board .draggable-token[data-tokenid]');
-
     data = Array.from(tokens).map(t => ({
         Id: parseInt(t.dataset.tokenid),
         X: parseFloat(t.style.left) || 0,
@@ -292,18 +292,13 @@ async function updateTokenPositions() {
     }));
 }
 
-async function updateSingleTokenPosition(token) {
-
+// updates a single token position on the player view when moved on the DM view.
+function updateSingleTokenPosition(token) {
     const existingToken = document.getElementById(`token-placed-${token.tokenid}`);
-
     if (existingToken) {
         existingToken.style.left = `${token.x}px`;
         existingToken.style.top = `${token.y}px`;
+    } else {
+        console.warn(`Token ${token.tokenid} not found on this view.`);
     }
-}
-
-async function localTokenPositions(tokens) {
-
-
-
 }
