@@ -44,23 +44,23 @@ namespace SAGroupAlphaSpring26.Controllers
             return Ok();
         }
 
-        [HttpGet("Map/GetTokens/{sessionId}")]
-        public IActionResult GetTokens(int sessionId)
-        {
-            var tokens = _context.Tokens
-                .Where(t => t.SessionId == sessionId)
-                .Select(t => new TokenUpdateModel
-                {
-                    Id = t.Id,
-                    X = t.X,
-                    Y = t.Y,
-                    zIndex = t.ZIndex,
-                    SessionID = t.SessionId,
-                    Name = t.Name
-                })
-                .ToList();
-            return Json(tokens);
-        }
+        //[HttpGet("Map/GetTokens/{sessionId}")]
+        //public IActionResult GetTokens(int sessionId)
+        //{
+        //    var tokens = _context.Tokens
+        //        .Where(t => t.SessionId == sessionId)
+        //        .Select(t => new TokenUpdateModel
+        //        {
+        //            Id = t.Id,
+        //            X = t.X,
+        //            Y = t.Y,
+        //            zIndex = t.ZIndex,
+        //            SessionID = t.SessionId,
+        //            Name = t.Name
+        //        })
+        //        .ToList();
+        //    return Json(tokens);
+        //}
 
 
         // Helper class for token JSON data.
@@ -81,7 +81,6 @@ namespace SAGroupAlphaSpring26.Controllers
             public double X { get; set; }
             public double Y { get; set; }
         }
-
 
         [HttpPost]
         public IActionResult CreateToken([FromBody] TokenCreateModel model)

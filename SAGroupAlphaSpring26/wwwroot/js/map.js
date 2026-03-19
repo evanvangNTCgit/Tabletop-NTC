@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     });
 
-    bc.postMessage("Broadcast, Channel working!", sessionId);
+    bc.postMessage(sessionId);
 
 
     if (!mapBoard) {
@@ -149,7 +149,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const newY = (e.clientY - rect.top) / zoomLevel - 26;
             token.style.left = `${newX}px`;
             token.style.top = `${newY}px`;
+
+
             console.log('Token moved:', { tokenid: token.dataset.tokenid, x: newX.toFixed(0), y: newY.toFixed(0) });
+
+            // Locally update token postions, then send via the broadcast channel for player view.
+            updateTokenPositions();
+
+            bc.postMessage(this.data);
+
+            console.log(this.data);
         });
     }
 
@@ -248,7 +257,7 @@ async function updateTokenPositions() {
 
     const tokens = document.querySelectorAll('#map-board .draggable-token[data-tokenid]');
 
-    data = Array.from(tokens).map(t => ({
+    this.data = Array.from(tokens).map(t => ({
         Id: parseInt(t.dataset.tokenid),
         X: parseFloat(t.style.left) || 0,
         Y: parseFloat(t.style.top) || 0,

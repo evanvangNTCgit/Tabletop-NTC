@@ -24,3 +24,18 @@
         </div>
     </div>
 </div>
+
+<!-- Scripts start here -->
+@section Scripts {
+    <script>
+        window.sessionId = @Json.Serialize(Model.CurrentSession.Id);
+    </script>
+    <script src="~/js/map.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const footer = document.getElementById('Footer');
+            if (footer) footer.style.display = 'none';
+        });
+    </script>
+}
+
