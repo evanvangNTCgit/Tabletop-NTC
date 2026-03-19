@@ -39,7 +39,13 @@ data-pieceid="@piece.Id.ToString()"
             </div>
             <button id="btn-save" class="button-primary">Save Positions</button>
             <a asp-controller="Home" asp-action="Index" class="button-primary" target="_blank">Exit</a>
-            <a class="button-primary" asp-controller="Map" asp-action="PlayerView" target="_blank" asp-route-sessionID="@Model.CurrentSession?.Id">Player View</a>
+            <a asp-controller="Map"
+                   asp-action="MapTest"
+                   target="_blank"
+                   asp-route-id="@Model.CurrentSession.Id"
+                   class="btn btn-success btn-lg w-100 shadow-sm">
+                Player View
+            </a>
         </div>
 
         <div class="map-board" id="map-board" style="background-image: url('@Model.MapImagePath'); background-size: contain; background-position: center;">
