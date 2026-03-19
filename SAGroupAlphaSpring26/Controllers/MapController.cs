@@ -82,6 +82,7 @@ namespace SAGroupAlphaSpring26.Controllers
             public double Y { get; set; }
         }
 
+
         [HttpPost]
         public IActionResult CreateToken([FromBody] TokenCreateModel model)
         {
