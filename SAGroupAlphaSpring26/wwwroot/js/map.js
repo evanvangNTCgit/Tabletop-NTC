@@ -2,15 +2,32 @@
  * D&D Map JS - Fixed Drag, Drop, Zoom, Pan for Pieces/Tokens
  */
 
+const sessionId = window.sessionId; // Set by Razor, stores session ID.
+
+let isDev = true; // Set to false for player view.
 let zoomLevel = 1;
 let panX = 0;
 let panY = 0;
 let isPanning = false;
 let startX, startY;
 
+let data = []; // For saving token positions
+
 document.addEventListener('DOMContentLoaded', () => {
     const mapBoard = document.getElementById('map-board');
     const sessionId = window.sessionId;
+
+    // Broadcast channel logic for player view
+    const bc = new BroadcastChannel('map_channel');
+
+    bc.addEventListener('message', (e) => {
+
+        console.log(e);
+
+    });
+
+    bc.postMessage("Broadcast, Channel working!", sessionId);
+
 
     if (!mapBoard) {
         console.error('Map board not found!');
@@ -207,15 +224,10 @@ function updateTransform() {
     mapBoard.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
 }
 
+// Calls the update token positions and then posts Token Positions.
 async function saveTokenPositions() {
-    const tokens = document.querySelectorAll('#map-board .draggable-token[data-tokenid]');
-    const data = Array.from(tokens).map(t => ({
-        Id: parseInt(t.dataset.tokenid),
-        X: parseFloat(t.style.left) || 0,
-        Y: parseFloat(t.style.top) || 0,
-        zIndex: parseInt(t.style.zIndex) || 1,
-        SessionID: window.sessionId
-    }));
+
+    updateTokenPositions();
 
     try {
         const res = await fetch('/Map/SavePositions', {
@@ -229,5 +241,20 @@ async function saveTokenPositions() {
         console.error('Save failed:', e);
         alert('Save failed.');
     }
+}
+
+// Local Save Token Positions.
+async function updateTokenPositions() {
+
+    tokenPositions = document.querySelectorAll('#map-board .draggable-token[data-tokenid]');
+
+
+    data = Array.from(tokens).map(t => ({
+        Id: parseInt(t.dataset.tokenid),
+        X: parseFloat(t.style.left) || 0,
+        Y: parseFloat(t.style.top) || 0,
+        zIndex: parseInt(t.style.zIndex) || 1,
+        SessionID: window.sessionId
+    }));
 }
 
