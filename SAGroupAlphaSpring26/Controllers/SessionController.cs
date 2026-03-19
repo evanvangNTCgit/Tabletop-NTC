@@ -108,12 +108,6 @@ namespace SAGroupAlphaSpring26.Controllers
             return Ok();
         }
 
-        public class NoteUpdateDTO
-        {
-            public int Id { get; set; }
-            public string Notes { get; set; } = string.Empty;
-        }
-
         // Confirms the deletion of the session
         [HttpPost("delete/{id}"), ActionName("Delete")]
         public IActionResult DeleteSessionConfirmed(int id)
