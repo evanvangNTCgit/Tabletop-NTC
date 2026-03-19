@@ -13,19 +13,21 @@ let startX, startY;
 
 let data = []; // For saving token positions
 
-
-const bc = new BroadcastChannel('map_channel');
-
-bc.onmessage = (event) => {
-    console.log("Test");
-    console.table(event.data);
-};
-
-bc.postMessage("Hello world!");
-
 document.addEventListener('DOMContentLoaded', () => {
     const mapBoard = document.getElementById('map-board');
     const sessionId = window.sessionId;
+
+    // Broadcast channel logic for player view
+    const bc = new BroadcastChannel('map_channel');
+
+    bc.addEventListener('message', (e) => {
+
+        console.log(e);
+
+    });
+
+    bc.postMessage("Broadcast, Channel working!", sessionId);
+
 
     if (!mapBoard) {
         console.error('Map board not found!');
@@ -83,8 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const y = (e.clientY - rect.top) / zoomLevel - 26;
 
         console.log('Drop:', { data, x: x.toFixed(0), y: y.toFixed(0), sessionId });
-
-        bc.postMessage("A piece was dropped!");
 
         // Skip if dragging existing token (handled in dragend)
         if (data.startsWith('token-placed-')) {

@@ -27,6 +27,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapBoard = document.getElementById('map-board');
     const sessionId = window.sessionId;
 
+<<<<<<< HEAD
+    // Broadcast channel logic for player view
+    const bc = new BroadcastChannel('map_channel');
+
+    bc.addEventListener('message', (e) => {
+
+        console.log(e);
+
+    });
+
+    bc.postMessage(sessionId);
+
+
+=======
+>>>>>>> 44fd3227ec07d0e1c9243571babfde02dc7c066e
     if (!mapBoard) {
         console.error('Map board not found!');
         return;
@@ -149,7 +164,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const newY = (e.clientY - rect.top) / zoomLevel - 26;
             token.style.left = `${newX}px`;
             token.style.top = `${newY}px`;
+
+
             console.log('Token moved:', { tokenid: token.dataset.tokenid, x: newX.toFixed(0), y: newY.toFixed(0) });
+
+            // Locally update token postions, then send via the broadcast channel for player view.
+            updateTokenPositions();
+
+            bc.postMessage(this.data);
+
+            console.log(this.data);
         });
     }
 
@@ -248,7 +272,7 @@ async function updateTokenPositions() {
 
     const tokens = document.querySelectorAll('#map-board .draggable-token[data-tokenid]');
 
-    data = Array.from(tokens).map(t => ({
+    this.data = Array.from(tokens).map(t => ({
         Id: parseInt(t.dataset.tokenid),
         X: parseFloat(t.style.left) || 0,
         Y: parseFloat(t.style.top) || 0,

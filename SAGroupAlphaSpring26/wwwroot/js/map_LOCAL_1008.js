@@ -13,19 +13,21 @@ let startX, startY;
 
 let data = []; // For saving token positions
 
-
-const bc = new BroadcastChannel('map_channel');
-
-bc.onmessage = (event) => {
-    console.log("Test");
-    console.table(event.data);
-};
-
-bc.postMessage("Hello world!");
-
 document.addEventListener('DOMContentLoaded', () => {
     const mapBoard = document.getElementById('map-board');
     const sessionId = window.sessionId;
+
+    // Broadcast channel logic for player view
+    const bc = new BroadcastChannel('map_channel');
+
+    bc.addEventListener('message', (e) => {
+
+        console.log(e);
+
+    });
+
+    bc.postMessage(sessionId);
+
 
     if (!mapBoard) {
         console.error('Map board not found!');
@@ -83,8 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const y = (e.clientY - rect.top) / zoomLevel - 26;
 
         console.log('Drop:', { data, x: x.toFixed(0), y: y.toFixed(0), sessionId });
-
-        bc.postMessage("A piece was dropped!");
 
         // Skip if dragging existing token (handled in dragend)
         if (data.startsWith('token-placed-')) {
@@ -149,7 +149,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const newY = (e.clientY - rect.top) / zoomLevel - 26;
             token.style.left = `${newX}px`;
             token.style.top = `${newY}px`;
+
+
             console.log('Token moved:', { tokenid: token.dataset.tokenid, x: newX.toFixed(0), y: newY.toFixed(0) });
+
+            // Locally update token postions, then send via the broadcast channel for player view.
+            updateTokenPositions();
+
+            bc.postMessage(this.data);
+
+            console.log(this.data);
         });
     }
 
@@ -248,7 +257,7 @@ async function updateTokenPositions() {
 
     const tokens = document.querySelectorAll('#map-board .draggable-token[data-tokenid]');
 
-    data = Array.from(tokens).map(t => ({
+    this.data = Array.from(tokens).map(t => ({
         Id: parseInt(t.dataset.tokenid),
         X: parseFloat(t.style.left) || 0,
         Y: parseFloat(t.style.top) || 0,
