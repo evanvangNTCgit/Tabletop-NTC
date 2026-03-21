@@ -585,3 +585,13 @@ body {
 .dropdown.show > .admin-toggle .bi-caret-down-fill {
     transform: rotate(180deg);
 }
+
+/* Welcome Section */
+#WelcomeSection{
+    background-image: url("/images/dungeons_and_dragons_group_commission_art_by_envakenkaqti_de0nvqd-fullview.png");
+    background-position: center;
+    background-size:cover;
+    background-position-y:10%;
+    position: relative;
+    height: 75vh;
+}
