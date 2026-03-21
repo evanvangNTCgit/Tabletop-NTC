@@ -126,7 +126,9 @@ namespace SAGroupAlphaSpring26.Controllers
 
             // Can configure certain authentication properties if desired.
             // https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.authentication.authenticationproperties?view=aspnetcore-10.0
-            var authProperties = new Microsoft.AspNetCore.Authentication.AuthenticationProperties { };
+            var authProperties = new Microsoft.AspNetCore.Authentication.AuthenticationProperties {
+            IsPersistent = true
+            };
 
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
