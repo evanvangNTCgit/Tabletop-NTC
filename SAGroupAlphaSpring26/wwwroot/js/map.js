@@ -10,6 +10,7 @@ let panX = 0;
 let panY = 0;
 let isPanning = false;
 let startX, startY;
+const mapBoard = document.getElementById(`map-board`);
 
 let data = [];
 
@@ -40,6 +41,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         bc.onmessage = function (event) {
             const tokenData = event.data;
+            console.table(tokenData);
+            if (tokenData.toggleV === true) {
+                console.log("Toggle");
+                toggleTokenVisibibility(tokenData);
+
+            }
+
             if (tokenData.tokenid) { // Ensure we are getting movement data, not "Hello world!"
                 updateSingleTokenPosition(tokenData);
                 console.log("Player View received:", event.data);
@@ -136,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             makeDraggable(tokenImg);
 
                             // Send creation event to player
-                            bc.postMessage({ tokenid: result.id, x: x.toFixed(0), y: y.toFixed(0) });
+                            bc.postMessage({ tokenid: result.id, x: x.toFixed(0), y: y.toFixed(0), isVisible: true });
                         }
                     }
                 } catch (error) {
@@ -167,6 +175,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 bc.postMessage({
                     tokenid: token.dataset.tokenid, x: newX.toFixed(0), y: newY.toFixed(0)
                 });
+            });
+
+            token.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                console.log(e);
+                //this.toggleTokenVisibibility(e);
+
+                bc.postMessage({
+                    tokenid: token.dataset.tokenid, toggleV: true
+                });
+
+                // this.updateSingleTokenPosition(e.srcElement.dataset);
             });
         }
 
@@ -287,6 +307,7 @@ function updateTokenPositions() {
         Id: parseInt(t.dataset.tokenid),
         X: parseFloat(t.style.left) || 0,
         Y: parseFloat(t.style.top) || 0,
+        visibility: true,
         zIndex: parseInt(t.style.zIndex) || 1,
         SessionID: window.sessionId
     }));
@@ -295,10 +316,29 @@ function updateTokenPositions() {
 // updates a single token position on the player view when moved on the DM view.
 function updateSingleTokenPosition(token) {
     const existingToken = document.getElementById(`token-placed-${token.tokenid}`);
+    const mapBoard = document.getElementById(`map-board`);
+
     if (existingToken) {
+        console.log(existingToken);
         existingToken.style.left = `${token.x}px`;
         existingToken.style.top = `${token.y}px`;
     } else {
-        console.warn(`Token ${token.tokenid} not found on this view.`);
+        console.warn(`Token ${token.id} not found on this view.`);
     }
+}
+
+function toggleTokenVisibibility(token)
+{
+    console.log(token);
+
+    const existingToken = document.getElementById(`token-placed-${token.tokenid}`);
+
+    if (mapBoard.dataset.role == 'player') {
+        console.log("Toggled visibility on player view!");
+        existingToken.style.visibility = "hidden";
+    } else if (mapBoard.dataset.role == 'dm')
+    {
+        existingToken.style.opacity = "0.5";
+    }
+    // updateSingleTokenPosition(token);
 }
