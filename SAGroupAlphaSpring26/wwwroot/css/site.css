@@ -595,3 +595,24 @@ body {
     position: relative;
     height: 75vh;
 }
+
+.map-piece {
+    position: relative;
+}
+
+/* creates a little eye next to the tokens on the map*/
+.eye-badge {
+    position: absolute;
+    font-size: 14px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    pointer-events: none; /* Prevents the eye from blocking your drag clicks */
+    z-index: 1000;
+}

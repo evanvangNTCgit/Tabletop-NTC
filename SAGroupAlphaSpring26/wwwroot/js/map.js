@@ -204,16 +204,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Event listener for right click.
             token.addEventListener('contextmenu', (e) => {
-                const tokenInfo = token;
+                e.preventDefault(); // prevents the right click menu from popping up.
 
+                
                 // switches from true to false and vice versa.
-                tokenInfo.visibility = !tokenInfo.visibility;
+                token.visibility = !token.visibility;
 
-                e.preventDefault();
+
+
+                // Toggles the visibility icon on the token, on the DM side.
+                if (token.visibility === true) {
+
+                    token.style.opacity = "1";
+                }
+                else {
+                    // dim opacity to show it can't be seen by players. I tried to add an eye icon and failed miserably... i got it to show up in the corner but it was janky.
+                    token.style.opacity = "0.5";
+                }
+
                 console.log(e);
 
                 bc.postMessage({
-                    tokenid: tokenInfo.dataset.tokenid, tokenVisibility: tokenInfo.visibility, action: 'toggleV'
+                    tokenid: token.dataset.tokenid, tokenVisibility: token.visibility, action: 'toggleV'
                 });
 
                 // this.updateSingleTokenPosition(e.srcElement.dataset);
@@ -356,17 +368,23 @@ function updateSingleTokenPosition(token) {
 }
 
 
-function toggleTokenVisibility(token)
-{
+function toggleTokenVisibility(token) {
     // console.log(token); already showing this on line 71(subject to changes)
 
     const existingToken = document.getElementById(`token-placed-${token.tokenid}`);
 
-    if (mapBoard.dataset.role == 'player') {
+    if (isPlayerView === true) {
         console.log("Toggled visibility on player view!");
-        existingToken.style.visibility = "hidden";
-    } else if (mapBoard.dataset.role == 'dm')
-    {
-        existingToken.style.opacity = "0.5";
+
+        // set to true to show eye and false to hide eye.
+        if (token.tokenVisibility === true) {
+            existingToken.style.visibility = "visible"; // show to players.
+        } else {
+            existingToken.style.visibility = "hidden"; // hides from players
+        }
+    }
+    else {
+        console.log("toggleTokenVisibility ran by DM view. No change made.")
     }
 }
+
