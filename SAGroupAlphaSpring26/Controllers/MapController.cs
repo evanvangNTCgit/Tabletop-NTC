@@ -62,26 +62,6 @@ namespace SAGroupAlphaSpring26.Controllers
         //    return Json(tokens);
         //}
 
-
-        // Helper class for token JSON data.
-        public class TokenUpdateModel
-        {
-            public int Id { get; set; }
-            public double X { get; set; }
-            public double Y { get; set; }
-            public int zIndex { get; set; }
-            public int SessionID { get; set; }
-            public string Name { get; set; } = string.Empty;
-        }
-
-        public class TokenCreateModel
-        {
-            public int PieceId { get; set; }
-            public int SessionId { get; set; }
-            public double X { get; set; }
-            public double Y { get; set; }
-        }
-
         [HttpPost]
         public IActionResult CreateToken([FromBody] TokenCreateModel model)
         {
