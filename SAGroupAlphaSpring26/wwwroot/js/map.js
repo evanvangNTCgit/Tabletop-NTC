@@ -4,13 +4,19 @@
 
 const sessionId = window.sessionId;
 
+// Sets isPlayerView Variable.
 let isPlayerView = false;
+
 let zoomLevel = 1;
 let panX = 0;
 let panY = 0;
 let isPanning = false;
 let startX, startY;
 
+// MapBoard Element.
+const mapBoard = document.getElementById(`map-board`);
+
+// token data.
 let data = [];
 
 // used for tracking which tokens have been deleted, so we can remove them from the playerview and database.
@@ -19,18 +25,22 @@ let selectedToken = null; // For tracking the token clicked.
 
 // Wait for the DOM to load before initializing the map logic.
 document.addEventListener('DOMContentLoaded', () => {
-    const mapBoard = document.getElementById('map-board');
-    const currentSessionId = window.sessionId;
+    // const mapBoard = document.getElementById('map-board'); // Commented out because it is now assigned at the top.
+    const currentSessionId = window.sessionId; // could prolly comment this out too???
 
+    // Error if no mapBoard.
     if (!mapBoard) {
         return console.error('Map board not found!');
     }
 
+    // Instantiates the broadcaster object for executing functions on the playerview side.
     const bc = new BroadcastChannel('map_channel');
     bc.postMessage("Hello world!");
 
+    // sets playerView to 'dm' or 'player' and then assigns isPlayerView to true if set to 'player'
     const playerView = mapBoard.dataset.role;
 
+    //assigns isPlayerView to true if set to 'player'
     if (playerView === 'player') {
         isPlayerView = true;
         console.log('Player view set to true.');
@@ -40,8 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // PLAYER SPECIFIC LOGIC
     ////////////////////////////////////////////////////////////////////////////
     if (isPlayerView === true) {
+        // if in player view, run updateTokenPositions();
         updateTokenPositions();
 
+        // When a broadcast message is sent, triggers this on the Player view.
         bc.onmessage = function (event) {
             const tokenData = event.data;
 
@@ -50,15 +62,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 const tokenIdToDelete = tokenData.tokenid;
                 if (tokenIdToDelete) tokenIdToDelete.remove();
                 console.log("Player View deleted token:", tokenIdToDelete);
+            }
+            // Checks if the action was 'toggleVisibility'
+            else if (tokenData.action === 'toggleV') {
+                console.log("Toggling Visibility");
+                toggleTokenVisibility(tokenData);
+                console.log("Player View received toggleV:", event.data);
+            }
+            else if (tokenData.action === 'tokenMoved') {
+                // Checks if tokenData contains a token id then runs update single token position.
+                if (tokenData.tokenid) {
+                    updateSingleTokenPosition(tokenData);
+                    console.log("Player View received tokenMoved:", event.data);
                 }
-            // Runs if the token was moved.
-            else if (tokenData.tokenid) { // Passes in token data from the event, which includes tokenid, x, and y.
-                updateSingleTokenPosition(tokenData);
-                console.log("Player View received:", event.data);
             }
         };
     }
-
     //////////////////////////////////////////////////////////////////////////////
     // DM SPECIFIC LOGIC
     ////////////////////////////////////////////////////////////////////////////
@@ -98,8 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
         mapBoard.addEventListener('dragleave', (e) => {
             mapBoard.classList.remove('drag-over');
         });
-
-
 
 
         // Handle dropping both new pieces from the sidebar and moving existing tokens on the map.
@@ -152,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             makeDraggable(tokenImg);
 
                             // Send creation event to player
-                            bc.postMessage({ tokenid: result.id, x: x.toFixed(0), y: y.toFixed(0), isVisible: true});
+                            bc.postMessage({ tokenid: result.id, x: x.toFixed(0), y: y.toFixed(0), isVisible: true, action: 'tokenMoved'});
                         }
                     }
                 } catch (error) {
@@ -181,10 +198,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Sends token movement to player view!
                 bc.postMessage({
-                    tokenid: token.dataset.tokenid, x: newX.toFixed(0), y: newY.toFixed(0), isVisible: true
+                    tokenid: token.dataset.tokenid, x: newX.toFixed(0), y: newY.toFixed(0), isVisible: token.isVisible, action:'tokenMoved'
+                });
+            });
+
+            // Event listener for right click.
+            token.addEventListener('contextmenu', (e) => {
+                const tokenInfo = token;
+
+                // switches from true to false and vice versa.
+                tokenInfo.visibility = !tokenInfo.visibility;
+
+                e.preventDefault();
+                console.log(e);
+
+                bc.postMessage({
+                    tokenid: tokenInfo.dataset.tokenid, tokenVisibility: tokenInfo.visibility, action: 'toggleV'
                 });
 
-                token.addEventListener('')
+                // this.updateSingleTokenPosition(e.srcElement.dataset);
             });
         }
 
@@ -274,7 +306,6 @@ function updateZoomDisplay() {
 
 // Applies the current zoom and pan to the map board.
 function updateTransform() {
-    const mapBoard = document.getElementById('map-board');
     if (mapBoard) {
         mapBoard.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
     }
@@ -297,7 +328,7 @@ async function saveTokenPositions() {
     }
 }
 
-// updates token positions.
+// updates token positions and visibility.
 function updateTokenPositions() {
     const tokens = document.querySelectorAll('#map-board .draggable-token[data-tokenid]');
     data = Array.from(tokens).map(t => ({
@@ -306,7 +337,6 @@ function updateTokenPositions() {
         Y: parseFloat(t.style.top) || 0,
         zIndex: parseInt(t.style.zIndex) || 1,
         SessionID: window.sessionId,
-        visibility: t.style.visibility || 'visible'
     }));
 }
 
@@ -315,24 +345,28 @@ function updateSingleTokenPosition(token) {
 
     const existingToken = document.getElementById(`token-placed-${token.tokenid}`);
 
-    // gets map board to determine player or dm view for visibility logic.
-    const mapBoard = document.getElementById('map-board');
-
     if (existingToken) {
+        console.log(existingToken);
         existingToken.style.left = `${token.x}px`;
         existingToken.style.top = `${token.y}px`;
 
     } else {
-        console.warn(`Token ${token.tokenid} not found on this view.`);
+        console.warn(`Token ${token.id} not found on this view.`);
     }
 }
 
 
-function toggleTokenVisibility(token) {
+function toggleTokenVisibility(token)
+{
+    // console.log(token); already showing this on line 71(subject to changes)
 
-     const existingToken = document.getElementById(`token-placed-${token.tokenId}`);
+    const existingToken = document.getElementById(`token-placed-${token.tokenid}`);
 
-     existingToken.isVisible = !existingToken.isVisible;
-
-     updateSingleTokenPosition(token);
-};
+    if (mapBoard.dataset.role == 'player') {
+        console.log("Toggled visibility on player view!");
+        existingToken.style.visibility = "hidden";
+    } else if (mapBoard.dataset.role == 'dm')
+    {
+        existingToken.style.opacity = "0.5";
+    }
+}
