@@ -90,6 +90,9 @@ namespace SAGroupAlphaSpring26.Controllers
             return Json(new { id = token.Id });
         }
 
+
+
+
         // Added id to routing.
         [Route("Map/MapTest/{id}")]
         public IActionResult MapTest(int id) 
@@ -202,6 +205,24 @@ namespace SAGroupAlphaSpring26.Controllers
             }
 
             return View(viewModel);
+        }
+
+        // Deletes a list of tokens by ID. The Javascript saves each deleted token's ID, then sends it here to the mapController, then calls the data service function to delete them from the database.
+        [HttpPost("Map/DeleteTokens")]
+        public IActionResult DeleteTokens([FromBody] List<int> tokenIds)
+        {
+            if (tokenIds == null || !tokenIds.Any()) return Ok(); // if nothing to delete: return ok.
+
+            // deletes the tokens
+            try
+            {
+                this._dataService.DeleteTokens(tokenIds);
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest("Failed to delete tokens.");
+            }
         }
     }
 }

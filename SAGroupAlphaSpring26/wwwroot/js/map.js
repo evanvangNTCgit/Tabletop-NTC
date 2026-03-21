@@ -13,6 +13,10 @@ let startX, startY;
 
 let data = [];
 
+// used for tracking which tokens have been deleted, so we can remove them from the playerview and database.
+let deletedTokenIds = []; // Tracks tokens so we can delete from database when the save button is clicked.
+let selectedToken = null; // For tracking the token clicked.
+
 // Wait for the DOM to load before initializing the map logic.
 document.addEventListener('DOMContentLoaded', () => {
     const mapBoard = document.getElementById('map-board');
@@ -40,12 +44,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         bc.onmessage = function (event) {
             const tokenData = event.data;
-            if (tokenData.tokenid) { // Ensure we are getting movement data, not "Hello world!"
+
+            // Checks if the action was 'delete' if so, removes the token from the player view and logs. If not, checks if tokenid exists then moves the position of the token.
+            if (tokenData.action === 'delete') {
+                const tokenIdToDelete = tokenData.tokenid;
+                if (tokenIdToDelete) tokenIdToDelete.remove();
+                console.log("Player View deleted token:", tokenIdToDelete);
+                }
+            // Runs if the token was moved.
+            else if (tokenData.tokenid) { // Passes in token data from the event, which includes tokenid, x, and y.
                 updateSingleTokenPosition(tokenData);
                 console.log("Player View received:", event.data);
             }
         };
     }
+
     //////////////////////////////////////////////////////////////////////////////
     // DM SPECIFIC LOGIC
     ////////////////////////////////////////////////////////////////////////////
@@ -85,6 +98,9 @@ document.addEventListener('DOMContentLoaded', () => {
         mapBoard.addEventListener('dragleave', (e) => {
             mapBoard.classList.remove('drag-over');
         });
+
+
+
 
         // Handle dropping both new pieces from the sidebar and moving existing tokens on the map.
         mapBoard.addEventListener('drop', async (e) => {
@@ -136,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             makeDraggable(tokenImg);
 
                             // Send creation event to player
-                            bc.postMessage({ tokenid: result.id, x: x.toFixed(0), y: y.toFixed(0) });
+                            bc.postMessage({ tokenid: result.id, x: x.toFixed(0), y: y.toFixed(0), isVisible: true});
                         }
                     }
                 } catch (error) {
@@ -165,8 +181,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Sends token movement to player view!
                 bc.postMessage({
-                    tokenid: token.dataset.tokenid, x: newX.toFixed(0), y: newY.toFixed(0)
+                    tokenid: token.dataset.tokenid, x: newX.toFixed(0), y: newY.toFixed(0), isVisible: true
                 });
+
+                token.addEventListener('')
             });
         }
 
@@ -216,7 +234,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-save')?.addEventListener('click', saveTokenPositions);
 
     updateZoomDisplay();
-
 });
 
 
@@ -288,17 +305,34 @@ function updateTokenPositions() {
         X: parseFloat(t.style.left) || 0,
         Y: parseFloat(t.style.top) || 0,
         zIndex: parseInt(t.style.zIndex) || 1,
-        SessionID: window.sessionId
+        SessionID: window.sessionId,
+        visibility: t.style.visibility || 'visible'
     }));
 }
 
 // updates a single token position on the player view when moved on the DM view.
 function updateSingleTokenPosition(token) {
+
     const existingToken = document.getElementById(`token-placed-${token.tokenid}`);
+
+    // gets map board to determine player or dm view for visibility logic.
+    const mapBoard = document.getElementById('map-board');
+
     if (existingToken) {
         existingToken.style.left = `${token.x}px`;
         existingToken.style.top = `${token.y}px`;
+
     } else {
         console.warn(`Token ${token.tokenid} not found on this view.`);
     }
 }
+
+
+function toggleTokenVisibility(token) {
+
+     const existingToken = document.getElementById(`token-placed-${token.tokenId}`);
+
+     existingToken.isVisible = !existingToken.isVisible;
+
+     updateSingleTokenPosition(token);
+};

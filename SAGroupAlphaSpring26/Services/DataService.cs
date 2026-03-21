@@ -281,6 +281,24 @@ namespace SAGroupAlphaSpring26.Services
                 throw new Exception($"Error occured getting user pieces User likely does not exist, {ex.Message}");
             }
         }
+
+        // Deletes a list of tokens by ID. The Javascript saves each deleted token's ID, then sends it to the mapcontroller, then calls this function to delete them from the database.
+        public void DeleteTokens(List<int> tokenIds)
+        {
+            try
+            {
+                var tokensToDelete = _dataContext.Tokens.Where(t => tokenIds.Contains(t.Id)).ToList();
+                if (tokensToDelete.Any())
+                {
+                    this._dataContext.Tokens.RemoveRange(tokensToDelete);
+                    this._dataContext.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"DataService Exception! Error deleting tokens: {e.Message}");
+            }
+        }
     }
 }
 
