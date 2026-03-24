@@ -1,7 +1,8 @@
 ﻿@model IEnumerable<Piece>
 <div>
     <p>
-        <a asp-controller="Admin" asp-action="AddPiece" class="btn-lg btn btn-outline-dark" style="background-color: mediumpurple" role="button">Add a piece</a>
+        <a asp-controller="Admin" asp-action="AddPiece" class="btn-lg btn btn-outline-dark" style="background-color: mediumpurple" role="button">Add a piece</a> |
+        <a asp-controller="Admin" asp-action="RecoverPiece" class="btn-lg btn btn-outline-dark" style="background-color: grey" role="button">Recover a piece</a>
     </p>
     <table class="table">
         <tr>
@@ -14,7 +15,8 @@
                 <td>@item.Name</td>
                 <td>
                     <!-- Add the ID onto the route of edit piece so admin controller can pull up from DB what Piece Type to edit. -->
-                    <a asp-controller="admin" asp-action="editpiece" asp-route-id="@item.Id">Edit</a>
+                    <a asp-controller="admin" asp-action="editpiece" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-controller="admin" asp-action="deletepiececonfirmation" asp-route-id="@item.Id">Delete</a>
                 </td>
             </tr>
         }

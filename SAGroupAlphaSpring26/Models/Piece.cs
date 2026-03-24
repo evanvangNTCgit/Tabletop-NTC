@@ -35,5 +35,8 @@ namespace SAGroupAlphaSpring26.Models
 
         // The list of owners that own a this piece. Many to many relationship since a user can own many pieces, and a piece can be owned by many users.
         public List<UserPieces>? Owners { get; set; } = new();
+
+        [Required]
+        public bool IsArchived { get; set; } = false;
     }
 }

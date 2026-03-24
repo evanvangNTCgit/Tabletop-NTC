@@ -19,7 +19,9 @@ namespace SAGroupAlphaSpring26.Services
         // Returns a list of all pieces in the data service.
         public List<Piece> GetPieces()
         {
-            return this._dataContext.Pieces.ToList();
+            return this._dataContext.Pieces
+                .Where(P => P.IsArchived == false)
+                .ToList();
         }
 
         // Returns a piece with the 
@@ -27,7 +29,8 @@ namespace SAGroupAlphaSpring26.Services
         {
             try
             {
-                var piece = _dataContext.Pieces.FirstOrDefault(p => p.Id == id);
+                var piece = _dataContext.Pieces
+                    .FirstOrDefault(p => p.Id == id);
 
                 if (piece == null)
                 {
@@ -127,7 +130,9 @@ namespace SAGroupAlphaSpring26.Services
 
         public List<Piece> GetAllPieces()
         {
-            return this._dataContext.Pieces.Include(p => p.PieceType).ToList();
+            return this._dataContext.Pieces
+                .Where(p => p.IsArchived == false)
+                .Include(p => p.PieceType).ToList();
         }
 
         public void CreateSet(Set set, List<int> pieceIds)
@@ -159,9 +164,13 @@ namespace SAGroupAlphaSpring26.Services
 
         public List<Set> GetAllSets()
         {
-            return _dataContext.Sets
-                .Include(s => s.PiecesList)
-                    .ThenInclude(ps => ps.Piece)
+            //return _dataContext.Sets
+            //    .Include(s => s.PiecesList)
+            //        .ThenInclude(ps => ps.Piece).Where(ps => ps.isarvhiced == false)
+            //    .ToList();
+            return this._dataContext.Sets
+                .Include(s => s.PiecesList!.Where(ps => ps.Piece.IsArchived == false))
+                .ThenInclude(ps => ps.Piece)
                 .ToList();
         }
 
@@ -302,12 +311,25 @@ namespace SAGroupAlphaSpring26.Services
             try
             {
                 // return this._dataContext.UserPieces.Where(up => up.UserId == id).Select(up => up.Piece).Include(up => up.PieceType).ToList();
-                return this._dataContext.UserPieces.Where(up => up.UserId == id).Include(up => up.Piece).ThenInclude(p => p.PieceType).Select(up => up.Piece).ToList();
+                return this._dataContext.UserPieces
+                    .Where(up => up.UserId == id)
+                    .Include(up => up.Piece)
+                    .ThenInclude(p => p.PieceType)
+                    .Select(up => up.Piece)
+                    .ToList();
+                // We do not run the not archived check here since user bought piece before archival.
             }
             catch (Exception ex)
             {
                 throw new Exception($"Error occured getting user pieces User likely does not exist, {ex.Message}");
             }
+        }
+
+        public List<Piece> GetDeletedPieces()
+        {
+            return this._dataContext.Pieces
+                .Where(p => p.IsArchived == true)
+                .ToList();
         }
 
         // Deletes a list of tokens by ID. The Javascript saves each deleted token's ID, then sends it to the mapcontroller, then calls this function to delete them from the database.
@@ -326,6 +348,39 @@ namespace SAGroupAlphaSpring26.Services
             {
                 throw new Exception($"DataService Exception! Error deleting tokens: {e.Message}");
             }
+        }
+
+        public void DeletePiece(int id)
+        {
+            try
+            {
+                var piece = this._dataContext.Pieces.FirstOrDefault(p => p.Id == id);
+
+                piece!.IsArchived = true;
+
+                this.UpdatePiece(piece);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to archive piece\n${ex.Message}");
+            }
+        }
+
+        public void RestorePiece(int id)
+        {
+            try
+            {
+                var piece = this._dataContext.Pieces.FirstOrDefault(p => p.Id == id);
+
+                piece!.IsArchived = false;
+
+                this.UpdatePiece(piece);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to restore piece {id} Likely does not exist\n{ex.Message}");
+            }
+
         }
     }
 }

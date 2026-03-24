@@ -1,0 +1,17 @@
+﻿@model Piece
+
+<h2>Delete Piece Confirm</h2>
+
+<div class="form-horizontal">
+
+    <form method="POST">
+        <input type="hidden" asp-for="Id" />
+        <div class="form-group">
+            <label>@Model.Name</label>
+        </div>
+
+        <p>
+            <button type="submit" class="btn btn-danger" role="button">Delete</button>
+        </p>
+    </form>
+</div>

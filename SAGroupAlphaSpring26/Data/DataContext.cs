@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace SAGroupAlphaSpring26.Data
 {
@@ -75,6 +74,11 @@ namespace SAGroupAlphaSpring26.Data
                 new PieceType { Id = 7, Name = "Shop" }
                 );
 
+            //// Just make sure all Piece have the default value of false.
+            //modelBuilder.Entity<Piece>()
+            //    .Property(p => p.IsArchived)
+            //    .HasDefaultValue(false);
+
             // Initial Piece
             modelBuilder.Entity<Piece>().HasData(
                                 new Piece { Id = 1, PieceTypeID = 2, Name = "Default Dungeon", ImagePath = "/images/testMap.png", Price = 0.00m },
@@ -146,7 +150,7 @@ namespace SAGroupAlphaSpring26.Data
 
             // Making one piece set:
             modelBuilder.Entity<Set>().HasData(
-                new Set { Id=1, Name = "Evans Beginner Pack", Price = 0.00m} // This is a free set for the user c:
+                new Set { Id = 1, Name = "Evans Beginner Pack", Price = 0.00m } // This is a free set for the user c:
                 );
             // Putting some pieces in my set.
             modelBuilder.Entity<PieceSets>().HasData(

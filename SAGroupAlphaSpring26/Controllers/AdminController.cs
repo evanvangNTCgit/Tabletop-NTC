@@ -285,6 +285,33 @@ namespace SAGroupAlphaSpring26.Controllers
                     return View(svm);
                 }
             }
+
+        [HttpGet("deletepiececonfirmation/{id:int}")]
+        public IActionResult DeletePieceConfirmation(int id) 
+        {
+            return View(this._dataService.GetPiece(id));
+        }
+
+        [HttpPost("deletepiececonfirmation/{id:int}")]
+        public IActionResult DeletePiece(int id)
+        {
+            this._dataService.DeletePiece(id);
+            return RedirectToAction(nameof(Pieces));
+        }
+
+        [HttpGet("RecoverPiece")]
+        public IActionResult RecoverPiece() 
+        {
+            return View(this._dataService.GetDeletedPieces());
+        }
+
+        [HttpGet("RecoverPiece/{id:int}")]
+        public IActionResult RecoverPiece(int id)
+        {
+            this._dataService.RestorePiece(id);
+
+            return RedirectToAction(nameof(Pieces));
+        }
     }
 }
 
