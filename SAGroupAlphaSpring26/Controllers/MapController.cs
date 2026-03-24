@@ -128,7 +128,7 @@ namespace SAGroupAlphaSpring26.Controllers
 
             viewModel.PlayablePieces = this._dataService.GetUserPieces(UserIdParse);
 
-            return View("~/Views/Map/Map.cshtml", viewModel);
+            return View("~/Views/Map/VangMap.cshtml", viewModel);
         }
 
         [Route("Map/PlayerView/{sessionID}")]
