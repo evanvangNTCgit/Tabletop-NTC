@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         stop: (event, ui) => {
             console.log("Broadcast a message to the player view!");
+            console.log("Dropped at:", event.target.x,"X");
+            console.log("Dropped at:", event.target.y,"Y");
         },
         drag: (event, ui) => {
             console.log("A piece is dragging!");
