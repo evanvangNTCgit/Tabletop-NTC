@@ -206,23 +206,18 @@ document.addEventListener('DOMContentLoaded', () => {
             token.addEventListener('contextmenu', (e) => {
                 e.preventDefault(); // prevents the right click menu from popping up.
 
-                
-                // switches from true to false and vice versa.
+                //// switches from true to false and vice versa.
                 token.visibility = !token.visibility;
 
-
-
-                // Toggles the visibility icon on the token, on the DM side.
+                //// Toggles the visibility icon on the token, on the DM side.
                 if (token.visibility === true) {
-
-                    token.style.opacity = "1";
+                    token.classList.add("dmOpacityToggle");
+                    console.log(token);
                 }
                 else {
                     // dim opacity to show it can't be seen by players. I tried to add an eye icon and failed miserably... i got it to show up in the corner but it was janky.
-                    token.style.opacity = "0.5";
+                    token.classList.remove("dmOpacityToggle");
                 }
-
-                console.log(e);
 
                 bc.postMessage({
                     tokenid: token.dataset.tokenid, tokenVisibility: token.visibility, action: 'toggleV'

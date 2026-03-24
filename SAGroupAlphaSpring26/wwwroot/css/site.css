@@ -616,3 +616,7 @@ body {
     pointer-events: none; /* Prevents the eye from blocking your drag clicks */
     z-index: 1000;
 }
+
+.dmOpacityToggle{
+    opacity:0.5;
+}
