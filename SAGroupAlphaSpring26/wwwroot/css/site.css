@@ -620,6 +620,9 @@ body {
 .dmOpacityToggle{
     opacity:0.5;
 }
+.dmOpacityToggle::after {
+        content: "Invis.";
+}
 
 #draggable {
     width: 150px;
