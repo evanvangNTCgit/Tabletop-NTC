@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.addEventListener('dragend', (e) => {
             if (e.target.classList.contains('map-piece')) {
-                e.target.style.opacity = '1';
+                // e.target.style.opacity = '1';
             }
         });
 
@@ -128,7 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const x = (e.clientX - rect.left) / zoomLevel - 26;
             const y = (e.clientY - rect.top) / zoomLevel - 26;
 
-            console.log('Drop:', { data, x: x.toFixed(0), y: y.toFixed(0), currentSessionId });
+            // console.log('Drop:', { data, x: x.toFixed(0), y: y.toFixed(0), currentSessionId });
+            console.log(data);
 
             if (data.startsWith('token-placed-')) {
                 console.log('Moving existing token (visual only)');
@@ -184,11 +185,12 @@ document.addEventListener('DOMContentLoaded', () => {
             token.draggable = true;
             token.style.cursor = 'grab';
             token.addEventListener('dragstart', () => {
-                token.style.opacity = '0.5';
+                // token.style.opacity = '0.5';
                 token.style.zIndex = (getMaxZIndex() + 1).toString();
             });
             token.addEventListener('dragend', (e) => {
-                token.style.opacity = '1';
+                console.log("Drag end!");
+                // token.style.opacity = '1';
                 const rect = mapBoard.getBoundingClientRect();
                 const newX = (e.clientX - rect.left) / zoomLevel - 26;
                 const newY = (e.clientY - rect.top) / zoomLevel - 26;
@@ -222,8 +224,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 bc.postMessage({
                     tokenid: token.dataset.tokenid, tokenVisibility: token.visibility, action: 'toggleV'
                 });
-
-                // this.updateSingleTokenPosition(e.srcElement.dataset);
             });
         }
 
