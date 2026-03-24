@@ -60,6 +60,7 @@ namespace SAGroupAlphaSpring26.Services
             try
             {
                 var session = _dataContext.Sessions
+                    .Where(s => s.IsArchived == false)
                 .Include(s => s.Tokens)
                     .ThenInclude(t => t.Piece)
                 .FirstOrDefault(s => s.Id == sessionId);
@@ -82,6 +83,7 @@ namespace SAGroupAlphaSpring26.Services
         {
             return _dataContext.Sessions
                 .Where(s => s.UserId == userId)
+                .Where(s => s.IsArchived == false)
                 .OrderByDescending(s => s.LastUpdated)
                 .ToList();
         }
@@ -237,13 +239,39 @@ namespace SAGroupAlphaSpring26.Services
                 var session = this._dataContext.Sessions.FirstOrDefault(s => s.Id == id);
                 if (session != null)
                 {
-                    this._dataContext.Sessions.Remove(session);
-                    this._dataContext.SaveChanges();
+                    // Archived instead now!
+                    // this._dataContext.Sessions.Remove(session);
+                    // this._dataContext.SaveChanges();
+                    session.IsArchived = true;
+                    this.UpdateSession(session);
                 }
             }
             catch (Exception e)
             {
                 throw new Exception($"Error deleting session {id}: {e.Message}");
+            }
+        }
+
+        public List<Session> GetDeletedSessions(int id)
+        {
+            return this._dataContext.Sessions
+                .Where(s => s.IsArchived == true)
+                .Where(s => s.UserId == id)
+                .ToList();
+        }
+
+        public Session RestoreSession(int id)
+        {
+            try
+            {
+                Session s = this._dataContext.Sessions.FirstOrDefault(s => s.Id == id)!;
+                s.IsArchived = false;
+                this.UpdateSession(s);
+                return s;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error in recovering session likely does not exist\n{ex.Message}");
             }
         }
 

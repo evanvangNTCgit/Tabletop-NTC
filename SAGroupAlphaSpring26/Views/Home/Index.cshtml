@@ -34,7 +34,11 @@
                 <a asp-controller="Session" asp-action="Create"
                    class="btn btn-success btn-lg px-5 rounded-pill shadow">
                     <i class="bi bi-plus-circle me-2"></i> Create New Session
-                </a>
+                </a> 
+                    <a asp-controller="Session" asp-action="RecoverSession"
+                    class="btn btn-secondary btn-lg px-5 rounded-pill shadow">
+                        Recover Session
+                    </a>
 
         </div>
             @if (!Model.Any())

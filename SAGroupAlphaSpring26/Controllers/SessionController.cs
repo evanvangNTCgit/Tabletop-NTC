@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SAGroupAlphaSpring26.Models;
 using SAGroupAlphaSpring26.Services;
+using System.Security.Claims;
 
 namespace SAGroupAlphaSpring26.Controllers
 {
@@ -121,6 +122,29 @@ namespace SAGroupAlphaSpring26.Controllers
                     _dataService.DeleteSession(id);
                 }
             }
+
+            // Redirect back to user index page.
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet("RecoverSession")]
+        public IActionResult RecoverSession() 
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            if(userId == null)
+            {
+                // Redirect back to sign in
+                // Maybe not signed in?
+                return RedirectToAction("Account", "Login");
+            }
+            List<Session> archivedSessions = this._dataService.GetDeletedSessions(int.Parse(userId));
+            return View(archivedSessions);
+        }
+
+        [HttpGet("RecoverSessionConfirm")]
+        public IActionResult RecoverSessionConfirm(int id)
+        {
+            this._dataService.RestoreSession(id);
 
             // Redirect back to user index page.
             return RedirectToAction("Index", "Home");

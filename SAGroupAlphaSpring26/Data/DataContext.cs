@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace SAGroupAlphaSpring26.Data
 {
@@ -95,6 +96,11 @@ namespace SAGroupAlphaSpring26.Data
             modelBuilder.Entity<Session>().HasData(
                 new Session { Id = 1, UserId = 1, Name = "Test Session", Notes = "Local Test Session", LastUpdated = DateTime.Now, },
                 new Session { Id = 2, UserId = 1, Name = "Test Session 2", Notes = "Local Test Session 2", LastUpdated = DateTime.Now, });
+
+            // Just makesure all session have the default value of false.
+            modelBuilder.Entity<Session>()
+                .Property(s => s.IsArchived)
+                .HasDefaultValue(false);
 
             modelBuilder.Entity<Token>().HasData(
                 // Session 1 Token Seed Data.

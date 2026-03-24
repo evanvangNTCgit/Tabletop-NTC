@@ -24,5 +24,10 @@
 
         // Stores tokens for the session.
         public List<Token> Tokens { get; set; } = new List<Token>();
+
+        // Instead of the user deleting a session entirely.
+        // We can just archive it and have the user restore it, if desired
+        [Required]
+        public bool IsArchived { get; set; } = false; // Default to false for the ones that did not get this column yet.
     }
 }
