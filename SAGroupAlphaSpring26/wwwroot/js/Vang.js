@@ -1,4 +1,6 @@
-﻿// https://api.jqueryui.com/draggable/#event-create
+﻿
+
+// https://api.jqueryui.com/draggable/#event-create
 document.addEventListener("DOMContentLoaded", () => {
     console.log("Hello! \nFrom -Mr. Vang")
     // Dont be afraid of the dollar sign
@@ -25,8 +27,21 @@ document.addEventListener("DOMContentLoaded", () => {
     // That they can select yes or no on.
     // It will make the piece on the map set it at a default 0x 0y and invisible to the player.
     // https://jqueryui.com/dialog/
-    document.querySelectorAll(".sidebar-piece").forEach((e) => {
-        e.addEventListener('click', (e) => {
+    document.querySelectorAll(".sidebar-piece").forEach( async (e) => {
+        e.addEventListener('click', async (e) => {
+            // E returns a pointer event so I need to get necessary data to work with the create token POST.
+
+            const pieceId = e.srcElement.dataset.pieceid;
+            // Gets the session ID form the uri
+            const currentSessionId = window.sessionId;
+
+            const x = 0;
+            const y = 0;
+            //const response = await fetch('/Map/CreateToken', {
+            //    method: 'POST',
+            //    headers: { 'Content-Type': 'application/json' },
+            //    body: JSON.stringify({ pieceId, sessionId: currentSessionId, X: x, Y: y })
+            //});
             console.log(e);
             $("#dialog").dialog({
                 // This will prevent the user from interacting with background (map) when popup shows.
@@ -49,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 ]
             });
-            document.getElementById("dialog").classList.remove("hidden")
+            document.getElementById("dialog").classList.remove("hidden");
             console.log("Should show dialog...");
         })
     });
@@ -64,3 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })
     })
 });
+
+const makeNewToken = (id) => {
+
+}
