@@ -114,6 +114,20 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
+        public Token AddToken(Token t)
+        {
+            try
+            {
+                _dataContext.Add(t);
+                _dataContext.SaveChanges();
+                return t;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error in adding Tpken: {e.Message}");
+            }
+        }
+
         public PieceType AddPieceType(PieceType pt)
         {
             try

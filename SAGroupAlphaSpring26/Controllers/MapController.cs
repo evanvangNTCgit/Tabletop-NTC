@@ -84,14 +84,10 @@ namespace SAGroupAlphaSpring26.Controllers
                 Y = model.Y,
                 ZIndex = maxZ + 1
             };
-            _context.Tokens.Add(token);
-            _context.SaveChanges();
+            this._dataService.AddToken(token);
 
-            return Json(new { id = token.Id });
+            return Json(new { id = token.PieceID });
         }
-
-
-
 
         // Added id to routing.
         [Route("Map/MapTest/{id}")]
