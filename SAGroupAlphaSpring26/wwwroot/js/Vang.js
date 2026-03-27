@@ -2,6 +2,8 @@
 document.addEventListener("DOMContentLoaded", () => {
     console.log("Hello! \nFrom -Mr. Vang")
     $(".draggable-token").draggable({
+        containment: "#map-board",
+        scroll: false,
         create: (event, ui) => {
             console.log("Token Created:", Date.now());
         },
