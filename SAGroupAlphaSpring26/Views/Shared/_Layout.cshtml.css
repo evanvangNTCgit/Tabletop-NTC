@@ -19,7 +19,7 @@ main {
 /* Sidebar */
 .sidebar {
     width: 220px;
-    background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+    background: linear-gradient(180deg, #0a0a0a 0%, #000000 100%);
     color: #ffffff;
     padding: 2rem 1rem;
     position: fixed;
@@ -27,31 +27,32 @@ main {
     align-self: flex-start;
     display: flex;
     flex-direction: column;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
     z-index: 1000;
+    letter-spacing: 2px;
 }
 
 /* Sidebar brand/title */
 .sidebar .brand {
     font-size: 1.25rem;
     font-weight: 700;
-    color: #60a5fa;
+    color: #D4AF37;
     padding: 0.5rem 1rem;
     margin-bottom: 1.5rem;
     text-decoration: none;
-    border-bottom: 1px solid #374151;
+    border-bottom: 1px solid #4a4a4a;
     padding-bottom: 1rem;
 }
 
 .sidebar .brand:hover {
-    color: #93c5fd;
+    color: #FFD700;
 }
 
 /* Main content */
 .main-content {
     flex: 1;
     padding: 2rem;
-    background-color: #f4f6f9;
+    background-color: #F5DEB3;
     margin-left: 220px;
 }
 
@@ -65,9 +66,9 @@ main {
     padding: 0.75rem 1rem;
     margin-bottom: 0.5rem;
     background-color: transparent;
-    border: 1px solid #374151;
+    border: 1px solid #4a4a4a;
     border-radius: 8px;
-    color: #d1d5db;
+    color: #F4E4BC;
     text-decoration: none;
     font-weight: 500;
     text-align: left;
@@ -76,43 +77,43 @@ main {
 }
 
 .nav-button:hover {
-    background-color: #2563eb;
-    border-color: #2563eb;
-    color: #ffffff;
+    background-color: #D4AF37;
+    border-color: #D4AF37;
+    color: #000000;
     transform: translateX(4px);
-    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 6px rgba(212, 175, 55, 0.4);
 }
 
 .nav-button.active {
-    background-color: #2563eb;
-    border-color: #2563eb;
-    color: #ffffff;
+    background-color: #D4AF37;
+    border-color: #D4AF37;
+    color: #000000;
 }
 
 /* Sign in button - special styling */
 .nav-button.signin {
-    background-color: #059669;
-    border-color: #059669;
-    color: #ffffff;
+    background-color: #D4AF37;
+    border-color: #D4AF37;
+    color: #000000;
     text-align: center;
 }
 
 .nav-button.signin:hover {
-    background-color: #047857;
-    border-color: #047857;
+    background-color: #B8860B;
+    border-color: #B8860B;
     transform: translateX(4px);
 }
 
 /* Logout button */
 .nav-button.logout {
-    background-color: #dc2626;
-    border-color: #dc2626;
+    background-color: #8B0000;
+    border-color: #8B0000;
     color: #ffffff;
 }
 
 .nav-button.logout:hover {
-    background-color: #b91c1c;
-    border-color: #b91c1c;
+    background-color: #660000;
+    border-color: #660000;
     transform: translateX(4px);
 }
 
@@ -123,7 +124,7 @@ main {
 .admin-section {
     margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 1px solid #374151;
+    border-top: 1px solid #4a4a4a;
 }
 
 .admin-dropdown {
@@ -135,8 +136,8 @@ main {
     width: 100%;
     padding: 0.75rem 1rem;
     margin-bottom: 0.5rem;
-    background-color: #7c3aed;
-    border: 1px solid #7c3aed;
+    background-color: #8B0000;
+    border: 1px solid #8B0000;
     border-radius: 8px;
     color: #ffffff;
     text-decoration: none;
@@ -147,8 +148,8 @@ main {
 }
 
 .admin-toggle:hover {
-    background-color: #6d28d9;
-    border-color: #6d28d9;
+    background-color: #660000;
+    border-color: #660000;
     transform: translateX(4px);
 }
 
@@ -173,22 +174,22 @@ main {
     font-size: 0.9rem;
     padding: 0.5rem 0.75rem;
     margin-bottom: 0.25rem;
-    background-color: #374151;
-    border-color: #4b5563;
+    background-color: #4a4a4a;
+    border-color: #696969;
 }
 
 .admin-menu .nav-button:hover {
-    background-color: #2563eb;
-    border-color: #2563eb;
+    background-color: #D4AF37;
+    border-color: #D4AF37;
 }
 
 /* User greeting */
 .user-greeting {
-    color: #9ca3af;
+    color: #D2B48C;
     font-size: 0.875rem;
     padding: 0.5rem 1rem;
     margin-bottom: 0.5rem;
-    border-bottom: 1px solid #374151;
+    border-bottom: 1px solid #4a4a4a;
     padding-bottom: 0.75rem;
 }
 
@@ -201,6 +202,7 @@ nav {
     top: 0;
     z-index: 1000;
     padding: 1rem 2rem;
+    background-color: #0a0a0a;
 }
 
 .navbar {
@@ -214,6 +216,7 @@ nav {
 
 .navbar-brand {
     font-size: 1.5rem;
+    color: #D4AF37;
 }
 
 .navbar-nav {
@@ -223,22 +226,22 @@ nav {
 
 .nav-link {
     text-decoration: none;
-    color: #0077cc;
+    color: #D4AF37;
     padding: 0.5rem 1rem;
     border-radius: 6px;
 }
 
     .nav-link:hover {
-        color: #ffffff;
-        background-color: #2563eb;
+        color: #000000;
+        background-color: #D4AF37;
     }
 
 /* =========================
    FOOTER
 ========================= */
 .footer {
-    background-color: #1f2937;
-    color: white;
+    background-color: #0a0a0a;
+    color: #F4E4BC;
     text-align: left;
     padding: 20px;
     width: 100%;
