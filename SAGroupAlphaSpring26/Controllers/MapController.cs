@@ -86,7 +86,7 @@ namespace SAGroupAlphaSpring26.Controllers
             };
             this._dataService.AddToken(token);
 
-            return Json(new { id = token.PieceID });
+            return Json(new { id = token.Id, pieceImageID = token.PieceID });
         }
 
         // Added id to routing.

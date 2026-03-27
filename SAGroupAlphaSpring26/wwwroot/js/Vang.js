@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                             const result = await response.json();
                             console.log('Token created:', result);
-                            makeNewToken(result.id);
+                            makeNewToken(result);
                         }
                     },
                     {
@@ -78,19 +78,19 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Requires id of the token.
-const makeNewToken = (id) => {
+const makeNewToken = (data) => {
     const mapBoard = document.getElementById('map-board');
 
     // Get the img element DOM in the sidebar.
-    const sidebarPiece = document.querySelector(`[data-pieceid="${id}"]`);
+    const sidebarPiece = document.querySelector(`[data-pieceid="${data.pieceImageID}"]`);
 
     // if we got it clone it and make it a normal draggable piece.
     if (sidebarPiece) {
         const tokenImg = sidebarPiece.cloneNode(true);
-        tokenImg.id = `token-placed-${id}`;
+        tokenImg.id = `token-placed-${data.id}`;
         tokenImg.classList.remove('sidebar-piece');
         tokenImg.classList.add('draggable-token');
-        tokenImg.dataset.tokenid = id;
+        tokenImg.dataset.tokenid = data.id;
         tokenImg.draggable = true;
         tokenImg.style.position = 'absolute';
         tokenImg.style.left = `100px`;
