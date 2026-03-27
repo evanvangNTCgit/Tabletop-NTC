@@ -1,8 +1,10 @@
 ﻿@model SAGroupAlphaSpring26.ViewModels.MapScreenViewModel
-
 <div class="map-container">
 
     <div class="piece-bar">
+        <div id="dialog" title="Add a piece" class="hidden">
+            <p>Would you like to add a new piece to the board?</p>
+        </div>
         <h4 style="color: white; padding: 10px; font-size: 0.9rem;">Collection</h4>
         <div class="token-list">
             @foreach (var piece in Model.PlayablePieces)
@@ -71,6 +73,7 @@
             }
         </div>
     </div>
+</div>
 </div>
 
 <!-- Scripts start here -->

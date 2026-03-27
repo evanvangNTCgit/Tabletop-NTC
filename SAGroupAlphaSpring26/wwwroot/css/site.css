@@ -629,3 +629,7 @@ body {
     height: 150px;
     padding: 0.5em;
 }
+
+.hidden {
+    display: none;
+}
