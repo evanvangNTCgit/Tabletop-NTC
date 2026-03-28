@@ -1,6 +1,10 @@
-﻿import { repositionToken } from "../js/PlayerMapFunctions.js";
+﻿import { repositionToken, toggleTokenInvisibility } from "../js/PlayerMapFunctions.js";
 
 const mapBoard = document.getElementById('map-board');
+mapBoard.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+});
+
 let isPlayerView = false;
 
 // Instantiates the broadcaster object for executing functions on the playerview side.
@@ -16,7 +20,14 @@ if (playerView === 'player') {
 
     bc.onmessage = (e) => {
         console.log(e);
-        repositionToken(e.data);
+        switch (e.data.action) {
+            case ("tokenMove"):
+                repositionToken(e.data);
+                break;
+            case ("toggleIn"):
+                toggleTokenInvisibility(e.data);
+                break;
+        }
     }
 }
 
@@ -94,9 +105,11 @@ if (!isPlayerView) {
         document.querySelectorAll('.vangtokendiv').forEach((e) => {
             e.addEventListener('contextmenu', (e) => {
                 e.preventDefault();
-                // console.log(e);
-                // Get the source element and add my DM Toggle opacity.
                 event.target.classList.toggle('dmOpacityToggle');
+                bc.postMessage({
+                    tokenId: `${e.target.id}`,
+                    action: 'toggleIn',
+                });
             });
         });
     });
@@ -142,7 +155,7 @@ if (!isPlayerView) {
         stop: (event, ui) => {
         },
         drag: (event, ui) => {
-            console.log('drag');
+            console.log(event);
             // Get the Token x and y; 
             const X = event.originalEvent.target.x;
             const Y = event.originalEvent.target.y;
