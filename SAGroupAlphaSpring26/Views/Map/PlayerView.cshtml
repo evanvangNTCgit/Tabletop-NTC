@@ -6,19 +6,24 @@
 
 <div class="map-container" style="display: flex; height: 90vh;">
 
-    <div class="map-main-area" style="flex-grow: 1; display: flex; flex-direction: column;">
-
-        <div class="map-board" id="map-board" style="background-image: url('@Model.MapImagePath');" data-role="player">
-
-            @foreach (var token in Model.Tokens.Where(t => t.Piece?.PieceType?.Name != "Map" && (t.X != 0 || t.Y != 0)))
-            {
-                <img src="@(string.IsNullOrEmpty(token.Piece?.ImagePath) ? "/images/default.png" : token.Piece.ImagePath)"
-                     class="map-piece draggable-token"
-                     style="position: absolute; left: @(token.X)px; top: @(token.Y)px;"
-                     id="token-placed-@token.Id"
-                     data-tokenid="@token.Id"
-                     onerror="this.onerror=null; this.src='/images/default.png';" />
-            }
+    <div class="map-main-area">
+        <div id="vangMapDiv">
+            <div class="map-board"
+                 id="map-board"
+                 style="background-image: url('@Model.MapImagePath');
+                aspect-ratio: 1 /1;"
+                 data-role="player">
+                @foreach (var token in Model.Tokens.Where(t => t.Piece?.PieceType?.Name != "Map" && (t.X != 0 || t.Y != 0)))
+                {
+                    <div class="vangtokendiv" id="token-placed-@token.Id" style="position: absolute; left: @(token.X)px; top: @(token.Y)px; z-index: @(token.ZIndex);">
+                        <img src="@(string.IsNullOrEmpty(token.Piece?.ImagePath) ? "/images/default.png" : token.Piece.ImagePath)"
+                             class="draggable-token"
+                             style="height: 50px; width: 50px;"
+                             data-tokenid="@token.Id"
+                             onerror="this.onerror=null; this.src='/images/default.png';" />
+                    </div>
+                }
+            </div>
         </div>
     </div>
 </div>

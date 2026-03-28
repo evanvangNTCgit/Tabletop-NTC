@@ -50,15 +50,14 @@
             </a>
         </div>
 
+        <!-- https://stackoverflow.com/questions/26438388/maintain-div-aspect-ratio-according-to-height -->
         <div id="vangMapDiv">
             <div class="map-board"
                  id="map-board"
                  style="background-image: url('@Model.MapImagePath');
-                background-size: 1500px 1000px;
                 background-repeat: no-repeat;
                 background-position: center;
-                width: 1500px;
-                height: 1000px;"
+                aspect-ratio: 1 /1;"
                  data-role="dm">
             @foreach (var token in Model.Tokens.Where(t => t.Piece?.PieceType?.Name != "Map" && (t.X != 0 || t.Y != 0)))
             {

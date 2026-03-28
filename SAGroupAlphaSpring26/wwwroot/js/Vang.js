@@ -142,7 +142,7 @@ if (!isPlayerView) {
         stop: (event, ui) => {
         },
         drag: (event, ui) => {
-            console.log('drag');
+            console.log(event);
             // Get the Token x and y; 
             const X = event.originalEvent.target.x;
             const Y = event.originalEvent.target.y;
