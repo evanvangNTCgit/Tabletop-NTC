@@ -4,12 +4,12 @@
     ViewData["Title"] = string.IsNullOrEmpty(Model.Name) ? $"Session {Model.Id}" : Model.Name;
 }
 
-<div b-pbe4b1c5lp class="main-content">
+<div class="main-content">
     <form asp-action="Edit" asp-controller="Session" method="post">
 
         <input type="hidden" asp-for="Id" />
 
-        <div class="text-center mb-5">
+        <div class="text-center mb-5 header">
             <h1 class="mb-0">Session Details</h1>
             <hr class="w-25 mx-auto" />
 
@@ -18,51 +18,58 @@
                    placeholder="Session @Model.Id" />
         </div>
 
-        <div class="card-body">
-            <div class="text-center mb-5">
-                <p class="lead">Session Notes</p>
-                <div class="p-3 border rounded bg-light">
-                    <textarea asp-for="Notes"
-                              class="form-control"
-                              placeholder="Write Notes Here..."
-                              style="min-height: 150px; border: none; background: transparent;"></textarea>
+        <div class="card">
+            <div class="card-body">
+                <div class="text-center mb-5">
+                    <p class="lead">Session Notes</p>
+                    <div class="session-notes">
+                        <textarea asp-for="Notes"
+                                  class="form-control"
+                                  placeholder="Write Notes Here..."
+                                  style="min-height: 150px; border: none; background: transparent;"></textarea>
+                    </div>
+                </div>
+
+                <div class="text-center mb-5">
+                    <h5>Current Map Preview</h5>
+                    <div class="card text-center d-flex align-items-center justify-content-center p-3" style="height: 200px; width: 100%;">
+                        <p>Map Preview Area</p>
+                    </div>
+                </div>
+
+                <div class="row justify-content-center g-3 col-8 mx-auto">
+                    <div class="col-md-6">
+                        <button type="submit" class="button-primary btn-lg w-100 shadow-sm">
+                            <i class="bi bi-save me-2"></i> Save Changes
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <a asp-controller="Map"
+                               asp-action="MapTest"
+                               asp-route-id="@Model.Id"
+                               class="button-success btn-lg w-100 shadow-sm">
+                            Launch Session
+                        </a>
+                    </div>
                 </div>
             </div>
-
-            <div class="text-center mb-5">
-                <h5>Current Map Preview</h5>
-                <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px; width: 100%;">
-                    <p>Map Preview Area</p>
-                </div>
-            </div>
-
-            <div class="row justify-content-center g-3 col-8 mx-auto">
+        </form>
+    
+        <div class="card-footer">
+            <div class="row justify-content-center">
                 <div class="col-md-6">
-                    <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm">
-                        <i class="bi bi-save me-2"></i> Save Changes
-                    </button>
-                </div>
-                <div class="col-md-6">
-                    <a asp-controller="Map"
-                       asp-action="MapTest"
-                       asp-route-id="@Model.Id"
-                       class="btn btn-success btn-lg w-100 shadow-sm">
-                        Launch Session
-                    </a>
+                    <form asp-action="Delete" asp-controller="Session" asp-route-id="@Model.Id" method="post">
+                        <button type="submit"
+                                class="button-danger btn-sm w-100 shadow-sm"
+                                onclick="return confirm('Are you sure you want to delete this session? This action can be undone.');">
+                            <i class="bi bi-trash me-2"></i> Delete Session
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-    </form> <div class="row justify-content-center mt-4 col-8 mx-auto">
-        <div class="col-md-12">
-            <form asp-action="Delete" asp-controller="Session" asp-route-id="@Model.Id" method="post">
-                <button type="submit"
-                        class="btn btn-outline-danger btn-sm w-100 shadow-sm"
-                        onclick="return confirm('Are you sure you want to delete this session? This action can be undone.');">
-                    <i class="bi bi-trash me-2"></i> Delete Session
-                </button>
-            </form>
-        </div>
-</div>
+
+    </div>
 
     <div class="card-footer text-muted text-center mt-4">
         Last Updated: @Model.LastUpdated.ToString("f")

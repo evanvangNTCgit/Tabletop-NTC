@@ -18,7 +18,7 @@ body {
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    background-attachment: fixed; 
+    background-attachment: fixed;
     font-family: 'DragonHunter', sans-serif;
     color: #111827; /* dark text for tan paper bg */
     letter-spacing: 2px;
@@ -95,28 +95,58 @@ h1, h2, h3 {
     color: #111827;
 }
 
+    .card .list-group-item.list-group-item-action {
+        background: transparent;
+        border: transparent;
+    }
+
 /* =========================================
    BUTTONS (Stronger Contrast)
 ========================================= */
 
 .button-primary {
-    background-color: #D4AF37; /* gold */
-    color: #000000;
+    background: linear-gradient(180deg, #d4af37, #b8962e);
+    border: 1px solid #f5d76e;
+    color: #1a120d;
     padding: 0.65rem 1.4rem;
     border-radius: 6px;
-    border: none;
     cursor: pointer;
-    font-weight: 400;
-    transition: 0.2s ease;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 4px rgba(212, 175, 55, 0.3);
 }
 
-    .button-primary:hover {
-        background-color: #B8860B;
-    }
+.button-primary:hover {
+    background: linear-gradient(180deg, #f5d76e, #d4af37);
+    color: #000;
+    box-shadow: 0 0 8px rgba(212, 175, 55, 0.7), 0 0 16px rgba(212, 175, 55, 0.4);
+    transform: translateY(-1px);
+}
 
 .button-success {
-    background-color: #D4AF37; /* gold */
-    color: #000000;
+    background: linear-gradient(180deg, #d4af37, #b8962e);
+    border: 1px solid #f5d76e;
+    color: #1a120d;
+    padding: 0.55rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 4px rgba(212, 175, 55, 0.3);
+}
+
+.button-success:hover {
+    background: linear-gradient(180deg, #f5d76e, #d4af37);
+    color: #000;
+    box-shadow: 0 0 8px rgba(212, 175, 55, 0.7), 0 0 16px rgba(212, 175, 55, 0.4);
+    transform: translateY(-1px);
+}
+
+.button-danger {
+    background-color: #8B0000;
+    color: #ffffff;
     padding: 0.55rem 1rem;
     border-radius: 6px;
     border: none;
@@ -124,8 +154,8 @@ h1, h2, h3 {
     font-weight: 600;
 }
 
-    .button-success:hover {
-        background-color: #B8860B;
+    .button-danger:hover {
+        background-color: #660000;
     }
 
 .button-disabled {
@@ -252,9 +282,9 @@ h1, h2, h3 {
     cursor: grab;
 }
 
-.map-board[draggable] {
-    cursor: grabbing !important;
-}
+    .map-board[draggable] {
+        cursor: grabbing !important;
+    }
 
 /* Piece Bar */
 .piece-bar {
@@ -272,10 +302,10 @@ h1, h2, h3 {
     box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
-.sidebar-piece:hover {
-    border-color: #D4AF37;
-    transform: scale(1.1);
-}
+    .sidebar-piece:hover {
+        border-color: #D4AF37;
+        transform: scale(1.1);
+    }
 
 .draggable-token {
     border: 2px solid #D4AF37;
@@ -283,15 +313,15 @@ h1, h2, h3 {
     user-select: none;
 }
 
-.draggable-token:hover {
-    border-color: #FFD700;
-    transform: scale(1.05);
-}
+    .draggable-token:hover {
+        border-color: #FFD700;
+        transform: scale(1.05);
+    }
 
-.draggable-token:active,
-.map-board.drag-over {
-    cursor: grabbing !important;
-}
+    .draggable-token:active,
+    .map-board.drag-over {
+        cursor: grabbing !important;
+    }
 
 .map-piece:active,
 .map-piece[draggable="true"]:active {
@@ -302,13 +332,13 @@ h1, h2, h3 {
 
 /* Drag ghost styling (browser default override) */
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
-  .map-piece:-webkit-drag {
-    opacity: 0.8;
-    border: 2px solid #D4AF37;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.5);
-    transform: rotate(5deg);
-  }
+    .map-piece:-webkit-drag {
+        opacity: 0.8;
+        border: 2px solid #D4AF37;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(212, 175, 55, 0.5);
+        transform: rotate(5deg);
+    }
 }
 
 .map-piece {
@@ -366,9 +396,9 @@ h1, h2, h3 {
     font-weight: 500;
 }
 
-.zoom-btn:hover {
-    background: #D2B48C;
-}
+    .zoom-btn:hover {
+        background: #D2B48C;
+    }
 
 #zoom-level {
     color: #111827 !important;
@@ -385,14 +415,14 @@ h1, h2, h3 {
 
 /* Add piece css*/
 
-.add-piece-image{
+.add-piece-image {
     height: 200px;
     width: 200px;
     margin: 10px;
     background-color: #000000;
 }
 
-.add-piece-div-image{
+.add-piece-div-image {
     display: inline-flex;
     margin: 10px;
     background-color: #8B0000;
@@ -441,9 +471,9 @@ h1, h2, h3 {
     padding-bottom: 1rem;
 }
 
-.sidebar .brand:hover {
-    color: #FFD700;
-}
+    .sidebar .brand:hover {
+        color: #FFD700;
+    }
 
 /* Navigation list */
 .nav-list {
@@ -452,9 +482,9 @@ h1, h2, h3 {
     margin: 0;
 }
 
-.nav-list li {
-    margin-bottom: 0.5rem;
-}
+    .nav-list li {
+        margin-bottom: 0.5rem;
+    }
 
 /* Navigation button styling */
 .nav-button {
@@ -475,47 +505,47 @@ h1, h2, h3 {
     font-family: inherit;
 }
 
-.nav-button:hover {
-    background-color: #D4AF37;
-    border-color: #D4AF37;
-    color: #000000;
-    transform: translateX(4px);
-    box-shadow: 0 4px 6px rgba(212, 175, 55, 0.4);
-    text-decoration: none;
-}
+    .nav-button:hover {
+        background-color: #D4AF37;
+        border-color: #D4AF37;
+        color: #000000;
+        transform: translateX(4px);
+        box-shadow: 0 4px 6px rgba(212, 175, 55, 0.4);
+        text-decoration: none;
+    }
 
-.nav-button.active {
-    background-color: #D4AF37;
-    border-color: #D4AF37;
-    color: #000000;
-}
+    .nav-button.active {
+        background-color: #D4AF37;
+        border-color: #D4AF37;
+        color: #000000;
+    }
 
-/* Sign in button - green */
-.nav-button.signin {
-    background-color: #D4AF37;
-    border-color: #D4AF37;
-    color: #000000;
-    text-align: center;
-}
+    /* Sign in button - green */
+    .nav-button.signin {
+        background-color: #D4AF37;
+        border-color: #D4AF37;
+        color: #000000;
+        text-align: center;
+    }
 
-.nav-button.signin:hover {
-    background-color: #B8860B;
-    border-color: #B8860B;
-    transform: translateX(4px);
-}
+        .nav-button.signin:hover {
+            background-color: #B8860B;
+            border-color: #B8860B;
+            transform: translateX(4px);
+        }
 
-/* Logout button - red */
-.nav-button.logout {
-    background-color: #8B0000;
-    border-color: #8B0000;
-    color: #ffffff;
-}
+    /* Logout button - red */
+    .nav-button.logout {
+        background-color: #8B0000;
+        border-color: #8B0000;
+        color: #ffffff;
+    }
 
-.nav-button.logout:hover {
-    background-color: #660000;
-    border-color: #660000;
-    transform: translateX(4px);
-}
+        .nav-button.logout:hover {
+            background-color: #660000;
+            border-color: #660000;
+            transform: translateX(4px);
+        }
 
 /* Admin dropdown */
 .admin-section {
@@ -541,17 +571,17 @@ h1, h2, h3 {
     cursor: pointer;
 }
 
-.admin-toggle:hover {
-    background-color: #660000;
-    border-color: #660000;
-    transform: translateX(4px);
-    text-decoration: none;
-}
+    .admin-toggle:hover {
+        background-color: #660000;
+        border-color: #660000;
+        transform: translateX(4px);
+        text-decoration: none;
+    }
 
-/* Hide Bootstrap's default caret on admin-toggle */
-.admin-toggle::after {
-    display: none !important;
-}
+    /* Hide Bootstrap's default caret on admin-toggle */
+    .admin-toggle::after {
+        display: none !important;
+    }
 
 .admin-menu {
     padding-left: 0.5rem;
@@ -559,18 +589,18 @@ h1, h2, h3 {
     list-style: none;
 }
 
-.admin-menu .nav-button {
-    font-size: 0.9rem;
-    padding: 0.5rem 0.75rem;
-    margin-bottom: 0.25rem;
-    background-color: #4a4a4a;
-    border-color: #696969;
-}
+    .admin-menu .nav-button {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 0.25rem;
+        background-color: #4a4a4a;
+        border-color: #696969;
+    }
 
-.admin-menu .nav-button:hover {
-    background-color: #D4AF37;
-    border-color: #D4AF37;
-}
+        .admin-menu .nav-button:hover {
+            background-color: #D4AF37;
+            border-color: #D4AF37;
+        }
 
 /* User greeting */
 .user-greeting {
@@ -598,10 +628,10 @@ h1, h2, h3 {
     transition: all 0.2s ease;
 }
 
-.dropdown-menu-dark .dropdown-item:hover {
-    background-color: #D4AF37;
-    color: #000000;
-}
+    .dropdown-menu-dark .dropdown-item:hover {
+        background-color: #D4AF37;
+        color: #000000;
+    }
 
 /* Dropdown arrow flip animation - Bootstrap Icons caret */
 .admin-toggle .bi-caret-down-fill {
@@ -614,11 +644,11 @@ h1, h2, h3 {
 }
 
 /* Welcome Section */
-#WelcomeSection{
+#WelcomeSection {
     background-image: url("/images/dungeons_and_dragons_group_commission_art_by_envakenkaqti_de0nvqd-fullview.png");
     background-position: center;
-    background-size:cover;
-    background-position-y:10%;
+    background-size: cover;
+    background-position-y: 10%;
     position: relative;
     height: 75vh;
 }
@@ -645,12 +675,13 @@ h1, h2, h3 {
     color: #111827;
 }
 
-.dmOpacityToggle{
-    opacity:0.5;
+.dmOpacityToggle {
+    opacity: 0.5;
 }
-.dmOpacityToggle::after {
+
+    .dmOpacityToggle::after {
         content: "Invis.";
-}
+    }
 
 #draggable {
     width: 150px;
@@ -662,3 +693,75 @@ h1, h2, h3 {
     display: none;
 }
 
+/* =========================================
+   Advanced Options on Index Page
+========================================= */
+/* Wrapper */
+.advanced-wrapper {
+    display: inline-block;
+}
+
+/* Pill button */
+.advanced-pill {
+    background: linear-gradient(180deg, #3b2a1f, #2a1c14);
+    border: 1px solid #6b4a2b;
+    color: #e6d3a3;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .advanced-pill:hover {
+        border-color: #d4af37;
+        box-shadow: 0 0 6px rgba(212, 175, 55, 0.5);
+        color: #fff8dc;
+    }
+
+/* Dropdown menu */
+.advanced-menu {
+    display: none;
+    margin-top: 0.5rem;
+}
+
+/* Show when open */
+.advanced-wrapper.open .advanced-menu {
+    display: block;
+}
+
+/* Smaller pill-style button inside */
+.small-pill {
+    display: inline-block;
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+/* Restore pill - always gold */
+.restore-pill {
+    display: inline-block;
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    text-decoration: none;
+    background: linear-gradient(180deg, #d4af37, #b8962e);
+    border: 1px solid #f5d76e;
+    color: #1a120d; /* dark text for contrast */
+
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+}
+
+/* Glow on hover */
+.restore-pill:hover {
+    background: linear-gradient(180deg, #f5d76e, #d4af37);
+    color: #000;
+    box-shadow: 0 0 8px rgba(212, 175, 55, 0.7), 0 0 16px rgba(212, 175, 55, 0.4);
+    transform: translateY(-1px);
+}
+.restore-pill {
+    box-shadow: 0 0 4px rgba(212, 175, 55, 0.3);
+}
