@@ -1,6 +1,10 @@
 ﻿import { repositionToken, toggleTokenInvisibility } from "../js/PlayerMapFunctions.js";
 
 const mapBoard = document.getElementById('map-board');
+mapBoard.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+});
+
 let isPlayerView = false;
 
 // Instantiates the broadcaster object for executing functions on the playerview side.
