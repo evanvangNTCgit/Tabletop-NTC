@@ -167,25 +167,14 @@ if (!isPlayerView) {
             event.target.style.left = `${leftPerc}%`;
         },
         drag: (event, ui) => {
-            // Get the Token x and y; 
-            const X = event.originalEvent.target.x;
-            const Y = event.originalEvent.target.y;
+            const $board = $('#map-board');
 
-            // Then the ID: 
-            const tokenId = event.originalEvent.target.id;
-
-            // Send over the img source:
-            const imgSrc = event.originalEvent.target.src;
-            // console.log(event);
-
-            const topPerc = $(`#${event.target.id}`).position().top / $(`#map-board`).height() * 100;
-            const leftPerc = $(`#${event.target.id}`).position().left / $(`#map-board`).width() * 100;
+            const topPerc = (ui.position.top / $board.height()) * 100;
+            const leftPerc = (ui.position.left / $board.width()) * 100;
 
             bc.postMessage({
-                tokenId: `${tokenId}`,
-                tokenImgSrc: `${imgSrc}`,
-                tokenX: X,
-                tokenY: Y,
+                tokenId: event.target.id,
+                tokenImgSrc: event.target.src,
                 tokenTopPerc: topPerc,
                 tokenLeftPerc: leftPerc,
                 action: 'tokenMove',
