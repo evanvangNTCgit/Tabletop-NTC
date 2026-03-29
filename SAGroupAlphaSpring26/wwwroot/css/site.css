@@ -261,7 +261,7 @@ h1, h2, h3 {
     display: block;
 }
 
-.map-board {
+/*.map-board {
     flex-grow: 1;
     position: relative;
     background-color: #000000;
@@ -280,7 +280,7 @@ h1, h2, h3 {
     transform: scale(var(--zoom)) translate(var(--pan-x, 0px), var(--pan-y, 0px));
     transform-origin: 0 0;
     cursor: grab;
-}
+}*/
 
     .map-board[draggable] {
         cursor: grabbing !important;
@@ -315,7 +315,6 @@ h1, h2, h3 {
 
     .draggable-token:hover {
         border-color: #FFD700;
-        transform: scale(1.05);
     }
 
     .draggable-token:active,
@@ -359,12 +358,12 @@ h1, h2, h3 {
     height: 90vh;
 }
 
-.map-main-area {
+/*.map-main-area {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
     height: 100vh;
-}
+}*/
 
 .map-toolbar {
     padding: 10px;

@@ -132,8 +132,10 @@ if (!isPlayerView) {
             tokenImg.dataset.tokenid = data.id;
             tokenImg.draggable = true;
             tokenImg.style.position = 'absolute';
-            tokenImg.style.left = `100px`;
-            tokenImg.style.top = `100px`;
+            tokenImg.style.left = `25%`;
+            tokenImg.style.top = `25%`;
+            tokenImg.style.width = `5%`;
+            tokenImg.style.height = `5%`;
             tokenImg.style.zIndex = 99;
             mapBoard.appendChild(tokenImg);
 
@@ -153,9 +155,18 @@ if (!isPlayerView) {
             console.log('Token Created:', Date.now());
         },
         stop: (event, ui) => {
+            // JQuery-ui sets the left and top manually with PX
+            // So I need to get the percentage.
+            // The percentage being based off of the mapboard since that is relattive.
+            // https://stackoverflow.com/questions/5230425/getting-percent-css-position-with-jquery
+            const topPerc = $(`#${event.target.id}`).position().top / $(`#map-board`).height() * 100;
+            const leftPerc = $(`#${event.target.id}`).position().left / $(`#map-board`).width() * 100;
+
+
+            event.target.style.top = `${topPerc}%`;
+            event.target.style.left = `${leftPerc}%`;
         },
         drag: (event, ui) => {
-            console.log(event);
             // Get the Token x and y; 
             const X = event.originalEvent.target.x;
             const Y = event.originalEvent.target.y;
@@ -167,11 +178,16 @@ if (!isPlayerView) {
             const imgSrc = event.originalEvent.target.src;
             // console.log(event);
 
+            const topPerc = $(`#${event.target.id}`).position().top / $(`#map-board`).height() * 100;
+            const leftPerc = $(`#${event.target.id}`).position().left / $(`#map-board`).width() * 100;
+
             bc.postMessage({
                 tokenId: `${tokenId}`,
                 tokenImgSrc: `${imgSrc}`,
                 tokenX: X,
                 tokenY: Y,
+                tokenTopPerc: topPerc,
+                tokenLeftPerc: leftPerc,
                 action: 'tokenMove',
             });
         },

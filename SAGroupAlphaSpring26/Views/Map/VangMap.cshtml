@@ -1,4 +1,42 @@
 ﻿@model SAGroupAlphaSpring26.ViewModels.MapScreenViewModel
+
+<div class="map-toolbar">
+    <div class="zoom-controls">
+        <button id="zoom-in" class="zoom-btn button-primary">+</button>
+        <button id="zoom-out" class="zoom-btn">-</button>
+        <span id="zoom-level" style="font-size: 0.9rem; margin: 0 10px;">1x</span>
+        <button id="zoom-reset" class="zoom-btn button-primary">1:1</button>
+    </div>
+    <button id="btn-save" class="button-primary">Save Positions</button>
+    <a asp-controller="Home" asp-action="Index" class="button-primary" target="_blank">Cancel</a>
+    <a asp-controller="Map"
+           asp-action="Playerview"
+           target="_blank"
+           asp-route-id="@Model.CurrentSession.Id"
+           class="btn btn-success btn-lg w-100 shadow-sm">
+        Player View
+    </a>
+</div>
+
+    <!-- https://stackoverflow.com/questions/26438388/maintain-div-aspect-ratio-according-to-height -->
+        <div class="map-container"
+             id="map-board"
+             style="position: relative; height:100%; justify-self: center; max-height: 70vh;"
+             data-role="dm">
+             <img src="@Model.MapImagePath" style="width: 100%; height: auto; display: block;"/>
+
+            @foreach (var token in Model.Tokens.Where(t => t.Piece?.PieceType?.Name != "Map" && (t.X != 0 || t.Y != 0)))
+            {
+                    <img src="@(string.IsNullOrEmpty(token.Piece?.ImagePath) ? "/images/default.png" : token.Piece.ImagePath)"
+                         class="draggable-token"
+                         style="width: 5%; height: 5%; position: absolute; top: 10%; left: 10%;"
+                         id="token-placed-@token.Id"
+                         data-tokenid="@token.Id"
+                         data-invisiblity="@token.Visibility"
+                         onerror="this.onerror=null; this.src='/images/default.png';" />
+            }
+        </div>
+
 <div class="map-container">
 
     <div class="piece-bar">
@@ -29,51 +67,6 @@
             }
         </div>
     </div>
-
-    <div class="map-main-area">
-
-        <div class="map-toolbar">
-            <div class="zoom-controls">
-                <button id="zoom-in" class="zoom-btn button-primary">+</button>
-                <button id="zoom-out" class="zoom-btn">-</button>
-                <span id="zoom-level" style="font-size: 0.9rem; margin: 0 10px;">1x</span>
-                <button id="zoom-reset" class="zoom-btn button-primary">1:1</button>
-            </div>
-            <button id="btn-save" class="button-primary">Save Positions</button>
-            <a asp-controller="Home" asp-action="Index" class="button-primary" target="_blank">Cancel</a>
-            <a asp-controller="Map"
-                   asp-action="Playerview"
-                   target="_blank"
-                   asp-route-id="@Model.CurrentSession.Id"
-                   class="btn btn-success btn-lg w-100 shadow-sm">
-                Player View
-            </a>
-        </div>
-
-        <!-- https://stackoverflow.com/questions/26438388/maintain-div-aspect-ratio-according-to-height -->
-        <div id="vangMapDiv">
-            <div class="map-board"
-                 id="map-board"
-                 style="background-image: url('@Model.MapImagePath');
-                background-repeat: no-repeat;
-                background-position: center;
-                aspect-ratio: 1 /1;"
-                 data-role="dm">
-            @foreach (var token in Model.Tokens.Where(t => t.Piece?.PieceType?.Name != "Map" && (t.X != 0 || t.Y != 0)))
-            {
-                    <div class="vangtokendiv" style="position: absolute; left: @(token.X)px; top: @(token.Y)px; z-index: @(token.ZIndex);">
-                <img src="@(string.IsNullOrEmpty(token.Piece?.ImagePath) ? "/images/default.png" : token.Piece.ImagePath)"
-                     class="draggable-token"
-                             style="height: 50px; width: 50px;"
-                     id="token-placed-@token.Id"
-                     data-tokenid="@token.Id"
-                     data-invisiblity = "@token.Visibility"
-                     onerror="this.onerror=null; this.src='/images/default.png';" />
-                </div>
-            }
-        </div>
-    </div>
-</div>
 </div>
 
 <!-- Scripts start here -->
