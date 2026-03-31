@@ -74,8 +74,8 @@
     <script>
         window.sessionId = @Json.Serialize(Model.CurrentSession.Id);
     </script>
-    <script src="~/js/PlayerMapFunctions.js" type="module"></script>
-    <script src="~/js/Vang.js" type="module"></script>
+    <!--Replaced with map.js module-->
+    <script type="module" src="~/js/map.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const footer = document.getElementById('Footer');

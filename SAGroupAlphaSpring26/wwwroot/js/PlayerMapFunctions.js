@@ -1,24 +1,38 @@
-﻿/**
- * Takes the broadcast data and positions tokens on player map accordingly.
+﻿// PlayerMapFunctions.js
+
+/**
+ * Takes the broadcast data and positions tokens on player map accordingly. 
+ * Additionally, if the token doesn't exist it now creates it.
  * @param {any} broadCastData the data received from broadcast channel post.
  */
 export const repositionToken = (broadCastData) => {
-    const token = document.getElementById(broadCastData.tokenId);
+    let token = document.getElementById(broadCastData.tokenId);
+
+    // If no existing token -> Create player view token.
+    if (!token && broadCastData.tokenImgSrc) {
+        token = document.createElement('img');
+        token.id = broadCastData.tokenId;
+        token.src = broadCastData.tokenImgSrc;
+        token.classList.add('draggable-token');
+        token.style.position = 'absolute';
+        token.style.zIndex = 99;
+        document.getElementById('map-board').appendChild(token);
+    }
+
     if (token) {
-        // Force percentage-based positioning
+        // % based positioning.
         token.style.left = `${broadCastData.tokenLeftPerc}%`;
         token.style.top = `${broadCastData.tokenTopPerc}%`;
-
-        // Ensure width/height stays consistent relative to the map
         token.style.width = '5%';
         token.style.height = 'auto';
-    } else {
-        console.log("that token not found.");
     }
 };
 
+// Toggles visibility of the tokens.
 export const toggleTokenInvisibility = (broadCastData) => {
-    console.log(broadCastData);
     const tokenGettingToggled = document.getElementById(broadCastData.tokenId);
-    tokenGettingToggled.classList.toggle('hidden');
-}
+    if (tokenGettingToggled) {
+        // toggles the hidden css.
+        tokenGettingToggled.classList.toggle('hidden');
+    }
+};

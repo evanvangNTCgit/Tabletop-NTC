@@ -9,9 +9,17 @@
 
   <ItemGroup>
     <Compile Remove="publish\**" />
+    <Compile Remove="wwwroot\fonts\**" />
     <Content Remove="publish\**" />
+    <Content Remove="wwwroot\fonts\**" />
     <EmbeddedResource Remove="publish\**" />
+    <EmbeddedResource Remove="wwwroot\fonts\**" />
     <None Remove="publish\**" />
+    <None Remove="wwwroot\fonts\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="wwwroot\fonts\DragonHunter.otf" />
   </ItemGroup>
 
   <ItemGroup>

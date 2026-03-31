@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapBoard = document.getElementById('map-board');
     const sessionId = window.sessionId;
 
-<<<<<<< HEAD
     // Broadcast channel logic for player view
     const bc = new BroadcastChannel('map_channel');
 
@@ -40,8 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
     bc.postMessage(sessionId);
 
 
-=======
->>>>>>> 44fd3227ec07d0e1c9243571babfde02dc7c066e
     if (!mapBoard) {
         console.error('Map board not found!');
         return;

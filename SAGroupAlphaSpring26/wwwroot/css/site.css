@@ -347,16 +347,12 @@ h1, h2, h3 {
     margin-bottom: 0.75rem;
     cursor: grab;
     transition: transform 0.15s ease;
+    position: relative;
 }
 
     .map-piece:hover {
         transform: scale(1.08);
     }
-
-.map-container {
-    display: flex;
-    height: 90vh;
-}
 
 /*.map-main-area {
     flex-grow: 1;
@@ -650,10 +646,6 @@ h1, h2, h3 {
     background-position-y: 10%;
     position: relative;
     height: 75vh;
-}
-
-.map-piece {
-    position: relative;
 }
 
 /* creates a little eye next to the tokens on the map*/
