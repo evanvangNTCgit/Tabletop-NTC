@@ -1,12 +1,12 @@
 ﻿@model SAGroupAlphaSpring26.ViewModels.MapScreenViewModel
 
 <div class="map-toolbar">
-    <div class="zoom-controls">
+    @* <div class="zoom-controls">
         <button id="zoom-in" class="zoom-btn button-primary">+</button>
         <button id="zoom-out" class="zoom-btn">-</button>
         <span id="zoom-level" style="font-size: 0.9rem; margin: 0 10px;">1x</span>
         <button id="zoom-reset" class="zoom-btn button-primary">1:1</button>
-    </div>
+    </div> *@
     <button id="btn-save" class="button-primary">Save Positions</button>
     <a asp-controller="Home" asp-action="Index" class="button-primary" target="_blank">Cancel</a>
     <a asp-controller="Map"
@@ -18,31 +18,12 @@
     </a>
 </div>
 
-    <!-- https://stackoverflow.com/questions/26438388/maintain-div-aspect-ratio-according-to-height -->
-        <div class="map-container"
-             id="map-board"
-             style="position: relative; height:100%; justify-self: center; max-height: 70vh;"
-             data-role="dm">
-             <img src="@Model.MapImagePath" style="width: 100%; height: auto; display: block;"/>
+@* I created a wrapper div for the map and piece bar. *@
 
-            @foreach (var token in Model.Tokens.Where(t => t.Piece?.PieceType?.Name != "Map" && (t.X != 0 || t.Y != 0)))
-            {
-                    <img src="@(string.IsNullOrEmpty(token.Piece?.ImagePath) ? "/images/default.png" : token.Piece.ImagePath)"
-                         class="draggable-token"
-                         style="width: 5%; height: 5%; position: absolute; top: 10%; left: 10%;"
-                         id="token-placed-@token.Id"
-                         data-tokenid="@token.Id"
-                         data-invisiblity="@token.Visibility"
-                         onerror="this.onerror=null; this.src='/images/default.png';" />
-            }
-        </div>
+<div class="map-layout-wrapper" style="display: flex; flex-direction: row; height: 90vh; overflow: hidden;">
 
-<div class="map-container">
-
+    @* I moved the piece bar before the map board. *@
     <div class="piece-bar">
-        <div id="dialog" title="Add a piece" class="hidden">
-            <p>Would you like to add a new piece to the board?</p>
-        </div>
         <h4 style="color: white; padding: 10px; font-size: 0.9rem;">Collection</h4>
         <div class="token-list">
             @foreach (var piece in Model.PlayablePieces)
@@ -67,8 +48,33 @@
             }
         </div>
     </div>
-</div>
 
+    <!-- https://stackoverflow.com/questions/26438388/maintain-div-aspect-ratio-according-to-height -->
+        <div class="map-container"
+             id="map-board"
+             style="position: relative; height:100%; justify-self: center; max-height: 70vh;"
+             data-role="dm">
+
+             <img src="@Model.MapImagePath" style="width: 100%; height: auto; display: block;"/>
+
+            @foreach (var token in Model.Tokens.Where(t => t.Piece?.PieceType?.Name != "Map" && (t.X != 0 || t.Y != 0)))
+            {
+                    <img src="@(string.IsNullOrEmpty(token.Piece?.ImagePath) ? "/images/default.png" : token.Piece.ImagePath)"
+                         class="draggable-token"
+                         style="width: 5%; height: 5%; position: absolute; top: 10%; left: 10%;"
+                         id="token-placed-@token.Id"
+                         data-tokenid="@token.Id"
+                         data-invisiblity="@token.Visibility"
+                         onerror="this.onerror=null; this.src='/images/default.png';" />
+            }
+        </div>
+
+
+
+    
+
+
+</div>
 <!-- Scripts start here -->
 @section Scripts {
     <script>

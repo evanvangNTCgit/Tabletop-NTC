@@ -247,13 +247,11 @@ h1, h2, h3 {
 ========================================= */
 
 .map-container {
-    position: relative;
-    height: 100vh;
     display: flex;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid #4a4a4a;
-    background-color: #0a0a0a;
+    flex-direction: row;
+    align-items: stretch;
+    height: 100vh;
+    width: 100%;
 }
 
 .map-image {
@@ -282,6 +280,11 @@ h1, h2, h3 {
     cursor: grab;
 }*/
 
+#map-board {
+    position: relative;
+    flex-grow: 1;
+    overflow: hidden;
+}
     .map-board[draggable] {
         cursor: grabbing !important;
     }
@@ -311,6 +314,8 @@ h1, h2, h3 {
     border: 2px solid #D4AF37;
     box-shadow: 0 4px 8px rgba(0,0,0,0.5);
     user-select: none;
+    width:5%;
+    height:5%;
 }
 
     .draggable-token:hover {
