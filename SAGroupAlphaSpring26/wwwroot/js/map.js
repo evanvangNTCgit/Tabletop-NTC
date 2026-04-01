@@ -2,7 +2,7 @@
  * map.js
  * Now imports from PlayerMapFunctions.js for player view related logic, and MapAPI.js for tracking token data.
  */
-import { repositionToken, toggleTokenInvisibility } from "./PlayerMapFunctions.js";
+import { repositionToken, toggleTokenInvisibility, syncBoard } from "./PlayerMapFunctions.js";
 import { saveTokenPositions } from "./MapApi.js";
 
 // Stores session ID, gets from Razor view.
@@ -37,10 +37,23 @@ if (playerView === 'player') {
         console.log("Player View received broadcast:", e.data);
         switch (e.data.action) {
             case ("tokenMove"):
+                // Repositions the token on the player view according to the data sent from the DM view. 
+                // Currently runs on 'drag' for live movement, but can be moved to 'stop' if it's too intensive.
                 repositionToken(e.data);
                 break;
             case ("toggleIn"):
+                // Toggles the invisibility of a token on the player view. Currently bugged and doesn't respect the visibility bool.
                 toggleTokenInvisibility(e.data);
+                break;
+            case ("syncAll"):
+                // Sends ALL local token data to the player view for syncing.
+                syncBoard(e.data.allTokens);
+                break;
+            case ("reload"):
+                // Reloads the player view, used after saving to prevent token duplication.
+                console.log("DM Saved, reloading player view page...");
+                window.location.reload();
+
                 break;
         }
     });
@@ -50,41 +63,23 @@ if (playerView === 'player') {
         console.log("Asking DM for unsaved token positions...");
         bc.postMessage({ action: 'requestSync' });
     }, 500);
-
 }
-
 
 
 // DM VIEW LOGIC
 if (!isPlayerView) {
-
     // switched to a bc .addEventListener because I think they are being overwritten...
     // DM VIEW BROADCAST LOGIC - Listens for the player view to 'requestSync', then sends the local tokenData to update the player view.
     bc.addEventListener('message', (e) => {
         if (e.data.action === 'requestSync') {
-            console.log(`DM HEARD REQUEST! Sending ${Object.keys(tokenData).length} tokens...`);
+            console.log(`DM View received 'requestSync' Sending ${Object.keys(tokenData).length} tokens...`);
 
-            Object.entries(tokenData).forEach(([htmlId, token]) => {
-                bc.postMessage({
-                    tokenId: htmlId,
-                    tokenImgSrc: token.src,
-                    tokenLeftPerc: token.x,
-                    tokenTopPerc: token.y,
-                    action: 'tokenMove'
-                });
-
-                if (!token.isVisible) {
-                    bc.postMessage({
-                        tokenId: htmlId,
-                        action: 'toggleIn'
-                    });
+            bc.postMessage({
+                action: 'syncAll',
+                allTokens: tokenData
+            });
                 }
             });
-        }
-    });
-
-
-
 
     document.addEventListener('DOMContentLoaded', () => {
         console.log('Hello! \nFrom -Mr. Vang (and the Clean Architecture!)');

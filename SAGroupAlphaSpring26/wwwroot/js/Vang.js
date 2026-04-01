@@ -153,6 +153,8 @@ if (!isPlayerView) {
         scroll: false,
         create: (event, ui) => {
             console.log('Token Created:', Date.now());
+            event.target.zIndex = 99;
+            event.target.Visibility = true;
         },
         stop: (event, ui) => {
             // JQuery-ui sets the left and top manually with PX
@@ -161,7 +163,6 @@ if (!isPlayerView) {
             // https://stackoverflow.com/questions/5230425/getting-percent-css-position-with-jquery
             const topPerc = $(`#${event.target.id}`).position().top / $(`#map-board`).height() * 100;
             const leftPerc = $(`#${event.target.id}`).position().left / $(`#map-board`).width() * 100;
-
 
             event.target.style.top = `${topPerc}%`;
             event.target.style.left = `${leftPerc}%`;

@@ -29,15 +29,39 @@ namespace SAGroupAlphaSpring26.Controllers
 
             foreach (var update in updates)
             {
-                var token = _context.Tokens.Find(update.Id);
-                if (token != null)
+                if (int.TryParse(update.Id, out int realTokenId))
                 {
-                    token.X = update.X;
-                    token.Y = update.Y;
-                    token.ZIndex = update.zIndex;
-                    
-                    var session = _dataService.GetSession(token.SessionId);
-                    session.LastUpdated = DateTime.Now;
+                    var token = _context.Tokens.Find(realTokenId);
+                    if (token != null)
+                    {
+                        token.X = update.X;
+                        token.Y = update.Y;
+                        token.ZIndex = update.zIndex;
+                        token.Visibility = update.Visibility;
+
+                        var session = _dataService.GetSession(token.SessionId);
+                        if (session != null) session.LastUpdated = DateTime.Now;
+                    }
+                }
+                else if(update.Id != null && update.Id.StartsWith("temp-"))
+                {
+                    var piece = _dataService.GetPiece(update.PieceId);
+                    if (piece != null)
+                    {
+                        _context.Tokens.Add(new Token
+                        {
+                            SessionId = update.SessionID,
+                            PieceID = update.PieceId,
+                            Name = piece.Name,
+                            X = update.X,
+                            Y = update.Y,
+                            ZIndex = update.zIndex,
+                            Visibility = update.Visibility
+                        });
+
+                        var session = _dataService.GetSession(update.SessionID);
+                        if (session != null) session.LastUpdated = DateTime.Now;
+                    }
                 }
             }
             _context.SaveChanges();

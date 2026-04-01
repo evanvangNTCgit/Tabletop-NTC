@@ -60,20 +60,15 @@
             @foreach (var token in Model.Tokens.Where(t => t.Piece?.PieceType?.Name != "Map"))
             {
                     <img src="@(string.IsNullOrEmpty(token.Piece?.ImagePath) ? "/images/default.png" : token.Piece.ImagePath)"
-                         class="draggable-token"
-                         style="position: absolute; left: @(token.X)%; top: @(token.Y)%;z-index: @token.ZIndex;"
+                         class="draggable-token @(!token.Visibility ? "dmOpacityToggle" : "")"
+                         style="position: absolute; left: @(token.X)%; top: @(token.Y)%; z-index: @token.ZIndex; width: 5%;"
                          id="token-placed-@token.Id"
                          data-tokenid="@token.Id"
-                         data-invisiblity="@token.Visibility"
+                         data-pieceid="@token.PieceID"
+                         data-visiblity="@token.Visibility.ToString().ToLower()"
                          onerror="this.onerror=null; this.src='/images/default.png';" />
             }
         </div>
-
-
-
-    
-
-
 </div>
 <!-- Scripts start here -->
 @section Scripts {
