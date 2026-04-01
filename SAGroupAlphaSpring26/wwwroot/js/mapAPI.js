@@ -5,34 +5,37 @@
  * @param {Object} tokenData - The local state dictionary
  * @param {number} sessionId - The current active session ID
  */
-export const saveTokenPositions = async (tokenData, sessionId) => {
+export const saveTokenPositions = (tokenData, sessionId) => {
+    // Converts the tokenData diction into an array to match model.
     const updates = Object.values(tokenData).map(token => ({
         Id: token.id.toString(),
         PieceId: parseInt(token.pieceId),
-        SessionID: sessionId,
-        X: token.x,
-        Y: token.y,
+        SessionID: parseInt(sessionId),
+        X: parseFloat(token.x),
+        Y: parseFloat(token.y),
         zIndex: 99,
         Visibility: token.isVisible
     }));
 
-    if (updates.length === 0) return alert('No tokens to save.');
-
-    try {
-        const res = await fetch('/Map/SavePositions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updates)
-        });
-
-        if (res.ok) {
-            alert('Positions saved!');
-            window.location.reload();
-        } else {
-            throw new Error(await res.text());
-        }
-    } catch (e) {
-        console.error('Save failed:', e);
-        alert('Save failed.');
+    if (updates.length === 0) {
+        alert('No tokens to save.');
+        return;
     }
+
+    // THE AJAX CALL
+    $.ajax({
+        url: '/Map/SavePositions',
+        type: 'POST',
+        contentType: 'application/json', // Tells C# to use [FromBody]
+        data: JSON.stringify(updates),   // Sends the array
+        success: function (response) {
+            alert('Positions saved successfully!');
+            window.location.reload();    // Reloads to show the new saved spots
+        },
+        error: function (xhr, status, error) {
+            console.error("Status: " + status);
+            console.error("Error: " + xhr.responseText);
+            alert('Save failed: ' + xhr.responseText);
+        }
+    });
 };

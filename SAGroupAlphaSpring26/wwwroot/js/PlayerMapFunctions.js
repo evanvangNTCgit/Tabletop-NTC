@@ -8,6 +8,7 @@
 export const repositionToken = (broadCastData) => {
     let token = document.getElementById(broadCastData.tokenId);
 
+    // Added Creation event for new Tokens.
     // If no existing token -> Create player view token.
     if (!token && broadCastData.tokenImgSrc) {
         token = document.createElement('img');

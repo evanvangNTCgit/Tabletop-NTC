@@ -27,13 +27,13 @@ const bc = new BroadcastChannel('map_channel');
 // The Local State Dictionary - The "Source of Truth" for offline changes
 let tokenData = {};
 
-// PLAYER VIEW LOGIC
+// PLAYER VIEW BROADCAST LOGIC
 if (playerView === 'player') {
     isPlayerView = true;
     console.log('Player view set to true.');
 
     // Switch statement within bc.onmessage for running functions within the playerview.
-    bc.onmessage = (e) => {
+    bc.addEventListener('message', (e) => {
         console.log("Player View received broadcast:", e.data);
         switch (e.data.action) {
             case ("tokenMove"):
@@ -43,11 +43,49 @@ if (playerView === 'player') {
                 toggleTokenInvisibility(e.data);
                 break;
         }
-    }
+    });
+
+    // Runs when the player view first loads and requests the local tokenData from the DM view. Has a delay to make sure the data is ready to send.
+    setTimeout(() => {
+        console.log("Asking DM for unsaved token positions...");
+        bc.postMessage({ action: 'requestSync' });
+    }, 500);
+
 }
+
+
 
 // DM VIEW LOGIC
 if (!isPlayerView) {
+
+    // switched to a bc .addEventListener because I think they are being overwritten...
+    // DM VIEW BROADCAST LOGIC - Listens for the player view to 'requestSync', then sends the local tokenData to update the player view.
+    bc.addEventListener('message', (e) => {
+        if (e.data.action === 'requestSync') {
+            console.log(`DM HEARD REQUEST! Sending ${Object.keys(tokenData).length} tokens...`);
+
+            Object.entries(tokenData).forEach(([htmlId, token]) => {
+                bc.postMessage({
+                    tokenId: htmlId,
+                    tokenImgSrc: token.src,
+                    tokenLeftPerc: token.x,
+                    tokenTopPerc: token.y,
+                    action: 'tokenMove'
+                });
+
+                if (!token.isVisible) {
+                    bc.postMessage({
+                        tokenId: htmlId,
+                        action: 'toggleIn'
+                    });
+                }
+            });
+        }
+    });
+
+
+
+
     document.addEventListener('DOMContentLoaded', () => {
         console.log('Hello! \nFrom -Mr. Vang (and the Clean Architecture!)');
 
@@ -114,9 +152,12 @@ if (!isPlayerView) {
         // Attach event for each .draggable-token.
         document.querySelectorAll('.vangtokendiv, .draggable-token').forEach(attachContextMenu);
 
+
+
         // Attaching the tokenData and Session ID to the Save button so we can save to our database when it is clicked.
         document.getElementById('btn-save')?.addEventListener('click', () => saveTokenPositions(tokenData, sessionId));
     });
+
 
     // Requires us to pass in the tokenData
     const makeNewToken = (data) => {

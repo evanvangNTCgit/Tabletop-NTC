@@ -57,11 +57,11 @@
 
              <img src="@Model.MapImagePath" style="width: 100%; height: auto; display: block;"/>
 
-            @foreach (var token in Model.Tokens.Where(t => t.Piece?.PieceType?.Name != "Map" && (t.X != 0 || t.Y != 0)))
+            @foreach (var token in Model.Tokens.Where(t => t.Piece?.PieceType?.Name != "Map"))
             {
                     <img src="@(string.IsNullOrEmpty(token.Piece?.ImagePath) ? "/images/default.png" : token.Piece.ImagePath)"
                          class="draggable-token"
-                         style="width: 5%; height: 5%; position: absolute; top: 10%; left: 10%;"
+                         style="position: absolute; left: @(token.X)%; top: @(token.Y)%;z-index: @token.ZIndex;"
                          id="token-placed-@token.Id"
                          data-tokenid="@token.Id"
                          data-invisiblity="@token.Visibility"

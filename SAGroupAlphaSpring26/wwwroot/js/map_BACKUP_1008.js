@@ -264,17 +264,4 @@ async function saveTokenPositions() {
     }
 }
 
-// Local Save Token Positions.
-async function updateTokenPositions() {
-
-    const tokens = document.querySelectorAll('#map-board .draggable-token[data-tokenid]');
-
-    this.data = Array.from(tokens).map(t => ({
-        Id: parseInt(t.dataset.tokenid),
-        X: parseFloat(t.style.left) || 0,
-        Y: parseFloat(t.style.top) || 0,
-        zIndex: parseInt(t.style.zIndex) || 1,
-        SessionID: window.sessionId
-    }));
-}
 
