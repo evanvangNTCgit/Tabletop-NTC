@@ -31,6 +31,8 @@ namespace SAGroupAlphaSpring26.Data
         public DbSet<SaleLine> SaleLines { get; set; }
         public DbSet<Sale> Sales { get; set; }
 
+        public DbSet<CartItem> CartItems { get; set; }
+
         // We overide the on model creation method
         // BECAUSE HERE... we specify what relationships we want to have in our database, and how we want to structure our tables.
         // Like Pieces and piecetypes have a relationship, so we would specify that here.
@@ -40,9 +42,15 @@ namespace SAGroupAlphaSpring26.Data
 
             // Configuring some relationships here:
 
-            // As of now 3/5/26
-            // When it comes to many to many I have lists put in both models
-            // So the model builder can handle this connection for us.
+            modelBuilder.Entity<Piece>() // A piece can be in many carts...
+                .HasMany(p => p.CartItems)
+                .WithOne(ci => ci.Piece)
+                .HasForeignKey(p => p.PieceId);
+
+            modelBuilder.Entity<User>() // A user can have many items in cart.
+                .HasMany(u => u.CartItems)
+                .WithOne(ci => ci.User)
+                .HasForeignKey(u => u.UserId);
 
             // One piece type can have many pieces, but a piece ONLY one type.
             modelBuilder.Entity<PieceType>()

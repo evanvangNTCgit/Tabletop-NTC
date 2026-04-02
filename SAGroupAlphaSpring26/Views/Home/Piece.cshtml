@@ -1,0 +1,20 @@
+﻿@model Piece
+
+@if(Model != null)
+{
+    <section>
+        <h3>@Model.Name</h3>
+        <img class="img-fluid pieceStoreImg" src=" @Model.ImagePath" alt="@Model.Name">
+        <p>@Model.Description</p>
+        <p>Price: $@Model.Price</p>
+    </section>
+
+    <form method="POST" asp-controller="cart" asp-action="addtocart" asp-route-id="@Model.Id">
+        <p>
+            <button type="submit" class="btn btn-primary" role="button">Add to cart</button>
+        </p>
+    </form>
+} else
+{
+    <p>No piece with said ID</p>
+}

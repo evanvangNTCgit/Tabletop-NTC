@@ -810,3 +810,9 @@ h1, h2, h3 {
 .delete-drop-zone.delete-hover .ui-icon {
     filter: brightness(0) invert(1);
 }
+
+/* For when you look at the piece on the store page. */
+.pieceStoreImg{
+    max-width: 70vw;
+    max-height: 50vh
+}

@@ -1,0 +1,46 @@
+﻿@model List<CartItem>
+
+<h2>Cart</h2>
+
+@if (Model != null && Model.Count > 0)
+{
+    <table class="table">
+        <tr>
+            <th scope="col">Item</th>
+            <th scope="col">Price</th>
+            <th scope="col">Quantity</th>
+            <th></th>
+        </tr>
+
+        @{
+            decimal totalPrice = 0;
+
+            @foreach (var item in Model)
+            {
+                totalPrice += item.Piece!.Price;
+                if(item.Piece!= null)
+                {
+                    <tr>
+                    <td>@item.Piece.Name</td>
+                        <td>@item.Piece.Price</td>
+                        <td>
+                            <a asp-controller="Cart" asp-action="RemoveFromCart" asp-route-id="@item.PieceId">Delete</a>
+                        </td>
+                    </tr>
+                }
+            }
+
+            <tr>
+                <td></td>
+                <td>                    <strong>Total: $@Html.Raw(totalPrice)</strong></td>
+                <td>
+                </td>
+                <td></td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <p>It looks like your cart is empty. You should really add something...</p>
+}

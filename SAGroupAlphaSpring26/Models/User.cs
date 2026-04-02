@@ -36,5 +36,7 @@
 
         // A user can be in many sessions. However since a session only has a DM a session CAN ONLY HAVE ONE USER - NO MANY TO MANY
         public List<Session> Sessions { get; set; } = new();
+
+        public List<CartItem>? CartItems { get; set; }
     }
 }

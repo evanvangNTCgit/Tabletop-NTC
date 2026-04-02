@@ -396,6 +396,74 @@ namespace SAGroupAlphaSpring26.Services
             }
 
         }
+
+        public CartItem GetCartItem(int userId, int pieceId)
+        {
+            try
+            {
+                return this._dataContext.CartItems
+                    .Where(ci => ci.UserId == userId)
+                    .Where(ci => ci.PieceId == pieceId)
+                    .Where(ci => ci.IsArchived == false)
+                    .Where(ci => ci.Piece!.IsArchived == false)
+                    .Include(ci => ci.Piece)
+                    .FirstOrDefault()!;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to get piece\n{ex.Message}");
+            }
+        }
+
+        public List<CartItem> GetCartItems(int userId)
+        {
+            return this._dataContext.CartItems
+                .Where(ci => ci.UserId == userId)
+                .Where(ci => ci.IsArchived == false)
+                .Include(ci => ci.Piece)
+                .ToList();
+        }
+
+        public void AddCartItem(int userId, int pieceId)
+        {
+            // Check if the user has an archived cartItem of same pieceId
+            CartItem userCartItem = this._dataContext.CartItems
+                .Where(ci => ci.UserId == userId)
+                .Where(ci => ci.IsArchived == true)
+                .Where(ci => ci.PieceId == pieceId)
+                .FirstOrDefault()!;
+
+            if (userCartItem != null)
+            {
+                userCartItem.IsArchived = false;
+                this._dataContext.Update(userCartItem);
+                this._dataContext.SaveChanges();
+            }
+            else
+            {
+                User user = this._dataContext.Users.FirstOrDefault(u => u.Id == userId)!;
+                if (user != null)
+                {
+                    CartItem newCartItem = new()
+                    {
+                        PieceId = pieceId,
+                        UserId = userId,
+                        IsArchived = false
+                    };
+
+                    this._dataContext.Add(newCartItem);
+                    this._dataContext.SaveChanges();
+                }
+            }
+        }
+
+        public void DeleteCartItem(int userId, int pieceId)
+        {
+            var userCartItem = this.GetCartItem(userId, pieceId);
+            userCartItem.IsArchived = true;
+            this._dataContext.Update(userCartItem);
+            this._dataContext.SaveChanges();
+        }
     }
 }
 

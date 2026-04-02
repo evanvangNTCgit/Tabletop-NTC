@@ -7,6 +7,24 @@
 <div class="text-center">
     <h1>Welcome to @ViewBag.ApplicationName!</h1>
 
+    <h1 style="margin-top: 20px">Sets</h1>
+    <div class="store-grid">
+        @foreach (var set in Model.Sets)
+        {
+            decimal totalPrice = set.PiecesList?.Sum(ps => ps.Piece.Price) ?? 0m;
+            decimal discountedPrice = totalPrice * (1 - set.Discount);
+            <div class="store-item" style="grid-column: span 2;">
+                <h3>@set.Name</h3>
+                <p>Pieces (@(set.PiecesList?.Count ?? 0)): @string.Join(", ", set.PiecesList?.Select(ps => ps.Piece.Name) ?? Enumerable.Empty<string>())</p>
+                <p>Total: $@totalPrice.ToString("F2")</p>
+                <p>Discounted (@((set.Discount * 100).ToString("F1") + "%")): $@discountedPrice.ToString("F2")</p>
+                <!-- Placeholder for owned pieces discount -->
+                <p class="text-muted">Owned pieces discount: $0.00 (TODO)</p>
+                @* <button class="button-primary">View</button> *@
+            </div>
+        }
+    </div>
+
     @foreach (var typeGroup in Model.Pieces.GroupBy(p => p.PieceTypeID))
     {
         <h2>@GetTypeName(typeGroup.Key)</h2>
@@ -22,29 +40,14 @@
                     <h3>@piece.Name</h3>
                     <p>@piece.Description</p>
                     <p>Price: $@piece.Price</p>
-                    <button class="buy-button button-primary">Buy</button>
+                    @* <button class="button-primary">View</button> *@
+                    <div>
+                    <a class="button-primary" asp-controller="Home" asp-action="Piece" asp-route-id="@piece.Id">View</a>
+                    </div>
                 </div>
             }
         </div>
     }
-
-    <h1>Sets</h1>
-    <div class="store-grid">
-        @foreach (var set in Model.Sets)
-        {
-            decimal totalPrice = set.PiecesList?.Sum(ps => ps.Piece.Price) ?? 0m;
-            decimal discountedPrice = totalPrice * (1 - set.Discount);
-            <div class="store-item" style="grid-column: span 2;">
-                <h3>@set.Name</h3>
-                <p>Pieces (@(set.PiecesList?.Count ?? 0)): @string.Join(", ", set.PiecesList?.Select(ps => ps.Piece.Name) ?? Enumerable.Empty<string>())</p>
-                <p>Total: $@totalPrice.ToString("F2")</p>
-                <p>Discounted (@((set.Discount * 100).ToString("F1") + "%")): $@discountedPrice.ToString("F2")</p>
-                <!-- Placeholder for owned pieces discount -->
-                <p class="text-muted">Owned pieces discount: $0.00 (TODO)</p>
-                <button class="buy-button button-primary">Buy Set</button>
-            </div>
-        }
-    </div>
 </div>
 
 @functions {

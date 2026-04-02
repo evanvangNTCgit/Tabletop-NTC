@@ -38,5 +38,7 @@ namespace SAGroupAlphaSpring26.Models
 
         [Required]
         public bool IsArchived { get; set; } = false;
+
+        public List<CartItem>? CartItems { get; set; }
     }
 }
