@@ -8,7 +8,7 @@
         <tr>
             <th scope="col">Item</th>
             <th scope="col">Price</th>
-            <th scope="col">Quantity</th>
+            <th scope="col">Remove From Cart?</th>
             <th></th>
         </tr>
 
@@ -24,7 +24,7 @@
                     <td>@item.Piece.Name</td>
                         <td>@item.Piece.Price</td>
                         <td>
-                            <a asp-controller="Cart" asp-action="RemoveFromCart" asp-route-id="@item.PieceId">Delete</a>
+                            <a asp-controller="Cart" asp-action="RemoveFromCart" asp-route-id="@item.PieceId">Remove</a>
                         </td>
                     </tr>
                 }

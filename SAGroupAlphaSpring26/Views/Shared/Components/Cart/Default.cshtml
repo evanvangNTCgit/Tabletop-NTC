@@ -1,0 +1,14 @@
+﻿@model List<SAGroupAlphaSpring26.Models.CartItem>
+
+@* Since CartItem.cs doesn't have a quantity field, 
+   we just count the number of items in the list. *@
+@{
+    int itemCount = Model?.Count ?? 0;
+}
+
+<li>
+    <a asp-controller="Cart" asp-action="ViewCart" class="nav-button" role="button">
+        🛒 Cart (@itemCount)
+    </a>
+</li>
+

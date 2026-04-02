@@ -41,7 +41,6 @@ namespace SAGroupAlphaSpring26.Data
             base.OnModelCreating(modelBuilder);
 
             // Configuring some relationships here:
-
             modelBuilder.Entity<Piece>() // A piece can be in many carts...
                 .HasMany(p => p.CartItems)
                 .WithOne(ci => ci.Piece)

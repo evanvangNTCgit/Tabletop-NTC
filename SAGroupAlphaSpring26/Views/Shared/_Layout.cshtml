@@ -32,9 +32,12 @@
             <li>
                 <a class="nav-button" asp-area="" asp-controller="Home" asp-action="Store">Store</a>
             </li>
+
+            <vc:cart></vc:cart>
+            @* removed for the above view component ^
             <li>
                 <a class="nav-button" asp-area="" asp-controller="Cart" asp-action="view">Cart</a>
-            </li>
+            </li> *@
 
             @if (User.Identity?.IsAuthenticated ?? false)
             {
