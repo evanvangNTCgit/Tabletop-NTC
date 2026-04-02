@@ -70,7 +70,6 @@ if (playerView === 'player') {
     }, 500);
 }
 
-
 // DM VIEW LOGIC
 if (!isPlayerView) {
     // switched to a bc .addEventListener because I think they are being overwritten...
@@ -292,8 +291,4 @@ if (!isPlayerView) {
             });
         });
     };
-
-
-
-
 }

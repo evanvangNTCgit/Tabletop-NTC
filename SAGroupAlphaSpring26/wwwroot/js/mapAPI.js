@@ -16,7 +16,8 @@ export const saveTokenPositions = (tokenData, sessionId, tokensToDelete) => {
         saveBtn.innerText = "Saving...";
     }
 
-    // create deletePromise, to ensure we delete tokens before the page reloads.
+    // create deletePromise, to ensure we delete tokens before the page reloads. 
+    // We need this so the playerview doesn't end up showing deleted tokens, as the playerview updates after the DM view saves.
     let deletePromise = $.Deferred().resolve();
 
     // Process the list of tokens to delete first, sending a request for each token ID that needs to be deleted.

@@ -788,13 +788,25 @@ h1, h2, h3 {
     transition: all 0.2s ease;
 }
 
-    /* Visual feedback when dragging over the bin */
-    .delete-drop-zone.delete-hover {
-        background-color: rgba(220, 53, 69, 0.8);
-        transform: scale(1.1);
-        color: white;
+/*I CANT GET THIS TRASH ICON TO SHOW UP */
+/*    jquery trash icon*/
+    .delete-drop-zone .ui-icon {
+        transform: scale(3);
+        margin-bottom: 15px;
+        background-image: url("https://code.jquery.com/ui/1.13.2/themes/base/images/ui-icons_444444_256x240.png");
     }
 
-.trash-icon {
-    font-size: 2rem;
+    .delete-drop-zone .delete-icon-trash {
+        display: block;
+    }
+
+ /* Visual feedback when dragging over the bin */
+.delete-drop-zone.delete-hover {
+    background-color: rgba(220, 53, 69, 0.8);
+    transform: scale(1.1);
+    color: white;
+}
+
+.delete-drop-zone.delete-hover .ui-icon {
+    filter: brightness(0) invert(1);
 }
