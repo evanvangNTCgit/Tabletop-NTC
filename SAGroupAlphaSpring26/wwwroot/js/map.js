@@ -161,7 +161,7 @@ if (!isPlayerView) {
                 const htmlId = ui.draggable.attr('id');
 
                 const dbId = ui.draggable.data('tokenid');
-
+                
                 // If it's a real token (not temp), stage it for DB deletion (temp tokens don't don't exist in the Database yet.)
                 if (dbId && !htmlId.startsWith('temp-')) {
                     tokensToDelete.push(dbId);
@@ -176,6 +176,7 @@ if (!isPlayerView) {
                     action: 'tokenDelete',
                     tokenId: htmlId
                 });
+                $(this).removeClass('delete-hover');
             }
         });
 

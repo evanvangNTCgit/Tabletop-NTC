@@ -167,7 +167,8 @@ namespace SAGroupAlphaSpring26.Data
                 new UserPieces { UserId = 1, PieceId = 2, Piece = null!, User = null! },
                 new UserPieces { UserId = 1, PieceId = 3, Piece = null!, User = null! },
                 new UserPieces { UserId = 1, PieceId = 4, Piece = null!, User = null! },
-                new UserPieces { UserId = 1, PieceId = 5, Piece = null!, User = null! }
+                new UserPieces { UserId = 1, PieceId = 5, Piece = null!, User = null! },
+                new UserPieces { UserId = 1, PieceId = 6, Piece = null!, User = null! }
                 );
 
             // Test Data:
