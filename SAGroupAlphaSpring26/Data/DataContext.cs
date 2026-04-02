@@ -81,11 +81,12 @@ namespace SAGroupAlphaSpring26.Data
 
             // Initial Piece
             modelBuilder.Entity<Piece>().HasData(
-                                new Piece { Id = 1, PieceTypeID = 2, Name = "Default Dungeon", ImagePath = "/images/testMap.png", Price = 0.00m },
+                new Piece { Id = 1, PieceTypeID = 2, Name = "Default Dungeon", ImagePath = "/images/testMap.png", Price = 0.00m },
                 new Piece { Id = 2, PieceTypeID = 1, Name = "Cleric", ImagePath = "/images/Cleric.png", Price = 0.00m },
                 new Piece { Id = 3, PieceTypeID = 5, Name = "Goblin Chief", ImagePath = "/images/GoblinChief.png", Price = 0.00m },
                 new Piece { Id = 4, PieceTypeID = 4, Name = "Basic Chest", ImagePath = "/images/chest.png", Price = 0.00m },
-                new Piece { Id = 5, PieceTypeID = 1, Name = "Bard", ImagePath = "/images/bardTest.png", Price = 0.00m }
+                new Piece { Id = 5, PieceTypeID = 1, Name = "Bard", ImagePath = "/images/bardTest.png", Price = 0.00m },
+                new Piece { Id = 6, PieceTypeID = 2, Name = "Beta Dungeon", ImagePath = "/images/BetaMap1.png", Price = 5.00m }
                 );
 
             // A password hasher 
@@ -114,7 +115,7 @@ namespace SAGroupAlphaSpring26.Data
                 new Token { Id = 4, SessionId = 1, PieceID = 4, Name = "Basic Chest", X = 50, Y = 10, ZIndex = 2, Visibility = false },
 
                 // Token Seed Data for 2nd Session testing.
-                new Token { Id = 5, SessionId = 2, PieceID = 1, Name = "Default Dungeon", X = 0, Y = 0, ZIndex = 0, Visibility = true },
+                new Token { Id = 5, SessionId = 2, PieceID = 6, Name = "Beta Dungeon", X = 0, Y = 0, ZIndex = 0, Visibility = true },
                 new Token { Id = 6, SessionId = 2, PieceID = 2, Name = "Cleric", X = 50, Y = 15, ZIndex = 3, Visibility = true },
                 new Token { Id = 7, SessionId = 2, PieceID = 2, Name = "Cleric", X = 50, Y = 5, ZIndex = 1, Visibility = true },
                 new Token { Id = 8, SessionId = 2, PieceID = 2, Name = "Cleric", X = 50, Y = 10, ZIndex = 2, Visibility = true },

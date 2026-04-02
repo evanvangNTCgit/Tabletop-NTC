@@ -133,7 +133,7 @@ namespace SAGroupAlphaSpring26.Controllers
             var viewModel = new MapScreenViewModel()
             {
                 CurrentSession = session,
-                MapImagePath = mapToken != null ? mapToken.Piece!.ImagePath : "/images/testMap.png",
+                MapImagePath = mapToken != null ? mapToken.Piece!.ImagePath : "/images/BetaMap1.png",
 
                 Tokens = session.Tokens
                 .Where(t => t.Piece?.PieceType?.Name != "Map")
@@ -169,7 +169,7 @@ namespace SAGroupAlphaSpring26.Controllers
             {
                 CurrentSession = session,
                 // Fallback to test map if no map token is found
-                MapImagePath = mapToken?.Piece?.ImagePath ?? "/images/testMap.png",
+                MapImagePath = mapToken?.Piece?.ImagePath ?? "/images/BetaMap1.png",
 
                 // Filter out the map itself from the interactive tokens list
                 Tokens = session.Tokens

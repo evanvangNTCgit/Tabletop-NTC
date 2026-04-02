@@ -2,11 +2,14 @@
  * map.js
  * Now imports from PlayerMapFunctions.js for player view related logic, and MapAPI.js for tracking token data.
  */
-import { repositionToken, toggleTokenInvisibility, syncBoard } from "./PlayerMapFunctions.js";
+import { repositionToken, toggleTokenInvisibility, syncBoard, removeToken } from "./PlayerMapFunctions.js";
 import { saveTokenPositions } from "./MapApi.js";
 
 // Stores session ID, gets from Razor view.
 const sessionId = window.sessionId;
+
+// Stores the IDs of tokens that need to be deleted from the database when the save button is hit.
+let tokensToDelete = [];
 
 // Sets isPlayerView Variable.
 let isPlayerView = false;
@@ -15,17 +18,17 @@ let isPlayerView = false;
 const mapBoard = document.getElementById('map-board');
 const playerView = mapBoard?.dataset?.role;
 
-if (mapBoard) {
-    mapBoard.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-    });
-}
-
 // Instantiates the broadcaster object for executing functions on the playerview side.
 const bc = new BroadcastChannel('map_channel');
 
 // The Local State Dictionary - The "Source of Truth" for offline changes
 let tokenData = {};
+
+if (mapBoard) {
+    mapBoard.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+    });
+}
 
 // PLAYER VIEW BROADCAST LOGIC
 if (playerView === 'player') {
@@ -34,7 +37,7 @@ if (playerView === 'player') {
 
     // Switch statement within bc.onmessage for running functions within the playerview.
     bc.addEventListener('message', (e) => {
-        console.log("Player View received broadcast:", e.data);
+        // console.log("Player View received broadcast:", e.data); this log clogs up the logs.
         switch (e.data.action) {
             case ("tokenMove"):
                 // Repositions the token on the player view according to the data sent from the DM view. 
@@ -53,8 +56,10 @@ if (playerView === 'player') {
                 // Reloads the player view, used after saving to prevent token duplication.
                 console.log("DM Saved, reloading player view page...");
                 window.location.reload();
-
                 break;
+            case ("tokenDelete"): 
+            // deletes token from the player view.
+                removeToken(e.data);
         }
     });
 
@@ -144,15 +149,43 @@ if (!isPlayerView) {
             }
         });
 
+        // sets area where tokens can be deleted by dragging and dropping them into.
+        $('#delete-area').droppable({
+            accept: '.draggable-token',
+            over: function () { $(this).addClass('delete-hover'); },
+            out: function () { $(this).removeClass('delete-hover'); },
+            drop: function (event, ui) {
+
+                // Gets the onboard token id and then the database id (if it exists, temp tokens wouldn't have one.).
+
+                const htmlId = ui.draggable.attr('id');
+
+                const dbId = ui.draggable.data('tokenid');
+
+                // If it's a real token (not temp), stage it for DB deletion (temp tokens don't don't exist in the Database yet.)
+                if (dbId && !htmlId.startsWith('temp-')) {
+                    tokensToDelete.push(dbId);
+                }
+
+                // Remove from local data and from the DOM content.
+                delete tokenData[htmlId];
+                ui.draggable.remove();
+
+                // Broadcast deletion to player view.
+                bc.postMessage({
+                    action: 'tokenDelete',
+                    tokenId: htmlId
+                });
+            }
+        });
+
         // Attach event for each .draggable-token.
         document.querySelectorAll('.vangtokendiv, .draggable-token').forEach(attachContextMenu);
 
 
-
         // Attaching the tokenData and Session ID to the Save button so we can save to our database when it is clicked.
-        document.getElementById('btn-save')?.addEventListener('click', () => saveTokenPositions(tokenData, sessionId));
+        document.getElementById('btn-save')?.addEventListener('click', () => saveTokenPositions(tokenData, sessionId, tokensToDelete));
     });
-
 
     // Requires us to pass in the tokenData
     const makeNewToken = (data) => {
@@ -208,6 +241,10 @@ if (!isPlayerView) {
             }
         },
         stop: (event, ui) => {
+
+            // Prevents the application from crashing after a token gets deleted. (After deletion the stop event tries to run)
+            if (!document.getElementById(event.target.id)) return;
+
             const topPerc = $(`#${event.target.id}`).position().top / $(`#map-board`).height() * 100;
             const leftPerc = $(`#${event.target.id}`).position().left / $(`#map-board`).width() * 100;
 
@@ -254,4 +291,8 @@ if (!isPlayerView) {
             });
         });
     };
+
+
+
+
 }

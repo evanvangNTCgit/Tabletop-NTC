@@ -59,7 +59,7 @@
 
             @foreach (var token in Model.Tokens.Where(t => t.Piece?.PieceType?.Name != "Map"))
             {
-                    <img src="@(string.IsNullOrEmpty(token.Piece?.ImagePath) ? "/images/default.png" : token.Piece.ImagePath)"
+                    <img src="@(string.IsNullOrEmpty(token.Piece?.ImagePath) ? "/images/BetaMap1.png" : token.Piece.ImagePath)"
                          class="draggable-token @(!token.Visibility ? "dmOpacityToggle" : "")"
                          style="position: absolute; left: @(token.X)%; top: @(token.Y)%; z-index: @token.ZIndex; width: 5%;"
                          id="token-placed-@token.Id"
@@ -68,8 +68,15 @@
                          data-visiblity="@token.Visibility.ToString().ToLower()"
                          onerror="this.onerror=null; this.src='/images/default.png';" />
             }
+
+        @* Drag tokens into this area to delete them. *@
+        <div id="delete-area" class="delete-drop-zone">
+            <span class="trash-icon"></span>
+            <p>Drop here to remove</p>
+        </div>
         </div>
 </div>
+
 <!-- Scripts start here -->
 @section Scripts {
     <script>

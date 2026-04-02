@@ -5,8 +5,9 @@
  * @param {Object} tokenData - The local state dictionary
  * @param {number} sessionId - The current active session ID
  */
-export const saveTokenPositions = (tokenData, sessionId) => {
+export const saveTokenPositions = (tokenData, sessionId, tokensToDelete) => {
 
+    // store save button for disabling and enabling.
     const saveBtn = document.getElementById('btn-save');
 
     if (saveBtn) {
@@ -15,52 +16,50 @@ export const saveTokenPositions = (tokenData, sessionId) => {
         saveBtn.innerText = "Saving...";
     }
 
-    // Converts the tokenData diction into an array to match model.
-    const updates = Object.values(tokenData).map(token => ({
-        Id: token.id ? token.id.toString() : "", // failsafe for new tokens missing an id.
-        PieceId: parseInt(token.pieceId) || 0, // failsafe for new tokens missing a pieceId, applied to the below aswell.
-        SessionID: parseInt(sessionId) || 0,
-        X: parseFloat(token.x) || 0,
-        Y: parseFloat(token.y) || 0,
-        zIndex: token.zIndex,
-        Visibility: token.isVisible,
-    }));
+    // create deletePromise, to ensure we delete tokens before the page reloads.
+    let deletePromise = $.Deferred().resolve();
 
-    if (updates.length === 0) {
-        alert('No tokens to save.');
+    // Process the list of tokens to delete first, sending a request for each token ID that needs to be deleted.
+    if (tokensToDelete.length > 0) {
 
-        // since it didn't save, re-enable the button.
-        if (saveBtn) {
-            saveBtn.disabled = false;
-            saveBtn.innerText = "Save";
-        }
+        console.log("Deleting Tokens:", tokensToDelete);
 
-        return;
+        deletePromise = $.ajax({
+            url: '/Map/DeleteTokens',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(tokensToDelete)
+        });
     }
 
-    // THE AJAX CALL, instead of using the old fetch API. This is built into jQuery.
-    $.ajax({
-        url: '/Map/SavePositions',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(updates),
-        success: function (response) {
-            // need a broadcast channel because the map.js bc is out of scope...
-            const bc = new BroadcastChannel('map_channel');
-            // Was duplicating new tokens on save... So now we reload the page (and the player page) so that the temperary token ids get replaced with new real ids by the backend.
-            alert('Positions saved successfully, reloading page!');
-            window.location.reload();
-            bc.postMessage({ action: 'reload' });
-        },
-        error: function (xhr, status, error) {
-            console.error("Status: " + status);
-            console.error("Error: " + xhr.responseText);
-            alert('Save failed: ' + xhr.responseText);
+    deletePromise.then(() => {
+        const updates = Object.values(tokenData).map(token => ({
+            Id: token.id ? token.id.toString() : "",
+            PieceId: parseInt(token.pieceId) || 0,
+            SessionID: parseInt(sessionId) || 0,
+            X: parseFloat(token.x) || 0,
+            Y: parseFloat(token.y) || 0,
+            zIndex: 99,
+            Visibility: !!token.isVisible
+        }));
 
-            if (saveBtn) {
-                saveBtn.disabled = false;
-                saveBtn.innerText = "Save Positions";
-            }
+        return $.ajax({
+            url: '/Map/SavePositions',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(updates)
+        });
+    }).then(() => {
+        const bc = new BroadcastChannel('map_channel');
+        bc.postMessage({ action: 'reload' });
+        console.log("Positions saved and reload message sent.");
+        window.location.reload();
+    }).fail((xhr) => {
+        console.error("Save/Delete error:", xhr.responseText);
+        alert('Critical Error during save. Check console.');
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerText = "Save Positions";
         }
     });
 };

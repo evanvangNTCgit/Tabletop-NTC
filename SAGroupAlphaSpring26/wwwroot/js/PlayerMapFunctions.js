@@ -40,12 +40,24 @@ export const toggleTokenInvisibility = (broadCastData) => {
 
 // For syncing the player board to the DM board. Runs on initial load and after every save so that the player board stays up to date with the DM board.
 export const syncBoard = (allTokens) => {
-    // Loop through the dictionary the DM sent
-    Object.entries(allTokens).forEach(([htmlId, token]) => {
+    const board = document.getElementById('map-board');
+    // Get the tokens from the player view, and the token IDs from the DM view, then compare them.
+    const currentTokensOnBoard = board.querySelectorAll('.draggable-token');
+    const incomingIdsFromDM = Object.keys(allTokens);
 
+    // Call the removeToken function for any token that is on the player view but not in the incoming data from the DM view.
+    currentTokensOnBoard.forEach(tokenElement => {
+        if (!incomingIdsFromDM.includes(tokenElement.id)) {
+
+            // Call Remove token in the same way that the BC channel would call it.
+            removeToken({ tokenId: tokenElement.id });
+        }
+    });
+
+    // Adds and updates tokens based on data from the DM view.
+    Object.entries(allTokens).forEach(([htmlId, token]) => {
         let tokenImg = document.getElementById(htmlId);
 
-        // Creates the token if it doesn't exist
         if (!tokenImg && token.src) {
             tokenImg = document.createElement('img');
             tokenImg.id = htmlId;
@@ -53,17 +65,15 @@ export const syncBoard = (allTokens) => {
             tokenImg.classList.add('draggable-token');
             tokenImg.style.position = 'absolute';
             tokenImg.style.zIndex = 99;
-            document.getElementById('map-board').appendChild(tokenImg);
+            board.appendChild(tokenImg);
         }
 
         if (tokenImg) {
-            // sets positioning of the token.
             tokenImg.style.left = `${token.x}%`;
             tokenImg.style.top = `${token.y}%`;
             tokenImg.style.width = '5%';
             tokenImg.style.height = 'auto';
 
-            // sets the visibility of the token.
             if (!token.isVisible) {
                 tokenImg.classList.add('hidden');
             } else {
@@ -71,4 +81,18 @@ export const syncBoard = (allTokens) => {
             }
         }
     });
+};
+
+export const removeToken = (broadCastData) => {
+    // Find the token using tokenId from the passed in data, then remove it from the DOM.
+    const token = document.getElementById(broadCastData.tokenId);
+
+    console.log("Removing token with id:", broadCastData.tokenId);
+
+    if (token) {
+        token.remove();
+        console.log("Token successfully removed from Player View.");
+    } else {
+        console.warn("Could not find token to remove:", broadCastData.tokenId);
+    }
 };
