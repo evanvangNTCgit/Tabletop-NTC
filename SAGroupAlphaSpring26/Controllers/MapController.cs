@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.Services;
-using System.Security.Claims;
 
 
 namespace SAGroupAlphaSpring26.Controllers
@@ -27,6 +27,9 @@ namespace SAGroupAlphaSpring26.Controllers
         {
             if (updates == null || !updates.Any()) return BadRequest("No token updates provided.");
 
+            // Session saving logic.
+            int? updatedSessionId = null;
+
             foreach (var update in updates)
             {
                 if (int.TryParse(update.Id, out int realTokenId))
@@ -38,12 +41,11 @@ namespace SAGroupAlphaSpring26.Controllers
                         token.Y = update.Y;
                         token.ZIndex = update.zIndex;
                         token.Visibility = update.Visibility;
-
-                        var session = _dataService.GetSession(token.SessionId);
-                        if (session != null) session.LastUpdated = DateTime.Now;
+                        // Session saving logic.
+                        updatedSessionId = token.SessionId;
                     }
                 }
-                else if(update.Id != null && update.Id.StartsWith("temp-"))
+                else if (update.Id != null && update.Id.StartsWith("temp-"))
                 {
                     var piece = _dataService.GetPiece(update.PieceId);
                     if (piece != null)
@@ -58,13 +60,23 @@ namespace SAGroupAlphaSpring26.Controllers
                             ZIndex = update.zIndex,
                             Visibility = update.Visibility
                         });
-
-                        var session = _dataService.GetSession(update.SessionID);
-                        if (session != null) session.LastUpdated = DateTime.Now;
+                        // Session saving logic.
+                        updatedSessionId = update.SessionID;
                     }
                 }
             }
-            _context.SaveChanges();
+            // Session saving logic.
+            if (updatedSessionId.HasValue)
+            {
+                var session = _dataService.GetSession(updatedSessionId.Value);
+                if (session != null)
+                {
+                    session.LastUpdated = DateTime.Now;
+                }
+                // Save all changes at once (token updates, insertions, and session timestamp)
+                _context.SaveChanges();
+            }
+
             return Ok();
         }
 
@@ -115,7 +127,7 @@ namespace SAGroupAlphaSpring26.Controllers
 
         // Added id to routing.
         [Route("Map/MapTest/{id}")]
-        public IActionResult MapTest(int id) 
+        public IActionResult MapTest(int id)
         {
             // now uses data service to get session data, this should get the tokens/pieces associated.
             var session = _dataService.GetSession(id);
@@ -141,7 +153,7 @@ namespace SAGroupAlphaSpring26.Controllers
             };
 
             var UserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if(!int.TryParse(UserId, out int UserIdParse)) 
+            if (!int.TryParse(UserId, out int UserIdParse))
             {
                 // implement some sort of error handling...
             }
@@ -219,7 +231,7 @@ namespace SAGroupAlphaSpring26.Controllers
             };
 
             var UserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if(int.TryParse(UserId, out int UserIdParse)) 
+            if (int.TryParse(UserId, out int UserIdParse))
             {
                 viewModel.PlayablePieces = this._dataService.GetUserPieces(UserIdParse);
             }

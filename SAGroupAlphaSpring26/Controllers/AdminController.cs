@@ -208,87 +208,84 @@ namespace SAGroupAlphaSpring26.Controllers
             return View(session);
         }
 
-            // Letting the admin see the list of piece types currently.
-            [HttpGet("PieceTypes")]
-            public IActionResult PieceTypes()
-            {
-                return View(this._dataService.GetPieceTypes());
-            }
+        // Letting the admin see the list of piece types currently.
+        [HttpGet("PieceTypes")]
+        public IActionResult PieceTypes()
+        {
+            return View(this._dataService.GetPieceTypes());
+        }
 
-            [HttpGet("Pieces")]
-            public IActionResult Pieces()
-            {
-                return View(this._dataService.GetPieces());
-            }
+        [HttpGet("Pieces")]
+        public IActionResult Pieces()
+        {
+            return View(this._dataService.GetPieces());
+        }
 
         [HttpGet("Sets")]
-        public IActionResult Sets() 
+        public IActionResult Sets()
         {
             return View(this._dataService.GetAllSets());
         }
 
-            // Adding a parameter for ID so we know what piece type to edit.
-            [HttpGet("edit-piecetype/{id:int}")]
-            public IActionResult EditPieceType(int id)
-            {
-                return View(_dataService.GetPieceType(id));
-            }
+        // Adding a parameter for ID so we know what piece type to edit.
+        [HttpGet("edit-piecetype/{id:int}")]
+        public IActionResult EditPieceType(int id)
+        {
+            return View(_dataService.GetPieceType(id));
+        }
 
-            [HttpPost("edit-piecetype/{id:int}")]
-            public IActionResult EditPieceType(PieceType pt)
+        [HttpPost("edit-piecetype/{id:int}")]
+        public IActionResult EditPieceType(PieceType pt)
+        {
+            // If not valid send user back to view with the piece type for correction.
+            if (!ModelState.IsValid)
             {
-                // If not valid send user back to view with the piece type for correction.
-                if (!ModelState.IsValid)
-                {
-                    return View(pt);
-                }
-                else
-                {
-                    _dataService.UpdatePieceType(pt);
+                return View(pt);
+            }
+            else
+            {
+                _dataService.UpdatePieceType(pt);
 
                 // Send user back to view of piece types to see their changes.
                 return RedirectToAction(nameof(PieceTypes));
-                }
             }
+        }
 
-            [HttpGet("AddSet")]
-            public IActionResult AddSet()
+        [HttpGet("AddSet")]
+        public IActionResult AddSet()
+        {
+            SetViewModel svm = new();
+            svm.AvailablePieces = this._dataService.GetAllPieces();
+
+
+            return View(svm);
+        }
+
+        // changed to get rid of the warning, removed "async Task<IActionResult>" we aren't using await within the function...
+        [HttpPost("AddSet")]
+        public IActionResult AddSet(SetViewModel svm)
+        {
+            if (!ModelState.IsValid || svm.SelectedPieceIds == null || svm.SelectedPieceIds.Count == 0)
             {
-                SetViewModel svm = new();
                 svm.AvailablePieces = this._dataService.GetAllPieces();
-
-                string pathForImages = Path.Combine(this._webHostEnvironment.WebRootPath, "images/");
-                // Note: Images are already in Piece.ImagePath, but list for consistency if needed
-                // svm.ImagePaths = Directory.EnumerateFiles(pathForImages).Select(fn => Path.GetFileName(fn)).ToList();
-
                 return View(svm);
             }
 
-            // changed to get rid of the warning, removed "async Task<IActionResult>" we aren't using await within the function...
-            [HttpPost("AddSet")]
-            public IActionResult AddSet(SetViewModel svm)
+            try
             {
-                if (!ModelState.IsValid || svm.SelectedPieceIds == null || svm.SelectedPieceIds.Count == 0)
-                {
-                    svm.AvailablePieces = this._dataService.GetAllPieces();
-                    return View(svm);
-                }
-
-                try
-                {
-                    this._dataService.CreateSet(svm.NewSet!, svm.SelectedPieceIds);
-                    return RedirectToAction("Index", "Home");
-                }
-                catch (Exception e)
-                {
-                    ModelState.AddModelError("", e.Message);
-                    svm.AvailablePieces = this._dataService.GetAllPieces();
-                    return View(svm);
-                }
+                this._dataService.CreateSet(svm.NewSet!, svm.SelectedPieceIds);
+                return RedirectToAction("Index", "Home");
             }
+            catch (Exception e)
+            {
+                ModelState.AddModelError("", e.Message);
+                svm.AvailablePieces = this._dataService.GetAllPieces();
+                return View(svm);
+            }
+        }
 
         [HttpGet("deletepiececonfirmation/{id:int}")]
-        public IActionResult DeletePieceConfirmation(int id) 
+        public IActionResult DeletePieceConfirmation(int id)
         {
             return View(this._dataService.GetPiece(id));
         }
@@ -301,7 +298,7 @@ namespace SAGroupAlphaSpring26.Controllers
         }
 
         [HttpGet("RecoverPiece")]
-        public IActionResult RecoverPiece() 
+        public IActionResult RecoverPiece()
         {
             return View(this._dataService.GetDeletedPieces());
         }
