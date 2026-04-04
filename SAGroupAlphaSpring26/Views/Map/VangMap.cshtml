@@ -14,7 +14,7 @@
     <a asp-controller="Map"
            asp-action="Playerview"
            target="_blank"
-           asp-route-id="@Model.CurrentSession.Id"
+           asp-route-id="@Model.CurrentSession?.Id"
            class="btn btn-success btn-lg w-100 shadow-sm">
         Player View
     </a>
@@ -28,7 +28,7 @@
     <div class="piece-bar">
         <h4 style="color: white; padding: 10px; font-size: 0.9rem;">Collection</h4>
         <div class="token-list">
-            @foreach (var piece in Model.PlayablePieces)
+            @foreach (var piece in Model.PlayablePieces?)
             {
                 // Image Paths currently /images/Cleric.png
                 // However must be ~/images/(filename).
@@ -57,7 +57,7 @@
              style="position: relative; height:100%; justify-self: center; max-height: 90vh; max-width:90vh;"
              data-role="dm">
 
-             <img src="@Model.MapImagePath" style="width: 100%; height: auto; display: block;"/>
+             <img src="@Model.MapImagePath?" style="width: 100%; height: auto; display: block;"/>
 
             @foreach (var token in Model.Tokens.Where(t => t.Piece?.PieceType?.Name != "Map"))
             {
