@@ -1,4 +1,4 @@
-﻿namespace SAGroupAlphaSpring26.ViewModels
+namespace SAGroupAlphaSpring26.ViewModels
 {
     // A simple view model for logging in
     // We need a users email address and password
@@ -9,10 +9,10 @@
         [Required]
         [DataType(DataType.EmailAddress)]
         [Display(Name = "Email Address")]
-        public string EmailAddress { get; set; }
+        public required string EmailAddress { get; set; } // added required to get rid of warning.
 
         [Required]
         [DataType(DataType.Password)]
-        public string Password { get; set; }
+        public required string Password { get; set; } // added required to get rid of warning.
     }
 }

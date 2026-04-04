@@ -1,11 +1,11 @@
-﻿@model SAGroupAlphaSpring26.ViewModels.MapScreenViewModel
+@model SAGroupAlphaSpring26.ViewModels.MapScreenViewModel
 
 <div class="map-container" >
 
     <div class="piece-bar">
         <h4 style="color: white; padding: 10px; font-size: 0.9rem;">Collection</h4>
         <div class="token-list">
-            @foreach(var piece in Model.PlayablePieces?)
+            @foreach(var piece in Model.PlayablePieces ?? new List<SAGroupAlphaSpring26.Models.Piece>()) // now creates new list if no pieces are found. Gets rid of the possible null warning. This should nevver happen, but in theory could.
             {
                 // Image Paths currently /images/Cleric.png
                 // However must be ~/images/(filename).
@@ -39,18 +39,19 @@ data-pieceid="@piece.Id.ToString()"
             </div>
             <button id="btn-save" class="button-primary">Save Positions</button>
             <a asp-controller="Home" asp-action="Index" class="button-primary" target="_blank">Cancel</a>
+            <!--added ?? 0 to get rid of the null warning.-->
             <a asp-controller="Map"
                    asp-action="Playerview"
                    target="_blank"
-                   asp-route-id="@Model.CurrentSession.Id"
+                   asp-route-id="@Model.CurrentSession?.Id ?? 0" 
                    class="btn btn-success btn-lg w-100 shadow-sm">
                 Player View
             </a>
         </div>
 
         <div class="map-board" id="map-board" style="background-image: url('@Model.MapImagePath'); background-size: contain; background-position: center;" data-role="dm">
-
-            @foreach (var token in Model.Tokens?.Where(t => t.Piece?.PieceType?.Name != "Map" && (t.X != 0 || t.Y != 0)))
+            <!-- Added ?? Enumerable.Empty<SAGroupAlphaSpring26.Models.Token>() to get rid of the null warning. -->
+            @foreach (var token in Model.Tokens?.Where(t => t.Piece?.PieceType?.Name != "Map" && (t.X != 0 || t.Y != 0)) ?? Enumerable.Empty<SAGroupAlphaSpring26.Models.Token>())
             {
                 <img src="@(string.IsNullOrEmpty(token.Piece?.ImagePath) ? "/images/default.png" : token.Piece.ImagePath)"
                      class="map-piece draggable-token"
@@ -67,7 +68,8 @@ data-pieceid="@piece.Id.ToString()"
 
 @section Scripts {
     <script>
-        window.sessionId = @Json.Serialize(Model.CurrentSession.Id);
+    // Added ?? 0 to get rid of the null warning. We should setup a landing page or redirect for the case that SessionID = 0 (null).
+        window.sessionId = @Json.Serialize(Model.CurrentSession?.Id ?? 0);
     </script>
 <script src="~/js/map.js"></script>
     <script>

@@ -1,4 +1,4 @@
-﻿@model SAGroupAlphaSpring26.ViewModels.MapScreenViewModel
+@model SAGroupAlphaSpring26.ViewModels.MapScreenViewModel
 
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 
@@ -24,11 +24,12 @@
 
 <div class="map-layout-wrapper" style="display: flex; flex-direction: row; height: 90vh; overflow: hidden;">
 
-    @* I moved the piece bar before the map board. *@
+    @* I moved the piece bar before the map board. (This set it to the left of the map) *@
     <div class="piece-bar">
         <h4 style="color: white; padding: 10px; font-size: 0.9rem;">Collection</h4>
         <div class="token-list">
-            @foreach (var piece in Model.PlayablePieces?)
+        <!-- Added creation of list (in the case it's null) to get rid of null warning. -->
+            @foreach (var piece in Model.PlayablePieces ?? new List<SAGroupAlphaSpring26.Models.Piece>())
             {
                 // Image Paths currently /images/Cleric.png
                 // However must be ~/images/(filename).
@@ -57,7 +58,7 @@
              style="position: relative; height:100%; justify-self: center; max-height: 90vh; max-width:90vh;"
              data-role="dm">
 
-             <img src="@Model.MapImagePath?" style="width: 100%; height: auto; display: block;"/>
+             <img src="@Model.MapImagePath" style="width: 100%; height: auto; display: block;"/>
 
             @foreach (var token in Model.Tokens.Where(t => t.Piece?.PieceType?.Name != "Map"))
             {
@@ -82,7 +83,7 @@
 <!-- Scripts start here -->
 @section Scripts {
     <script>
-        window.sessionId = @Json.Serialize(Model.CurrentSession.Id);
+        window.sessionId = @Json.Serialize(Model.CurrentSession?.Id ?? 0);
     </script>
     <!--Replaced with map.js module-->
     <script type="module" src="~/js/map.js"></script>

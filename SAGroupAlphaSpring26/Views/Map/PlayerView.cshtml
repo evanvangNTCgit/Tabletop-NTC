@@ -1,4 +1,4 @@
-﻿@{
+@{
     Layout = "_PlayerLayout";
 }
 
@@ -10,14 +10,14 @@
      style="position: relative; justify-self: center; max-height: 90vh; max-width:90vh; overflow: hidden;"
      data-role="player">
 
-    <img src="@Model.MapImagePath?" style="width: 100%; height: auto; display: block;" />
+    <img src="@Model.MapImagePath" style="width: 100%; height: auto; display: block;" />
 
 </div>
 
 <!-- Scripts start here -->
 @section Scripts {
     <script>
-        window.sessionId = @Json.Serialize(Model.CurrentSession.Id);
+        window.sessionId = @Json.Serialize(Model.CurrentSession?.Id ?? 0);
     </script>
     @* uses a module now. *@
     <script src="~/js/map.js" type="module"></script>

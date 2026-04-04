@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.Services;
@@ -264,8 +264,9 @@ namespace SAGroupAlphaSpring26.Controllers
                 return View(svm);
             }
 
+            // changed to get rid of the warning, removed "async Task<IActionResult>" we aren't using await within the function...
             [HttpPost("AddSet")]
-            public async Task<IActionResult> AddSet(SetViewModel svm)
+            public IActionResult AddSet(SetViewModel svm)
             {
                 if (!ModelState.IsValid || svm.SelectedPieceIds == null || svm.SelectedPieceIds.Count == 0)
                 {
