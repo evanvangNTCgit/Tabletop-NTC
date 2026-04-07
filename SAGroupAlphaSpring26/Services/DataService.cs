@@ -470,6 +470,7 @@ namespace SAGroupAlphaSpring26.Services
                 .Where(cis => cis.UserId == userId)
                 .Where(cis => cis.IsArchived == false)
                 .Include(cis => cis.Set)
+                .ThenInclude(s => s.PiecesList)
                 .ToList();
         }
 

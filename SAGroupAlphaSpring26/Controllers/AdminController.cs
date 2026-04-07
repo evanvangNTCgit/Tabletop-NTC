@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.Services;
-using SAGroupAlphaSpring26.ViewModels;
 
 namespace SAGroupAlphaSpring26.Controllers
 {
