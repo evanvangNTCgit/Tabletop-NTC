@@ -17,7 +17,9 @@ namespace SAGroupAlphaSpring26.ViewComponents
 
         public IViewComponentResult Invoke()
         {
+            var model = new CartViewModel();
             List<CartItem> cartItems = new List<CartItem>();
+            List<CartItemSet> setItems = new();
 
             // auth check.
             if (User.Identity != null && User.Identity.IsAuthenticated)
@@ -26,11 +28,22 @@ namespace SAGroupAlphaSpring26.ViewComponents
                 string? userIdClaim = ((ClaimsPrincipal)User).FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (int.TryParse(userIdClaim, out int userId))
                 {
+
                     cartItems = _dataService.GetCartItems(userId);
+                    if (cartItems != null && cartItems.Count > 0)
+                    {
+                        model.Pieces.AddRange(cartItems);
+                    }
+
+                    setItems = _dataService.GetCartItemSet(userId);
+                    if (setItems != null && setItems.Count > 0)
+                    {
+                        model.Sets.AddRange(setItems);
+                    }
                 }
             }
 
-            return View(cartItems);
+            return View(model);
         }
     }
 }

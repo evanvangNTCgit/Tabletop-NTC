@@ -40,7 +40,7 @@ namespace SAGroupAlphaSpring26.Controllers
         {
             int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-            _dataService.AddSetCartItem(userId, id);
+            _dataService.AddCartItem(userId, id);
 
             return RedirectToAction(nameof(ViewCart));
         }
