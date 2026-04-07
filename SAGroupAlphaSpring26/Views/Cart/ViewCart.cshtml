@@ -1,4 +1,4 @@
-﻿@model CartViewModel
+@model CartViewModel
 
 <h2>Cart</h2>
 
@@ -57,6 +57,12 @@
             </tr>
         }
     </table>
+
+    <div class="mt-4">
+        <form asp-controller="Cart" asp-action="Checkout" method="post">
+            <button type="submit" class="button-primary">Purchase Items</button>
+        </form>
+    </div>
 }
 else
 {

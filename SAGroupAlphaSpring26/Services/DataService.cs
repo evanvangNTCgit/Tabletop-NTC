@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
 using System.Security.Claims;
 
@@ -577,6 +577,58 @@ namespace SAGroupAlphaSpring26.Services
             userCartSetItem.IsArchived = true;
             this._dataContext.Update(userCartSetItem);
             this._dataContext.SaveChanges();
+        }
+
+        // Checks out the user's cart, adding all pieces to their collection and archiving the cart items.
+        public void CheckoutCart(int userId)
+        {
+            try
+            {
+                // Get pieces from the cart
+                var cartItems = this.GetCartItems(userId);
+                foreach (var item in cartItems)
+                {
+                    // If user doesn't already own it, add it
+                    if (!this._dataContext.UserPieces.Any(up => up.UserId == userId && up.PieceId == item.PieceId))
+                    {
+                        this._dataContext.UserPieces.Add(new UserPieces { UserId = userId, PieceId = item.PieceId });
+                    }
+                    // Archive the cart item
+                    item.IsArchived = true;
+                    this._dataContext.Update(item);
+                }
+
+                // Get sets from the cart
+                // We need to retrieve the sets with the PiecesList included to get the PieceIds
+                var cartSets = this._dataContext.CartItemSets
+                    .Where(cis => cis.UserId == userId && cis.IsArchived == false)
+                    .Include(cis => cis.Set)
+                    .ThenInclude(s => s!.PiecesList)
+                    .ToList();
+
+                foreach (var setItem in cartSets)
+                {
+                    // Add all pieces from the set to the user account
+                    if (setItem.Set != null && setItem.Set.PiecesList != null)
+                    {
+                        foreach (var pieceSet in setItem.Set.PiecesList)
+                        {
+                            if (!this._dataContext.UserPieces.Any(up => up.UserId == userId && up.PieceId == pieceSet.PieceId))
+                            {
+                                this._dataContext.UserPieces.Add(new UserPieces { UserId = userId, PieceId = pieceSet.PieceId });
+                            }
+                        }
+                    }
+                    setItem.IsArchived = true;
+                    this._dataContext.Update(setItem);
+                }
+
+                this._dataContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to checkout cart for user {userId}: {ex.Message}");
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.Services;
@@ -72,6 +72,17 @@ namespace SAGroupAlphaSpring26.Controllers
 
             _dataService.DeleteSetCartItem(userId, id);
 
+            return RedirectToAction(nameof(ViewCart));
+        }
+
+        [HttpPost("checkout")]
+        public IActionResult Checkout()
+        {
+            int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            _dataService.CheckoutCart(userId);
+
+            // Redirect back to the cart or profile, could also add TempData message here.
             return RedirectToAction(nameof(ViewCart));
         }
     }
