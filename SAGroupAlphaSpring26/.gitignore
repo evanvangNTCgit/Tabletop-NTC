@@ -1,5 +1,6 @@
 # Local development settings (contains connection strings)
 appsettings.Development.json
+appsettings.local.json
 
 # User-specific files
 *.user
