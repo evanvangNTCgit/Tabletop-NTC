@@ -1,4 +1,4 @@
-﻿@model SAGroupAlphaSpring26.ViewModels.MapScreenViewModel
+@model SAGroupAlphaSpring26.ViewModels.MapScreenViewModel
 
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 
@@ -54,10 +54,10 @@
     <!-- https://stackoverflow.com/questions/26438388/maintain-div-aspect-ratio-according-to-height -->
         <div class="map-container"
              id="map-board"
-             style="position: relative; height:100%; justify-self: center; max-height: 90vh; max-width:90vh;"
+             style="position: relative; height: auto; width: 100%; align-self: center; justify-self: center; max-height: 90vh; max-width: 90vh; aspect-ratio: 1 / 1;"
              data-role="dm">
 
-             <img src="@Model.MapImagePath" style="width: 100%; height: auto; display: block;"/>
+             <img src="@Model.MapImagePath" style="width: 100%; height: 100%; display: block;"/>
 
             @foreach (var token in Model.Tokens.Where(t => t.Piece?.PieceType?.Name != "Map"))
             {
@@ -73,8 +73,7 @@
 
         @* Drag tokens into this area to delete them. *@
         <div id="delete-area" class="delete-drop-zone">
-            <span class="ui-icon ui-icon-trash"></span>
-            <p>Drop Here To Remove</p>
+            <p>Drop to Remove</p>
         </div>
         </div>
 </div>
