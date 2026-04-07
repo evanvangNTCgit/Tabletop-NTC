@@ -10,7 +10,7 @@
 
 @font-face {
     font-family: 'DragonHunter';
-    src: url('../fonts/DragonHunter.otf') format('truetype');
+    src: url('../fonts/DragonHunter.ttf') format('truetype');
 }
 
 body {
