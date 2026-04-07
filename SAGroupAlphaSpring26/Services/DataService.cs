@@ -482,6 +482,17 @@ namespace SAGroupAlphaSpring26.Services
                 .Where(ci => ci.PieceId == pieceId)
                 .FirstOrDefault()!;
 
+            // Also check if user has cartItem in cart since in our app. you can only buy things once.
+            CartItem alreadyInCart = this._dataContext.CartItems
+                .Where(ci => ci.UserId == userId)
+                .Where(ci => ci.IsArchived == false)
+                .Where(ci => ci.PieceId == pieceId)
+                .FirstOrDefault()!;
+            if (alreadyInCart != null)
+            {
+                return;
+            }
+
             if (userCartItem != null)
             {
                 userCartItem.IsArchived = false;
@@ -506,7 +517,7 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
-        public void AddSetCartItem(int userId, int setId) 
+        public void AddSetCartItem(int userId, int setId)
         {
             // Check if the user has an archived cartItem of same pieceId
             CartItemSet userSetItem = this._dataContext.CartItemSets
@@ -514,6 +525,18 @@ namespace SAGroupAlphaSpring26.Services
                 .Where(cis => cis.IsArchived == true)
                 .Where(cis => cis.SetId == setId)
                 .FirstOrDefault()!;
+
+            // Also check if user already has this set in the cart they can only buy things once.
+            CartItemSet alreadyInCart = this._dataContext.CartItemSets
+                .Where(cis => cis.UserId == userId)
+                .Where(cis => cis.IsArchived == false)
+                .Where(cis => cis.SetId == setId)
+                .FirstOrDefault()!;
+            if(alreadyInCart != null)
+            {
+                return;
+            }
+
 
             if (userSetItem != null)
             {
