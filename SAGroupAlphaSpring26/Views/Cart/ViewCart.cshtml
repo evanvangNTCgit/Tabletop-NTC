@@ -1,8 +1,8 @@
-﻿@model List<CartItem>
+﻿@model CartViewModel
 
 <h2>Cart</h2>
 
-@if (Model != null && Model.Count > 0)
+@if (Model != null && (Model.Pieces.Count > 0 || Model.Sets.Count > 0))
 {
     <table class="table">
         <tr>
@@ -15,7 +15,8 @@
         @{
             decimal totalPrice = 0;
 
-            @foreach (var item in Model)
+            if(Model.Pieces.Count > 0){
+            @foreach (var item in Model.Pieces)
             {
                 totalPrice += item.Piece!.Price;
                 if(item.Piece!= null)
@@ -24,8 +25,25 @@
                     <td>@item.Piece.Name</td>
                         <td>@item.Piece.Price</td>
                         <td>
-                            <a asp-controller="Cart" asp-action="RemoveFromCart" asp-route-id="@item.PieceId">Remove</a>
+                            <a asp-controller="Cart" asp-action="RemoveFromCart" asp-route-id="@item.Piece.Id">Remove</a>
                         </td>
+                    </tr>
+                }
+                }
+            }
+
+            if(Model.Sets.Count > 0)
+            {
+                @foreach(var set in Model.Sets)
+                {
+                    totalPrice += set.Set!.Price;
+
+                    <tr>
+                    <td>@set.Set.Name</td>
+                    <td>@set.Set.Price</td>
+                    <td>
+                    <a asp-controller="Cart" asp-action="RemoveSetFromCart" asp-route-id="@set.Set.Id">Remove</a>
+                    </td>
                     </tr>
                 }
             }

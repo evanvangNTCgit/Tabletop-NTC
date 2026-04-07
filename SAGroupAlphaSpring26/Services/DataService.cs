@@ -437,12 +437,39 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
+        public CartItemSet GetCartItemSet(int userId, int setId)
+        {
+            try
+            {
+                return this._dataContext.CartItemSets
+                    .Where(cis => cis.UserId == userId)
+                    .Where(cis => cis.SetId == setId)
+                    .Where(cis => cis.IsArchived == false)
+                    .Where(cis => cis.Set!.IsArchived == false)
+                    .Include(cis => cis.Set)
+                    .FirstOrDefault()!;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to get set\n{ex.Message}");
+            }
+        }
+
         public List<CartItem> GetCartItems(int userId)
         {
             return this._dataContext.CartItems
                 .Where(ci => ci.UserId == userId)
                 .Where(ci => ci.IsArchived == false)
                 .Include(ci => ci.Piece)
+                .ToList();
+        }
+
+        public List<CartItemSet> GetCartItemSet(int userId)
+        {
+            return this._dataContext.CartItemSets
+                .Where(cis => cis.UserId == userId)
+                .Where(cis => cis.IsArchived == false)
+                .Include(cis => cis.Set)
                 .ToList();
         }
 
@@ -479,11 +506,52 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
+        public void AddSetCartItem(int userId, int setId) 
+        {
+            // Check if the user has an archived cartItem of same pieceId
+            CartItemSet userSetItem = this._dataContext.CartItemSets
+                .Where(cis => cis.UserId == userId)
+                .Where(cis => cis.IsArchived == true)
+                .Where(cis => cis.SetId == setId)
+                .FirstOrDefault()!;
+
+            if (userSetItem != null)
+            {
+                userSetItem.IsArchived = false;
+                this._dataContext.Update(userSetItem);
+                this._dataContext.SaveChanges();
+            }
+            else
+            {
+                User user = this._dataContext.Users.FirstOrDefault(u => u.Id == userId)!;
+                if (user != null)
+                {
+                    CartItemSet newCartItemSet = new()
+                    {
+                        SetId = setId,
+                        UserId = userId,
+                        IsArchived = false
+                    };
+
+                    this._dataContext.Add(newCartItemSet);
+                    this._dataContext.SaveChanges();
+                }
+            }
+        }
+
         public void DeleteCartItem(int userId, int pieceId)
         {
             var userCartItem = this.GetCartItem(userId, pieceId);
             userCartItem.IsArchived = true;
             this._dataContext.Update(userCartItem);
+            this._dataContext.SaveChanges();
+        }
+
+        public void DeleteSetCartItem(int userId, int setId)
+        {
+            var userCartSetItem = this.GetCartItemSet(userId, setId);
+            userCartSetItem.IsArchived = true;
+            this._dataContext.Update(userCartSetItem);
             this._dataContext.SaveChanges();
         }
     }

@@ -33,6 +33,8 @@ namespace SAGroupAlphaSpring26.Data
 
         public DbSet<CartItem> CartItems { get; set; }
 
+        public DbSet<CartItemSet> CartItemSets { get; set; }
+
         // We overide the on model creation method
         // BECAUSE HERE... we specify what relationships we want to have in our database, and how we want to structure our tables.
         // Like Pieces and piecetypes have a relationship, so we would specify that here.

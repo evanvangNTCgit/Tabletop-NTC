@@ -23,9 +23,13 @@ namespace SAGroupAlphaSpring26.Controllers
             // Get the user ID (currently a string), parse it. 
             // Then get the cart items based on user ID.
             int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            List<CartItem> model = _dataService.GetCartItems(userId);
+            List<CartItem> userCartItems = _dataService.GetCartItems(userId);
+            List<CartItemSet> userSets = _dataService.GetCartItemSet(userId);
 
-            var test = _dataService.GetAllPieces();
+            var model = new CartViewModel();
+
+            model.Pieces.AddRange(userCartItems);
+            model.Sets.AddRange(userSets);
 
             // Show view.
             return View(model);
@@ -36,7 +40,17 @@ namespace SAGroupAlphaSpring26.Controllers
         {
             int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-            _dataService.AddCartItem(userId, id);
+            _dataService.AddSetCartItem(userId, id);
+
+            return RedirectToAction(nameof(ViewCart));
+        }
+
+        [HttpPost("add-set-to-cart/{id:int}")]
+        public IActionResult AddSetToCart(int id)
+        {
+            int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            _dataService.AddSetCartItem(userId, id);
 
             return RedirectToAction(nameof(ViewCart));
         }
@@ -47,6 +61,16 @@ namespace SAGroupAlphaSpring26.Controllers
             int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
             _dataService.DeleteCartItem(userId, id);
+
+            return RedirectToAction(nameof(ViewCart));
+        }
+
+        [HttpGet("remove-set-from-cart/{id:int}")]
+        public IActionResult RemoveSetFromCart(int id)
+        {
+            int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            _dataService.DeleteSetCartItem(userId, id);
 
             return RedirectToAction(nameof(ViewCart));
         }
