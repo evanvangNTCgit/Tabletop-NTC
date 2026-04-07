@@ -1,0 +1,59 @@
+﻿@model Set
+
+@if (Model != null)
+{
+    if (Model.PiecesList != null)
+    {
+        @* foreach (PieceSets piece in Model.PiecesList!)
+        {
+            <div>
+                <h1>@piece.Piece.Name</h1>
+                <img src="@piece.Piece.ImagePath"/>
+            </div>
+        } *@
+        // Making a 2x2 grid for the pieces.
+        for(int i = 0; i < Model.PiecesList.Count(); i++)
+        {
+            Piece piece = Model.PiecesList[i].Piece;
+
+            if(i % 2 == 0)
+            {
+                @:<div class="row">
+            }
+            <div class="card col" style="margin: 15px">
+                <img src="@piece.ImagePath" class="card-img-top" style="height: 10vh; width: auto; aspect-ratio: 16 / 9; object-fit: contain;" />
+                <div class="card-body align-self-center">
+                    <h5 class="card-title">@piece.Name</h5>
+                    <p class="card-body">@piece.Description</p>
+                    </div>
+            </div>
+
+            @* <div class="col">
+                <img src="@piece.ImagePath" style="height: 10vh; width: auto; aspect-ratio: 16 / 9; object-fit: contain;" />
+                <div>
+                    <h5>@piece.Name</h5>
+                    <p>@piece.Description</p>
+                </div>
+            </div> *@
+
+             if(i % 2 == 1)
+            {
+                // Then after two piece in the row close it.
+                @:</div>
+            }
+        }
+    }
+
+    <p>
+        Price: @Model.Price;
+    </p>
+    <form method="POST" asp-controller="cart" asp-action="addtocart" asp-route-id="@Model.Id">
+        <p>
+            <button type="submit" class="btn btn-primary" role="button">Add to cart</button>
+        </p>
+    </form>
+}
+else
+{
+    <p>No set with said ID</p>
+}

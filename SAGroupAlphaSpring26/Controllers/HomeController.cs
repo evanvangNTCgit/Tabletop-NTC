@@ -84,6 +84,14 @@ namespace SAGroupAlphaSpring26.Controllers
             return View(model);
         }
 
+        // Gets a specific set by ID.
+        [Route("Set/{id}")]
+        public IActionResult Set(int id)
+        {
+            var model = _dataService.GetSet(id);
+            return View(model);
+        }
+
         [Route("Session/{id}")]
         public IActionResult Session(int id)
             {

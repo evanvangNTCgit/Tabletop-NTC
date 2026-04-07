@@ -51,6 +51,16 @@ namespace SAGroupAlphaSpring26.Data
                 .WithOne(ci => ci.User)
                 .HasForeignKey(u => u.UserId);
 
+            modelBuilder.Entity<User>() // User can have many cart item sets.
+                .HasMany(u => u.CartItemSets)
+                .WithOne(cis => cis.User)
+                .HasForeignKey(u => u.UserId);
+
+            modelBuilder.Entity<Set>() // Set can be in many cart item sets.
+                .HasMany(s => s.CartItemSets)
+                .WithOne(cis => cis.Set)
+                .HasForeignKey(s => s.SetId);
+
             // One piece type can have many pieces, but a piece ONLY one type.
             modelBuilder.Entity<PieceType>()
                 .HasMany(pt => pt.Pieces)

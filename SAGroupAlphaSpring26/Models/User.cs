@@ -38,5 +38,7 @@
         public List<Session> Sessions { get; set; } = new();
 
         public List<CartItem>? CartItems { get; set; }
+
+        public List<CartItemSet>? CartItemSets { get; set; }
     }
 }

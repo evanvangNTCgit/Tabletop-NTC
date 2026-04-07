@@ -45,6 +45,28 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
+        public Set GetSet(int id)
+        {
+            try
+            {
+                var set = _dataContext.Sets
+                    .Include(p => p.PiecesList!)
+                    .ThenInclude(pl => pl.Piece)
+                    .FirstOrDefault(s => s.Id == id);
+
+                if (set == null)
+                {
+                    throw new Exception();
+                }
+
+                return set;
+            }
+            catch
+            {
+                throw new Exception($"Piece of {id} not found");
+            }
+        }
+
         public List<PieceType> GetPieceTypes()
         {
             try

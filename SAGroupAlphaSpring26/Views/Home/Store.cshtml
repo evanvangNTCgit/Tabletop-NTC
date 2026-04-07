@@ -12,15 +12,18 @@
         @foreach (var set in Model.Sets)
         {
             decimal totalPrice = set.PiecesList?.Sum(ps => ps.Piece.Price) ?? 0m;
-            decimal discountedPrice = totalPrice * (1 - set.Discount);
+            @* decimal discountedPrice = totalPrice * (1 - set.Discount); *@
             <div class="store-item" style="grid-column: span 2;">
                 <h3>@set.Name</h3>
                 <p>Pieces (@(set.PiecesList?.Count ?? 0)): @string.Join(", ", set.PiecesList?.Select(ps => ps.Piece.Name) ?? Enumerable.Empty<string>())</p>
-                <p>Total: $@totalPrice.ToString("F2")</p>
-                <p>Discounted (@((set.Discount * 100).ToString("F1") + "%")): $@discountedPrice.ToString("F2")</p>
+                <p>Total: $@set.Price.ToString("F2")</p>
+                @* <p>Discounted (@((set.Discount * 100).ToString("F1") + "%")): $@discountedPrice.ToString("F2")</p> *@
                 <!-- Placeholder for owned pieces discount -->
-                <p class="text-muted">Owned pieces discount: $0.00 (TODO)</p>
+                @* <p class="text-muted">Owned pieces discount: $0.00 (TODO)</p> *@
                 @* <button class="button-primary">View</button> *@
+                <div>
+                    <a class="button-primary" asp-controller="Home" asp-action="Set" asp-route-id="@set.Id">View</a>
+                </div>
             </div>
         }
     </div>
