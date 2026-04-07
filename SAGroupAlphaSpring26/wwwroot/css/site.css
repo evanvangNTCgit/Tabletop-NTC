@@ -9,8 +9,8 @@
 }
 
 @font-face {
-    font-family: 'DragonHunter';
-    src: url('../fonts/DragonHunter.ttf') format('truetype');
+    font-family: 'Knights Quest';
+    src: url('../fonts/Knights_Quest.ttf') format('truetype');
 }
 
 body {
@@ -19,7 +19,7 @@ body {
     background-repeat: no-repeat;
     background-position: center;
     background-attachment: fixed;
-    font-family: 'DragonHunter', sans-serif;
+    font-family: 'Knights Quest', sans-serif;
     color: #111827;
     /* dark text for tan paper bg */
     letter-spacing: 2px;
