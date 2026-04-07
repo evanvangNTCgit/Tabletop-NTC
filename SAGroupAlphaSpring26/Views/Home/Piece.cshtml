@@ -1,4 +1,23 @@
-﻿@model Piece
+﻿@using System.Security.Claims
+@using SAGroupAlphaSpring26.Data;
+@using SAGroupAlphaSpring26.Services;
+@model Piece
+
+<!-- This is how you dependency inject a cshtml-->
+@inject DataContext dc;
+
+@{
+    bool pieceInCart = false;
+
+    DataService dataService = new(dc);
+    int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+    var set = dataService.GetCartItem(userId, Model.Id);
+    if (set != null)
+    {
+        pieceInCart = true;
+    }
+}
 
 @if(Model != null)
 {
@@ -9,11 +28,17 @@
         <p>Price: $@Model.Price</p>
     </section>
 
-    <form method="POST" asp-controller="cart" asp-action="addtocart" asp-route-id="@Model.Id">
-        <p>
-            <button type="submit" class="btn btn-primary" role="button">Add to cart</button>
-        </p>
-    </form>
+    @if (!pieceInCart)
+    {
+        <form method="POST" asp-controller="cart" asp-action="addtocart" asp-route-id="@Model.Id">
+            <p>
+                <button type="submit" class="btn btn-primary" role="button">Add to cart</button>
+            </p>
+        </form>
+    } else
+    {
+        <p>This piece is already in your cart.</p>
+    }
 } else
 {
     <p>No piece with said ID</p>
