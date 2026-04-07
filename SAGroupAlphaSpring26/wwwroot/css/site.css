@@ -20,13 +20,16 @@ body {
     background-position: center;
     background-attachment: fixed;
     font-family: 'DragonHunter', sans-serif;
-    color: #111827; /* dark text for tan paper bg */
+    color: #111827;
+    /* dark text for tan paper bg */
     letter-spacing: 2px;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
     color: #111827 !important;
-    text-shadow: 1px 1px 2px rgba(255,255,255,0.7);
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7);
 }
 
 /* =========================================
@@ -41,23 +44,27 @@ h1, h2, h3 {
 /* Sidebar */
 .sidebar {
     width: 240px;
-    background-color: #0a0a0a; /* D&D dark */
+    background-color: #0a0a0a;
+    /* D&D dark */
     color: #F4E4BC;
     padding: 1.5rem 1rem;
     /* Make sidebar sticky */
     position: sticky;
-    top: 0; /* sticks to top of viewport when scrolling */
-    height: 100vh; /* full viewport height */
-    overflow-y: auto; /* scroll if sidebar content is long */
+    top: 0;
+    /* sticks to top of viewport when scrolling */
+    height: 100vh;
+    /* full viewport height */
+    overflow-y: auto;
+    /* scroll if sidebar content is long */
 }
 
-    .sidebar h2 {
-        margin-bottom: 1.5rem;
-        font-size: 1.1rem;
-        font-weight: 600;
-        letter-spacing: 2px;
-        color: #FFD700;
-    }
+.sidebar h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #FFD700;
+}
 
 /* Main Content */
 .main-content {
@@ -95,10 +102,10 @@ h1, h2, h3 {
     color: #111827;
 }
 
-    .card .list-group-item.list-group-item-action {
-        background: transparent;
-        border: transparent;
-    }
+.card .list-group-item.list-group-item-action {
+    background: transparent;
+    border: transparent;
+}
 
 /* =========================================
    BUTTONS (Stronger Contrast)
@@ -154,9 +161,9 @@ h1, h2, h3 {
     font-weight: 600;
 }
 
-    .button-danger:hover {
-        background-color: #660000;
-    }
+.button-danger:hover {
+    background-color: #660000;
+}
 
 .button-disabled {
     background-color: #696969;
@@ -208,9 +215,11 @@ h1, h2, h3 {
 
 .store-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr); /* exactly 5 items per row */
+    grid-template-columns: repeat(5, 1fr);
+    /* exactly 5 items per row */
     gap: 1.5rem;
-    margin-bottom: 3rem; /* spacing between types */
+    margin-bottom: 3rem;
+    /* spacing between types */
 }
 
 .store-item {
@@ -224,17 +233,17 @@ h1, h2, h3 {
     color: #111827;
 }
 
-    .store-item:hover {
-        border-color: #D4AF37;
-    }
+.store-item:hover {
+    border-color: #D4AF37;
+}
 
-    .store-item img {
-        width: 100%;
-        max-height: 200px;
-        max-width: 200px;
-        object-fit: cover;
-        border-radius: 8px;
-    }
+.store-item img {
+    width: 100%;
+    max-height: 200px;
+    max-width: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+}
 
 .buy-button {
     margin-top: 0.75rem;
@@ -285,9 +294,10 @@ h1, h2, h3 {
     flex-grow: 1;
     overflow: hidden;
 }
-    .map-board[draggable] {
-        cursor: grabbing !important;
-    }
+
+.map-board[draggable] {
+    cursor: grabbing !important;
+}
 
 /* Piece Bar */
 .piece-bar {
@@ -302,30 +312,30 @@ h1, h2, h3 {
 
 .sidebar-piece {
     border: 2px solid #696969;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-    .sidebar-piece:hover {
-        border-color: #D4AF37;
-        transform: scale(1.1);
-    }
+.sidebar-piece:hover {
+    border-color: #D4AF37;
+    transform: scale(1.1);
+}
 
 .draggable-token {
     border: 2px solid #D4AF37;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     user-select: none;
-    width:5%;
-    height:5%;
+    width: 5%;
+    height: 5%;
 }
 
-    .draggable-token:hover {
-        border-color: #FFD700;
-    }
+.draggable-token:hover {
+    border-color: #FFD700;
+}
 
-    .draggable-token:active,
-    .map-board.drag-over {
-        cursor: grabbing !important;
-    }
+.draggable-token:active,
+.map-board.drag-over {
+    cursor: grabbing !important;
+}
 
 .map-piece:active,
 .map-piece[draggable="true"]:active {
@@ -355,9 +365,9 @@ h1, h2, h3 {
     position: relative;
 }
 
-    .map-piece:hover {
-        transform: scale(1.08);
-    }
+.map-piece:hover {
+    transform: scale(1.08);
+}
 
 /*.map-main-area {
     flex-grow: 1;
@@ -396,9 +406,9 @@ h1, h2, h3 {
     font-weight: 500;
 }
 
-    .zoom-btn:hover {
-        background: #D2B48C;
-    }
+.zoom-btn:hover {
+    background: #D2B48C;
+}
 
 #zoom-level {
     color: #111827 !important;
@@ -429,10 +439,10 @@ h1, h2, h3 {
     padding: 5px;
 }
 
-    .add-piece-div-image:hover {
-        box-shadow: 10px 10px rgba(212, 175, 55, 0.5);
-        transition: .5s;
-    }
+.add-piece-div-image:hover {
+    box-shadow: 10px 10px rgba(212, 175, 55, 0.5);
+    transition: .5s;
+}
 
 /* =========================================
    SIDEBAR NAVIGATION BUTTONS
@@ -471,9 +481,9 @@ h1, h2, h3 {
     padding-bottom: 1rem;
 }
 
-    .sidebar .brand:hover {
-        color: #FFD700;
-    }
+.sidebar .brand:hover {
+    color: #FFD700;
+}
 
 /* Navigation list */
 .nav-list {
@@ -482,9 +492,9 @@ h1, h2, h3 {
     margin: 0;
 }
 
-    .nav-list li {
-        margin-bottom: 0.5rem;
-    }
+.nav-list li {
+    margin-bottom: 0.5rem;
+}
 
 /* Navigation button styling */
 .nav-button {
@@ -505,47 +515,47 @@ h1, h2, h3 {
     font-family: inherit;
 }
 
-    .nav-button:hover {
-        background-color: #D4AF37;
-        border-color: #D4AF37;
-        color: #000000;
-        transform: translateX(4px);
-        box-shadow: 0 4px 6px rgba(212, 175, 55, 0.4);
-        text-decoration: none;
-    }
+.nav-button:hover {
+    background-color: #D4AF37;
+    border-color: #D4AF37;
+    color: #000000;
+    transform: translateX(4px);
+    box-shadow: 0 4px 6px rgba(212, 175, 55, 0.4);
+    text-decoration: none;
+}
 
-    .nav-button.active {
-        background-color: #D4AF37;
-        border-color: #D4AF37;
-        color: #000000;
-    }
+.nav-button.active {
+    background-color: #D4AF37;
+    border-color: #D4AF37;
+    color: #000000;
+}
 
-    /* Sign in button - green */
-    .nav-button.signin {
-        background-color: #D4AF37;
-        border-color: #D4AF37;
-        color: #000000;
-        text-align: center;
-    }
+/* Sign in button - green */
+.nav-button.signin {
+    background-color: #D4AF37;
+    border-color: #D4AF37;
+    color: #000000;
+    text-align: center;
+}
 
-        .nav-button.signin:hover {
-            background-color: #B8860B;
-            border-color: #B8860B;
-            transform: translateX(4px);
-        }
+.nav-button.signin:hover {
+    background-color: #B8860B;
+    border-color: #B8860B;
+    transform: translateX(4px);
+}
 
-    /* Logout button - red */
-    .nav-button.logout {
-        background-color: #8B0000;
-        border-color: #8B0000;
-        color: #ffffff;
-    }
+/* Logout button - red */
+.nav-button.logout {
+    background-color: #8B0000;
+    border-color: #8B0000;
+    color: #ffffff;
+}
 
-        .nav-button.logout:hover {
-            background-color: #660000;
-            border-color: #660000;
-            transform: translateX(4px);
-        }
+.nav-button.logout:hover {
+    background-color: #660000;
+    border-color: #660000;
+    transform: translateX(4px);
+}
 
 /* Admin dropdown */
 .admin-section {
@@ -571,17 +581,17 @@ h1, h2, h3 {
     cursor: pointer;
 }
 
-    .admin-toggle:hover {
-        background-color: #660000;
-        border-color: #660000;
-        transform: translateX(4px);
-        text-decoration: none;
-    }
+.admin-toggle:hover {
+    background-color: #660000;
+    border-color: #660000;
+    transform: translateX(4px);
+    text-decoration: none;
+}
 
-    /* Hide Bootstrap's default caret on admin-toggle */
-    .admin-toggle::after {
-        display: none !important;
-    }
+/* Hide Bootstrap's default caret on admin-toggle */
+.admin-toggle::after {
+    display: none !important;
+}
 
 .admin-menu {
     padding-left: 0.5rem;
@@ -589,18 +599,18 @@ h1, h2, h3 {
     list-style: none;
 }
 
-    .admin-menu .nav-button {
-        font-size: 0.9rem;
-        padding: 0.5rem 0.75rem;
-        margin-bottom: 0.25rem;
-        background-color: #4a4a4a;
-        border-color: #696969;
-    }
+.admin-menu .nav-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.25rem;
+    background-color: #4a4a4a;
+    border-color: #696969;
+}
 
-        .admin-menu .nav-button:hover {
-            background-color: #D4AF37;
-            border-color: #D4AF37;
-        }
+.admin-menu .nav-button:hover {
+    background-color: #D4AF37;
+    border-color: #D4AF37;
+}
 
 /* User greeting */
 .user-greeting {
@@ -628,10 +638,10 @@ h1, h2, h3 {
     transition: all 0.2s ease;
 }
 
-    .dropdown-menu-dark .dropdown-item:hover {
-        background-color: #D4AF37;
-        color: #000000;
-    }
+.dropdown-menu-dark .dropdown-item:hover {
+    background-color: #D4AF37;
+    color: #000000;
+}
 
 /* Dropdown arrow flip animation - Bootstrap Icons caret */
 .admin-toggle .bi-caret-down-fill {
@@ -639,7 +649,7 @@ h1, h2, h3 {
     font-size: 0.75rem;
 }
 
-.dropdown.show > .admin-toggle .bi-caret-down-fill {
+.dropdown.show>.admin-toggle .bi-caret-down-fill {
     transform: rotate(180deg);
 }
 
@@ -665,8 +675,9 @@ h1, h2, h3 {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    pointer-events: none; /* Prevents the eye from blocking your drag clicks */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    /* Prevents the eye from blocking your drag clicks */
     z-index: 1000;
     color: #111827;
 }
@@ -675,9 +686,9 @@ h1, h2, h3 {
     opacity: 0.5;
 }
 
-    .dmOpacityToggle::after {
-        content: "Invis.";
-    }
+.dmOpacityToggle::after {
+    content: "Invis.";
+}
 
 #draggable {
     width: 150px;
@@ -709,11 +720,11 @@ h1, h2, h3 {
     transition: all 0.2s ease;
 }
 
-    .advanced-pill:hover {
-        border-color: #d4af37;
-        box-shadow: 0 0 6px rgba(212, 175, 55, 0.5);
-        color: #fff8dc;
-    }
+.advanced-pill:hover {
+    border-color: #d4af37;
+    box-shadow: 0 0 6px rgba(212, 175, 55, 0.5);
+    color: #fff8dc;
+}
 
 /* Dropdown menu */
 .advanced-menu {
@@ -744,7 +755,8 @@ h1, h2, h3 {
     text-decoration: none;
     background: linear-gradient(180deg, #d4af37, #b8962e);
     border: 1px solid #f5d76e;
-    color: #1a120d; /* dark text for contrast */
+    color: #1a120d;
+    /* dark text for contrast */
 
     font-weight: 600;
     letter-spacing: 0.5px;
@@ -758,6 +770,7 @@ h1, h2, h3 {
     box-shadow: 0 0 8px rgba(212, 175, 55, 0.7), 0 0 16px rgba(212, 175, 55, 0.4);
     transform: translateY(-1px);
 }
+
 .restore-pill {
     box-shadow: 0 0 4px rgba(212, 175, 55, 0.3);
 }
@@ -772,10 +785,10 @@ h1, h2, h3 {
 
 .delete-drop-zone {
     position: absolute;
-    bottom: 20px;
-    right: 20px;
-    width: 80px;
-    height: 80px;
+    bottom: 2%;
+    right: 2%;
+    width: 10%;
+    height: 10%;
     background-color: rgba(220, 53, 69, 0.2);
     border: 2px dashed #dc3545;
     border-radius: 10px;
@@ -784,23 +797,20 @@ h1, h2, h3 {
     align-items: center;
     justify-content: center;
     color: #dc3545;
-    z-index: 999; /* Ensure it stays above tokens */
+    z-index: 999;
     transition: all 0.2s ease;
+    overflow: hidden;
 }
 
-/*I CANT GET THIS TRASH ICON TO SHOW UP */
-/*    jquery trash icon*/
-    .delete-drop-zone .ui-icon {
-        transform: scale(3);
-        margin-bottom: 15px;
-        background-image: url("https://code.jquery.com/ui/1.13.2/themes/base/images/ui-icons_444444_256x240.png");
-    }
+.delete-drop-zone p {
+    font-size: clamp(0.35rem, 1.2vmin, 0.65rem);
+    text-align: center;
+    margin: 0;
+    padding: 2px;
+    line-height: 1.2;
+}
 
-    .delete-drop-zone .delete-icon-trash {
-        display: block;
-    }
-
- /* Visual feedback when dragging over the bin */
+/* Visual feedback when dragging over the bin */
 .delete-drop-zone.delete-hover {
     background-color: rgba(220, 53, 69, 0.8);
     transform: scale(1.1);
@@ -812,7 +822,7 @@ h1, h2, h3 {
 }
 
 /* For when you look at the piece on the store page. */
-.pieceStoreImg{
+.pieceStoreImg {
     max-width: 70vw;
     max-height: 50vh
 }
