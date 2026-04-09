@@ -7,7 +7,7 @@
     <p>
         <a asp-controller="Admin" asp-action="AddSet" class="btn-lg btn btn-outline-dark" style="background-color: mediumpurple" role="button">Add a set</a>
     </p>
-    <table class="table">
+    <table class="table saBackground">
         <tr>
             <th>Name</th>
             <th>Actions</th>
@@ -15,7 +15,7 @@
         </tr>
         @foreach (var item in Model)
         {
-            <tr>
+            <tr class="saBackground">
                 <td>@item.Name</td>
                 <td>
                     <a href="#">Edit (placeholder)</a>
