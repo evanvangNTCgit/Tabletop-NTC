@@ -33,11 +33,11 @@
 
 @if(Model != null)
 {
-    <section>
-        <h3>@Model.Name</h3>
+    <section class="text-center" style="background-color: #F5DEB3;">
+        <h1>@Model.Name</h1>
         <img class="img-fluid pieceStoreImg" src=" @Model.ImagePath" alt="@Model.Name">
-        <p>@Model.Description</p>
-        <p>Price: $@Model.Price</p>
+        <p style="font-size: 20px;">@Model.Description</p>
+        <p style="font-size: 20px;">Price: $@Model.Price</p>
     </section>
 
     @if (setInCartContainsPiece)

@@ -14,6 +14,13 @@
                 <div class="card">
                     <div class="list-group shadow">
                         <!-- Loops Through the User's Sessions and Displays them-->
+                        @if (!Model.Any())
+                        {
+                            <div class="alert alert-info mt-4" style="font-size: 25px;">
+                                No sessions found. <a asp-controller="Session" asp-action="Create">Create a new one!</a>
+                            </div>
+                        }
+
                         @foreach (var item in Model)
                         {
                             <a asp-controller="Session"
@@ -56,12 +63,6 @@
                 </div>
 
             </div>
-            @if (!Model.Any())
-            {
-                <div class="alert alert-info mt-4">
-                    No sessions found. <a asp-controller="Session" asp-action="Create">Create a new one!</a>
-                </div>
-            }
         </div>
     </div>
 </section>
