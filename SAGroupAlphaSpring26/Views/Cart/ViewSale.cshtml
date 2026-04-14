@@ -39,4 +39,11 @@
             }
         }
     </table>    
+    <form asp-controller="Cart" asp-action="checkout">
+        <p>
+            <button type="submit" class="btn btn-primary" role="button">Place Order</button>
+        </p>
+    </form>
+} else {
+    <p>You seem to have nothing to purchase. You should add something to your cart!</p>
 }
