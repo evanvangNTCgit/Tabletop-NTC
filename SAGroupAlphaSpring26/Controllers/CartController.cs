@@ -97,6 +97,8 @@ namespace SAGroupAlphaSpring26.Controllers
         {
             int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
+            Sale userSale = this.BuildSale();
+            _dataService.AddSale(userSale);
             _dataService.CheckoutCart(userId);
 
             // Redirect back to the cart or profile, could also add TempData message here.

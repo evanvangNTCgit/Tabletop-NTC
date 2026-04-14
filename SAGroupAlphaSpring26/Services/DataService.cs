@@ -631,6 +631,19 @@ namespace SAGroupAlphaSpring26.Services
                 throw new Exception($"Failed to checkout cart for user {userId}: {ex.Message}");
             }
         }
+    
+        public void AddSale(Sale sale)
+        {
+            foreach (SaleLine sl in sale.SaleLines) 
+            {
+                // So EF does not freak out.
+                sl.Piece = null;
+                sl.Set = null;
+            }
+
+            this._dataContext.Sales.Add(sale);
+            this._dataContext.SaveChanges();
+        }
     }
 }
 
