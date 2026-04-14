@@ -15,8 +15,8 @@
                 <td>@item.Name</td>
                 <td>
                     <!-- Add the ID onto the route of edit piece so admin controller can pull up from DB what Piece Type to edit. -->
-                    <a asp-controller="admin" asp-action="editpiece" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-controller="admin" asp-action="deletepiececonfirmation" asp-route-id="@item.Id">Delete</a>
+                    <a asp-controller="admin" asp-action="editpiece" asp-route-id="@item.Id" class="admin-edit-btn">Edit</a> |
+                    <a asp-controller="admin" asp-action="deletepiececonfirmation" asp-route-id="@item.Id" class="admin-delete-btn">Delete</a>
                 </td>
             </tr>
         }

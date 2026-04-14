@@ -1,0 +1,208 @@
+/* Sidebar navigation from site.css */
+
+/* SIDEBAR NAVIGATION BUTTONS */
+.sidebar {
+    width: 220px;
+    background: linear-gradient(180deg, #0a0a0a 0%, #000000 100%);
+    color: #F4E4BC;
+    padding: 2rem 1rem;
+    position: fixed;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    min-height: 100vh;
+}
+
+/* Main content adjustment */
+.main-content {
+    margin-left: 220px;
+    padding: 2rem;
+}
+
+/* Sidebar brand/title */
+.sidebar .brand {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #D4AF37;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1.5rem;
+    text-decoration: none;
+    border-bottom: 1px solid #4a4a4a;
+    padding-bottom: 1rem;
+}
+
+.sidebar .brand:hover {
+    color: #FFD700;
+}
+
+/* Navigation list */
+.nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-list li {
+    margin-bottom: 0.5rem;
+}
+
+/* Navigation button styling */
+.nav-button {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background-color: transparent;
+    border: 1px solid #4a4a4a;
+    border-radius: 8px;
+    color: #F4E4BC;
+    text-decoration: none;
+    font-weight: 500;
+    text-align: left;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.nav-button:hover {
+    background-color: #D4AF37;
+    border-color: #D4AF37;
+    color: #000000;
+    transform: translateX(4px);
+    box-shadow: 0 4px 6px rgba(212, 175, 55, 0.4);
+    text-decoration: none;
+}
+
+.nav-button.active {
+    background-color: #D4AF37;
+    border-color: #D4AF37;
+    color: #000000;
+}
+
+/* Sign in button - green */
+.nav-button.signin {
+    background-color: #D4AF37;
+    border-color: #D4AF37;
+    color: #000000;
+    text-align: center;
+}
+
+.nav-button.signin:hover {
+    background-color: #B8860B;
+    border-color: #B8860B;
+    transform: translateX(4px);
+}
+
+/* Logout button - red */
+.nav-button.logout {
+    background-color: #8B0000;
+    border-color: #8B0000;
+    color: #ffffff;
+}
+
+.nav-button.logout:hover {
+    background-color: #660000;
+    border-color: #660000;
+    transform: translateX(4px);
+}
+
+/* Admin dropdown */
+.admin-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #4a4a4a;
+}
+
+.admin-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background-color: #8B0000;
+    border: 1px solid #8B0000;
+    border-radius: 8px;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.admin-toggle:hover {
+    background-color: #660000;
+    border-color: #660000;
+    transform: translateX(4px);
+    text-decoration: none;
+}
+
+/* Hide Bootstrap's default caret on admin-toggle */
+.admin-toggle::after {
+    display: none !important;
+}
+
+.admin-menu {
+    padding-left: 0.5rem;
+    margin-top: 0.25rem;
+    list-style: none;
+}
+
+.admin-menu .nav-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.25rem;
+    background-color: #4a4a4a;
+    border-color: #696969;
+}
+
+.admin-menu .nav-button:hover {
+    background-color: #D4AF37;
+    border-color: #D4AF37;
+}
+
+/* User greeting */
+.user-greeting {
+    color: #D2B48C;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid #4a4a4a;
+    padding-bottom: 0.75rem;
+}
+
+/* Bootstrap dropdown styled to match buttons */
+.dropdown-menu {
+    background-color: #0a0a0a;
+    border: 1px solid #4a4a4a;
+    border-radius: 8px;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.dropdown-menu-dark .dropdown-item {
+    color: #F4E4BC;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.dropdown-menu-dark .dropdown-item:hover {
+    background-color: #D4AF37;
+    color: #000000;
+}
+
+/* Dropdown arrow flip animation - Bootstrap Icons caret */
+.admin-toggle .bi-caret-down-fill {
+    transition: transform 0.2s ease;
+    font-size: 0.75rem;
+}
+
+.dropdown.show>.admin-toggle .bi-caret-down-fill {
+    transform: rotate(180deg);
+}
+

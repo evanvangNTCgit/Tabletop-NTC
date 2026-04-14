@@ -1,6 +1,7 @@
 @model SAGroupAlphaSpring26.ViewModels.MapScreenViewModel
 
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
+<link rel="stylesheet" href="~/css/pages/vang-map.css" asp-append-version="true" />
 
 <div class="map-toolbar">
     @* <div class="zoom-controls">
@@ -15,14 +16,14 @@
            asp-action="Playerview"
            target="_blank"
            asp-route-id="@Model.CurrentSession.Id"
-           class="btn btn-success btn-lg w-100 shadow-sm">
+           class="button-success player-view-btn">
         Player View
     </a>
 </div>
 
 @* I created a wrapper div for the map and piece bar. *@
 
-<div class="map-layout-wrapper" style="display: flex; flex-direction: row; height: 90vh; overflow: hidden;">
+<div class="map-layout-wrapper map-container" style="--zoom: 1; transform: scale(var(--zoom)); transform-origin: top left; height: 90vh; overflow: hidden;">
 
     @* I moved the piece bar before the map board. *@
     <div class="piece-bar">
