@@ -80,8 +80,16 @@ namespace SAGroupAlphaSpring26.Controllers
         {
             int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             Sale userSale = this.BuildSale();
+            List<CartItemSet> userSets = _dataService.GetCartItemSet(userId);
 
-            return View(userSale);
+            // Dont want to keep making DB reads, I will pass in the list of sets right in the model.
+            SaleViewModel model = new()
+            {
+                Sale = userSale,
+                Sets = userSets
+            };
+
+            return View(model);
         }
 
         [HttpPost("checkout")]
@@ -102,7 +110,6 @@ namespace SAGroupAlphaSpring26.Controllers
             List<CartItemSet> userSets = _dataService.GetCartItemSet(userId);
 
             Sale userSale = new();
-
             userSale.UserID = userId;
 
             if (userCartItems != null && userCartItems.Count > 0)

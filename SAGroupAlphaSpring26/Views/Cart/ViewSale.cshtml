@@ -1,4 +1,8 @@
-﻿@model Sale
+﻿<!--Need this injection to read the set.-->
+@model SaleViewModel
+@{
+    List<int> ListOfSetIds = [];
+}
 
 <h2>Your Purchase:</h2>
 
@@ -9,14 +13,31 @@
         <th>Item</th>
         <th>Price</th>
         </tr>
-
-        @foreach(var item in Model.SaleLines)
+        @foreach(CartItemSet cis in Model.Sets)
         {
+            <tr>
+                @* <td>@set.Piece.Id</td>
+                <td>@set.Piece.Name</td>
+                <td>@set.Piece.Price</td> *@
+                <td>@cis.Set.Name</td>
+                <td>@cis.Set.Price</td>
+            </tr>
+        }
+        @foreach(var item in Model.Sale.SaleLines)
+        {
+            // If its in a set.
+            @if(item.SetID > 0 && item.SetID != null)
+            {
+                // skip it already displayed.
+            }
+            else {
+
             <tr>
                 <td>@item.Piece.Id</td>
             <td>@item.Piece.Name</td>
             <td>@item.Piece.Price</td>
             </tr>
+            }
         }
     </table>    
 }
