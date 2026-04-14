@@ -8,7 +8,7 @@
 
 @if(Model != null)
 {
-    <table>
+    <table class="table" style="background-color: #F5DEB3; border-radius: 10px; border: 1px solid #4a4a4a; color: #111827;">
         <tr>
         <th>Item</th>
         <th>Price</th>
@@ -33,7 +33,6 @@
             else {
 
             <tr>
-                <td>@item.Piece.Id</td>
             <td>@item.Piece.Name</td>
             <td>@item.Piece.Price</td>
             </tr>
