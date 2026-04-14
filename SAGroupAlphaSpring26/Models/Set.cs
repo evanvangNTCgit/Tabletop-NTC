@@ -26,5 +26,7 @@ namespace SAGroupAlphaSpring26.Models
         public List<PieceSets>? PiecesList { get; set; } = new();
 
         public List<CartItemSet>? CartItemSets { get; set; } = new();
+
+        public List<SaleLine>? SaleLines { get; set; }
     }
 }

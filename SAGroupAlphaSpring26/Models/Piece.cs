@@ -40,5 +40,8 @@ namespace SAGroupAlphaSpring26.Models
         public bool IsArchived { get; set; } = false;
 
         public List<CartItem>? CartItems { get; set; }
+
+        // Piece could be in many salelines.
+        public List<SaleLine>? SaleLines { get; set; }
     }
 }

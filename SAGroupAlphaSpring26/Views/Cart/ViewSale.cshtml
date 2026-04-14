@@ -1,0 +1,22 @@
+﻿@model Sale
+
+<h2>Your Purchase:</h2>
+
+@if(Model != null)
+{
+    <table>
+        <tr>
+        <th>Item</th>
+        <th>Price</th>
+        </tr>
+
+        @foreach(var item in Model.SaleLines)
+        {
+            <tr>
+                <td>@item.Piece.Id</td>
+            <td>@item.Piece.Name</td>
+            <td>@item.Piece.Price</td>
+            </tr>
+        }
+    </table>    
+}

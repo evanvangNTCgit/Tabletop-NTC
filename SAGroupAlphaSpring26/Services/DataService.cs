@@ -471,6 +471,7 @@ namespace SAGroupAlphaSpring26.Services
                 .Where(cis => cis.IsArchived == false)
                 .Include(cis => cis.Set)
                 .ThenInclude(s => s.PiecesList)
+                .ThenInclude(pl => pl.Piece)
                 .ToList();
         }
 

@@ -58,10 +58,14 @@
         }
     </table>
 
-    <div class="mt-4">
+    @* <div class="mt-4">
         <form asp-controller="Cart" asp-action="Checkout" method="post">
             <button type="submit" class="button-primary">Purchase Items</button>
         </form>
+    </div> *@
+
+    <div>
+        <a asp-controller="Cart" asp-action="ViewSale" class="btn btn-primary" role="button">Review Sale</a>
     </div>
 }
 else
