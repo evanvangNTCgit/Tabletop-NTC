@@ -1,0 +1,54 @@
+@using System.Security.Claims
+@using SAGroupAlphaSpring26.Data
+@using SAGroupAlphaSpring26.Services
+@inject DataContext dc
+@model dynamic
+
+@{
+    string entityType = ViewData["EntityType"].ToString(); // "piece" or "set"
+    int entityId = (int)ViewData["EntityId"];
+    object entity = ViewData["Entity"];
+
+    bool inCart = false;
+    DataService dataService = new(dc);
+    int? userId = User.Identity.IsAuthenticated ? Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value) : null;
+
+    if (userId.HasValue)
+    {
+        if (entityType == "piece")
+        {
+            var cartItem = dataService.GetCartItem(userId.Value, entityId);
+            inCart = cartItem != null;
+        }
+        else if (entityType == "set")
+        {
+            var cartSet = dataService.GetCartItemSet(userId.Value, entityId);
+            inCart = cartSet != null;
+        }
+    }
+}
+
+@if (!inCart)
+{
+    if (entityType == "piece")
+    {
+        <form method="POST" asp-controller="cart" asp-action="addtocart" asp-route-id="@entityId">
+            <p>
+                <button type="submit" class="btn btn-primary" role="button">Add to cart</button>
+            </p>
+        </form>
+    }
+    else if (entityType == "set")
+    {
+        <form method="POST" asp-controller="cart" asp-action="addsettocart" asp-route-id="@entityId">
+            <p>
+                <button type="submit" class="btn btn-primary" role="button">Add to cart</button>
+            </p>
+        </form>
+    }
+}
+else
+{
+    <p>This item is already in your cart.</p>
+    <a class="btn btn-primary" asp-controller="Home" asp-action="Store">Store</a>
+}

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.Services;
+using SAGroupAlphaSpring26.ViewModels;
 
 namespace SAGroupAlphaSpring26.Controllers
 {
@@ -220,14 +221,21 @@ namespace SAGroupAlphaSpring26.Controllers
                 return View(this._dataService.GetPieces());
             }
 
-        [HttpGet("Sets")]
+[HttpGet("Sets")]
         public IActionResult Sets() 
         {
             return View(this._dataService.GetAllSets());
         }
 
+        [HttpGet("Purchases")]
+        public IActionResult Purchases()
+        {
+            var stats = _dataService.GetPiecePurchaseStats();
+            return View(stats);
+        }
+
             // Adding a parameter for ID so we know what piece type to edit.
-            [HttpGet("edit-piecetype/{id:int}")]
+[HttpGet("edit-piecetype/{id:int}")]
             public IActionResult EditPieceType(int id)
             {
                 return View(_dataService.GetPieceType(id));

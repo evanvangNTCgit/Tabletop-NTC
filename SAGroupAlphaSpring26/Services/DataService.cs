@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
+using SAGroupAlphaSpring26.ViewModels;
 using System.Security.Claims;
 
 namespace SAGroupAlphaSpring26.Services
@@ -629,6 +630,21 @@ namespace SAGroupAlphaSpring26.Services
             {
                 throw new Exception($"Failed to checkout cart for user {userId}: {ex.Message}");
             }
+        }
+
+        public List<PurchaseStatsViewModel> GetPiecePurchaseStats()
+        {
+            return _dataContext.SaleLines
+                .Include(sl => sl.Piece)
+                .ThenInclude(p => p.PieceType)
+                .GroupBy(sl => sl.PieceID)
+                .Select(g => new PurchaseStatsViewModel 
+                { 
+                    Piece = g.First().Piece, 
+                    TotalPurchased = g.Count() 
+                })
+                .OrderByDescending(x => x.TotalPurchased)
+                .ToList();
         }
     }
 }
