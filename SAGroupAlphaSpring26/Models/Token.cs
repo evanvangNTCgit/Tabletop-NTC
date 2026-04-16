@@ -41,5 +41,8 @@ namespace SAGroupAlphaSpring26.Models
 
         // Is this token visible or not, by default yes.
         public bool Visibility { get; set; } = true;
+
+        // Notes for the token, can be used by the DM for additional information.
+        public string Notes { get; set; } = string.Empty;
     }
 }

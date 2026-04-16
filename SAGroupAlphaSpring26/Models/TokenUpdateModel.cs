@@ -1,4 +1,4 @@
-﻿namespace SAGroupAlphaSpring26.Models
+namespace SAGroupAlphaSpring26.Models
 {
     // Helper class for token JSON data.
     public class TokenUpdateModel
@@ -11,5 +11,6 @@
         public string Name { get; set; } = string.Empty;
         public int PieceId { get; set; }
         public bool Visibility { get; set; }
+        public string Notes { get; set; } = string.Empty;
     }
 }
