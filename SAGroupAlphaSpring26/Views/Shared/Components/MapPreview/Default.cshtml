@@ -1,0 +1,67 @@
+@model IEnumerable<SAGroupAlphaSpring26.Models.Token>
+
+@{
+    var mapToken = Model.FirstOrDefault(t => t.Piece?.PieceType?.Name == "Map");
+    var activeTokens = Model.Where(t => t.Piece?.PieceType?.Name != "Map").ToList();
+}
+
+<div class="card shadow-sm mb-4 text-start">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Session Tokens Preview</h5>
+        <span class="badge bg-secondary">@activeTokens.Count Token(s)</span>
+    </div>
+    
+    @if (mapToken != null && mapToken.Piece != null)
+    {
+        <div class="card-img-top position-relative" style="height: 150px; overflow: hidden; background-color: #1a1a1a;">
+            <img src="@mapToken.Piece.ImagePath" class="w-100 h-100" style="object-fit: cover; opacity: 0.6;" alt="Map Background" />
+            <div class="position-absolute top-50 start-50 translate-middle text-center w-100">
+                <h4 class="text-white fw-bold mb-0" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">Current Map</h4>
+            </div>
+        </div>
+    }
+
+    <div class="card-body p-0">
+        @if (activeTokens.Any())
+        {
+            <div class="list-group list-group-flush" style="max-height: 400px; overflow-y: auto;">
+                @foreach (var token in activeTokens.OrderByDescending(t => t.ZIndex))
+                {
+                    var tokenName = string.IsNullOrEmpty(token.Name) ? (token.Piece?.Name ?? "Unknown Piece") : token.Name;
+                    var imagePath = token.Piece?.ImagePath ?? "/images/default.png";
+                    var isVisible = token.Visibility;
+
+                    <div class="list-group-item list-group-item-action d-flex align-items-start bg-dark text-light border-secondary">
+                        <img src="@imagePath" alt="@tokenName" class="rounded me-3 border border-warning" style="width: 50px; height: 50px; object-fit: contain; background: #0a0a0a;" />
+                        <div class="flex-grow-1">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1 fw-bold text-warning">
+                                    @tokenName
+                                    @if (!isVisible)
+                                    {
+                                        <span class="badge bg-danger ms-2"><i class="bi bi-eye-slash"></i> Hidden</span>
+                                    }
+                                </h6>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(token.Notes))
+                            {
+                                <p class="mb-1 text-muted small fst-italic">"@token.Notes"</p>
+                            }
+                            else
+                            {
+                                <p class="mb-1 text-muted small fst-italic">No notes attached.</p>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center p-4 text-muted bg-dark">
+                <i class="bi bi-inbox fs-1 mb-2"></i>
+                <p class="mb-0">No active tokens dropped on map</p>
+            </div>
+        }
+    </div>
+</div>
