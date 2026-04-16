@@ -1,0 +1,44 @@
+/* Layout styles from site.css */
+
+/* LAYOUT */
+.app {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar - general */
+.sidebar {
+    width: 240px;
+    background-color: #0a0a0a;
+    /* D&D dark */
+    color: #F4E4BC;
+    padding: 1.5rem 1rem;
+    /* Make sidebar sticky */
+    position: sticky;
+    top: 0;
+    /* sticks to top of viewport when scrolling */
+    height: 100vh;
+    /* full viewport height */
+    overflow-y: auto;
+    /* scroll if sidebar content is long */
+}
+
+.sidebar h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #FFD700;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    margin-left: 11.5rem;
+    background-image: url('/images/Paper-Background.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+

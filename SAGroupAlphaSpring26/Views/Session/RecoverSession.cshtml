@@ -1,0 +1,28 @@
+﻿@model IEnumerable<Session>
+<div>
+    <h3>Restore Session</h3>
+<table class="table recover-table">
+        <tr>
+            <th>Session</th>
+            <th>Action</th>
+        </tr>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/recover-session.css" asp-append-version="true" />
+}
+        @if (Model.Count() <= 0)
+        {
+            <tr>
+                <td>Nothing</td>
+                <td>You have no session to recover</td>
+            </tr>
+        }
+        @foreach (Session s in Model)
+        {
+            <tr>
+                <td>@s.Name</td>
+                <td><a asp-controller="Session" asp-action="RecoverSessionConfirm" asp-route-id="@s.Id" class="recover-restore-btn">Restore</a></td>
+            </tr>
+        }
+    </table>
+</div>

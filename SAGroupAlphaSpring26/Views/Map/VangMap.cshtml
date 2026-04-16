@@ -1,0 +1,131 @@
+@model SAGroupAlphaSpring26.ViewModels.MapScreenViewModel
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
+<link rel="stylesheet" href="~/css/map-general.css" asp-append-version="true" />
+
+<div class="map-toolbar">
+    @* <div class="zoom-controls">
+        <button id="zoom-in" class="zoom-btn button-primary">+</button>
+        <button id="zoom-out" class="zoom-btn">-</button>
+        <span id="zoom-level" style="font-size: 0.9rem; margin: 0 10px;">1x</span>
+        <button id="zoom-reset" class="zoom-btn button-primary">1:1</button>
+    </div> *@
+    <button id="btn-save" class="button-primary">Save Changes</button>
+    <a asp-controller="Home" asp-action="Index" class="button-primary">Cancel</a>
+    <a asp-controller="Map"
+           asp-action="Playerview"
+           target="_blank"
+           asp-route-id="@Model.CurrentSession.Id"
+           class="button-success player-view-btn">
+        Player View
+    </a>
+</div>
+
+@* I created a wrapper div for the map and piece bar. *@
+
+<div class="map-layout-wrapper map-container" style="--zoom: 1; transform: scale(var(--zoom)); transform-origin: top left; height: 90vh; overflow: hidden;">
+
+    @* I moved the piece bar before the map board. *@
+    <div class="piece-bar">
+        <h4 style="color: white; padding: 10px; font-size: 0.9rem;">Collection</h4>
+        <div class="token-list">
+            @foreach (var piece in Model.PlayablePieces)
+            {
+                // Image Paths currently /images/Cleric.png
+                // However must be ~/images/(filename).
+
+                // I assume we dont want he user to get a map?
+                if (piece.PieceType!.Name == "Map")
+                {
+                    continue;
+                }
+
+                String realImagePath = $"{piece.ImagePath}";
+
+                 <img src="@realImagePath"
+                      class="map-piece sidebar-piece"
+                      draggable="true"
+                      data-pieceid="@piece.Id.ToString()"
+                      data-piecename="@piece.Name"
+                      alt="@piece.Name"
+                      onerror="this.onerror=null; this.src='/images/default.png';" />
+            }
+        </div>
+    </div>
+
+    <!-- https://stackoverflow.com/questions/26438388/maintain-div-aspect-ratio-according-to-height -->
+        <div class="map-container"
+             id="map-board"
+             style="position: relative; height: auto; width: 100%; align-self: center; justify-self: center; max-height: 90vh; max-width: 90vh; aspect-ratio: 1 / 1;"
+             data-role="dm">
+
+             <img src="@Model.MapImagePath" style="width: 100%; height: 100%; display: block;"/>
+
+            @foreach (var token in Model.Tokens.Where(t => t.Piece?.PieceType?.Name != "Map"))
+            {
+                    <img src="@(string.IsNullOrEmpty(token.Piece?.ImagePath) ? "/images/BetaMap1.png" : token.Piece.ImagePath)"
+                         class="draggable-token @(!token.Visibility ? "dmOpacityToggle" : "")"
+                         style="position: absolute; left: @(token.X)%; top: @(token.Y)%; z-index: @token.ZIndex; width: 5%;"
+                         id="token-placed-@token.Id"
+                         data-tokenid="@token.Id"
+                         data-pieceid="@token.PieceID"
+                         data-piecename="@(token.Piece?.Name ?? "")"
+                         data-name="@(string.IsNullOrEmpty(token.Name) ? (token.Piece?.Name ?? "") : token.Name)"
+                         data-notes="@(token.Notes)"
+                         data-visibility="@token.Visibility.ToString().ToLower()"
+                         onerror="this.onerror=null; this.src='/images/default.png';" />
+            }
+
+        @* Drag tokens into this area to delete them. *@
+        <div id="delete-area" class="delete-drop-zone">
+            <p>Drop to Remove</p>
+        </div>
+        </div>
+
+    @* Token Information Panel *@
+    <div class="token-info-panel" id="token-info-panel" style="display: none;">
+        <h4 style="color: white; padding: 10px; font-size: 1.1rem; border-bottom: 1px solid #4a4a4a; margin-bottom: 10px; text-align:center;">Token Info</h4>
+        
+        <div style="padding: 0 10px; display: flex; flex-direction: column; gap: 15px;">
+            <div style="display: flex; justify-content: center;">
+                <img id="token-info-image" src="" alt="Token Graphic" style="width: 80px; height: 80px; object-fit: contain; border-radius: 8px; border: 2px solid #D4AF37;"/>
+            </div>
+
+            <div>
+                <label for="token-info-name" style="color: #f4e4bc; font-size: 0.9rem;">Name:</label>
+                <input type="text" id="token-info-name" class="form-control" style="background: #0a0a0a; color: #fff; border: 1px solid #4a4a4a; border-radius: 4px; padding: 5px; width: 100%;" />
+            </div>
+
+            <div>
+                <label for="token-info-zindex" style="color: #f4e4bc; font-size: 0.9rem;">Z-Index:</label>
+                <input type="number" id="token-info-zindex" class="form-control" style="background: #0a0a0a; color: #fff; border: 1px solid #4a4a4a; border-radius: 4px; padding: 5px; width: 100%;" />
+            </div>
+
+            <div>
+                <label for="token-info-notes" style="color: #f4e4bc; font-size: 0.9rem;">Notes:</label>
+                <textarea id="token-info-notes" class="form-control" style="background: #0a0a0a; color: #fff; border: 1px solid #4a4a4a; border-radius: 4px; padding: 5px; width: 100%; min-height: 60px; resize: vertical;"></textarea>
+            </div>
+
+            <div style="display:flex; align-items:center; gap: 10px; margin-top:5px;">
+                <label for="token-info-visibility" style="color: #f4e4bc; font-size: 0.9rem; margin:0;">Is Visible:</label>
+                <input type="checkbox" id="token-info-visibility" style="transform: scale(1.3); accent-color: #D4AF37; margin:0;"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts start here -->
+@section Scripts {
+    <script>
+        window.sessionId = @Json.Serialize(Model.CurrentSession.Id);
+    </script>
+    <!--Replaced with map.js module-->
+    <script type="module" src="~/js/map.js" asp-append-version="true"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const footer = document.getElementById('Footer');
+            if (footer) footer.style.display = 'none';
+        });
+    </script>
+}
+

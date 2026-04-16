@@ -1,0 +1,40 @@
+﻿@model IEnumerable<Set>
+@{
+    // This is for the string to show that represents the piece in the set.
+    string piecesToShow = "";
+}
+<div>
+    <p>
+        <a asp-controller="Admin" asp-action="AddSet" class="btn-lg btn btn-outline-dark" style="background-color: mediumpurple" role="button">Add a set</a>
+    </p>
+    <table class="table saBackground">
+        <tr>
+            <th>Name</th>
+            <th>Actions</th>
+            <th>Pieces</th>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr class="saBackground">
+                <td>@item.Name</td>
+                <td>
+                    <a href="#" class="admin-edit-btn">Edit</a>
+                </td>
+                <td>
+                    @if (item.PiecesList != null && item.PiecesList.Any())
+                    {
+                        foreach(var piece in item.PiecesList)
+                        {
+                        piecesToShow += $"{piece.Piece.Name}, ";    
+                        }
+                        <p>@piecesToShow</p>
+                    }
+                    else
+                    {
+                        <p>No pieces found.</p>
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+</div>

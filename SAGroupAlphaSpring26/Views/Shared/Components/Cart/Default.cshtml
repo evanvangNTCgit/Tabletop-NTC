@@ -1,0 +1,30 @@
+﻿@model CartViewModel
+
+@* Since CartItem.cs doesn't have a quantity field, 
+   we count the number of items in the list... *@
+@{
+    // int itemCount = Model?.Count ?? 0;
+
+    // Sums the price of all pieces in the cart.
+    // decimal totalValue = Model?.Sum(ci => ci.Piece?.Price ?? 0) ?? 0m;
+
+    int itemCount = (Model.Pieces.Count + Model.Sets.Count);
+
+    decimal totalValue = 0.00m;
+
+    if(Model.Pieces != null && Model.Pieces.Count > 0)
+    {
+        totalValue += Model.Pieces.Sum(pi => pi.Piece!.Price);
+    }
+    if(Model.Sets != null && Model.Sets.Count > 0)
+    {
+        totalValue += Model.Sets.Sum(s => s.Set!.Price);
+    }
+}
+
+<li>
+    <a asp-controller="Cart" asp-action="ViewCart" class="nav-button" role="button">
+        🛒 Cart (@itemCount) $@totalValue.ToString("F2")
+    </a>
+</li>
+

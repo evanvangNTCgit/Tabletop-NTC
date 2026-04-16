@@ -1,0 +1,17 @@
+﻿@model PieceType
+<h2>Update Piece Type</h2>
+<div class="form-horizontal">
+    <form method="post">
+        <!-- Sending the piece type ID without user knowledge for proper processing in admin controller -->
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="All"></div>
+        <div class="form-group mb-3">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name"></span>
+        </div>
+        <p>
+            <button type="submit" class="btn btn-primary" role="button">Save</button>
+        </p>
+    </form>
+</div>

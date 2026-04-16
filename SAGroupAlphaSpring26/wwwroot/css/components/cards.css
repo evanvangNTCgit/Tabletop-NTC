@@ -1,0 +1,33 @@
+/* Cards and headers from site.css */
+
+.header {
+    background-color: #F5DEB3;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    border: 1px solid #4a4a4a;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #111827;
+}
+
+.saBackground {
+    background-color: #F5DEB3;
+    border-radius: 10px;
+    border: 1px solid #4a4a4a;
+}
+
+.card {
+    background-color: #F5DEB3;
+    border-radius: 10px;
+    border: 1px solid #4a4a4a;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #111827;
+}
+
+.card .list-group-item.list-group-item-action {
+    background: transparent;
+    border: transparent;
+}
+

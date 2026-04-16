@@ -11,6 +11,9 @@
 *.sln.docstates
 appsettings.Development.json
 
+# this is a folder that has my personal notes in it
+ImportantNotes/
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

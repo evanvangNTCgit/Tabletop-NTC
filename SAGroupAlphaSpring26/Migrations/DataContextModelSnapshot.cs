@@ -22,7 +22,7 @@ namespace SAGroupAlphaSpring26.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("SAGroupAlphaSpring26.Models.Collection", b =>
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.CartItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,12 +30,48 @@ namespace SAGroupAlphaSpring26.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PieceId")
+                        .HasColumnType("int");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Collections");
+                    b.HasIndex("PieceId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CartItems");
+                });
+
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.CartItemSet", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SetId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SetId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CartItemSets");
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Piece", b =>
@@ -47,12 +83,14 @@ namespace SAGroupAlphaSpring26.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImagePath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -64,14 +102,9 @@ namespace SAGroupAlphaSpring26.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("SetID")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("PieceTypeID");
-
-                    b.HasIndex("SetID");
 
                     b.ToTable("Pieces");
 
@@ -79,42 +112,89 @@ namespace SAGroupAlphaSpring26.Migrations
                         new
                         {
                             Id = 1,
-                            Description = "Default Description",
-                            ImagePath = "/images/Cleric.png",
-                            Name = "Cleric",
-                            PieceTypeID = 1,
-                            Price = 0.00m,
-                            SetID = 1
+                            Description = "No description provided",
+                            ImagePath = "/images/testMap.png",
+                            IsArchived = false,
+                            Name = "Default Dungeon",
+                            PieceTypeID = 2,
+                            Price = 0.00m
                         },
                         new
                         {
                             Id = 2,
-                            Description = "Default Description",
-                            ImagePath = "/images/testMap.png",
-                            Name = "Default Dungeon",
-                            PieceTypeID = 2,
-                            Price = 0.00m,
-                            SetID = 1
+                            Description = "No description provided",
+                            ImagePath = "/images/Cleric.png",
+                            IsArchived = false,
+                            Name = "Cleric",
+                            PieceTypeID = 1,
+                            Price = 0.00m
                         },
                         new
                         {
                             Id = 3,
-                            Description = "Default Description",
+                            Description = "No description provided",
                             ImagePath = "/images/GoblinChief.png",
+                            IsArchived = false,
                             Name = "Goblin Chief",
-                            PieceTypeID = 1,
-                            Price = 0.00m,
-                            SetID = 1
+                            PieceTypeID = 5,
+                            Price = 0.00m
                         },
                         new
                         {
                             Id = 4,
-                            Description = "Default Description",
+                            Description = "No description provided",
                             ImagePath = "/images/chest.png",
+                            IsArchived = false,
                             Name = "Basic Chest",
+                            PieceTypeID = 4,
+                            Price = 0.00m
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Description = "No description provided",
+                            ImagePath = "/images/bardTest.png",
+                            IsArchived = false,
+                            Name = "Bard",
                             PieceTypeID = 1,
-                            Price = 0.00m,
-                            SetID = 1
+                            Price = 0.00m
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Description = "No description provided",
+                            ImagePath = "/images/BetaMap1.png",
+                            IsArchived = false,
+                            Name = "Beta Dungeon",
+                            PieceTypeID = 2,
+                            Price = 5.00m
+                        });
+                });
+
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.PieceSets", b =>
+                {
+                    b.Property<int>("PieceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SetId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PieceId", "SetId");
+
+                    b.HasIndex("SetId");
+
+                    b.ToTable("PieceSets");
+
+                    b.HasData(
+                        new
+                        {
+                            PieceId = 2,
+                            SetId = 1
+                        },
+                        new
+                        {
+                            PieceId = 5,
+                            SetId = 1
                         });
                 });
 
@@ -172,7 +252,7 @@ namespace SAGroupAlphaSpring26.Migrations
                         });
                 });
 
-            modelBuilder.Entity("SAGroupAlphaSpring26.Models.Purchase", b =>
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.Sale", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -180,25 +260,20 @@ namespace SAGroupAlphaSpring26.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("PieceId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("PurchaseDate")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("UserID")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PieceId");
+                    b.HasIndex("UserID");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Purchases");
+                    b.ToTable("Sales");
                 });
 
-            modelBuilder.Entity("SAGroupAlphaSpring26.Models.Receipt", b =>
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.SaleLine", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -206,31 +281,34 @@ namespace SAGroupAlphaSpring26.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("PieceID")
+                    b.Property<int?>("PieceID")
+                        .IsRequired()
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("PurchaseDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("PurchaseID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SetID")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("TotalAmount")
+                    b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
+                    b.Property<int>("SaleID")
                         .HasColumnType("int");
+
+                    b.Property<int?>("SetID")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Tax")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalCost")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Receipts");
+                    b.HasIndex("PieceID");
+
+                    b.HasIndex("SaleID");
+
+                    b.HasIndex("SetID");
+
+                    b.ToTable("SaleLines");
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Session", b =>
@@ -241,8 +319,17 @@ namespace SAGroupAlphaSpring26.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("IsArchived")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<DateTime>("LastUpdated")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Notes")
                         .IsRequired()
@@ -261,8 +348,19 @@ namespace SAGroupAlphaSpring26.Migrations
                         new
                         {
                             Id = 1,
-                            LastUpdated = new DateTime(2026, 2, 17, 17, 50, 12, 338, DateTimeKind.Local).AddTicks(998),
-                            Notes = "Production Test Session",
+                            IsArchived = false,
+                            LastUpdated = new DateTime(2026, 4, 14, 11, 48, 5, 721, DateTimeKind.Local).AddTicks(1127),
+                            Name = "Test Session",
+                            Notes = "Local Test Session",
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            IsArchived = false,
+                            LastUpdated = new DateTime(2026, 4, 14, 11, 48, 5, 721, DateTimeKind.Local).AddTicks(1131),
+                            Name = "Test Session 2",
+                            Notes = "Local Test Session 2",
                             UserId = 1
                         });
                 });
@@ -274,6 +372,12 @@ namespace SAGroupAlphaSpring26.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("decimal(5,4)");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -290,34 +394,11 @@ namespace SAGroupAlphaSpring26.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "Base Set",
+                            Discount = 0.1m,
+                            IsArchived = false,
+                            Name = "Evans Beginner Pack",
                             Price = 0.00m
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Expansion 1",
-                            Price = 4.99m
                         });
-                });
-
-            modelBuilder.Entity("SAGroupAlphaSpring26.Models.Store", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("SetId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Marketplaces");
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Token", b =>
@@ -328,91 +409,148 @@ namespace SAGroupAlphaSpring26.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("IsVisible")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Notes")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PieceID")
                         .HasColumnType("int");
 
-                    b.Property<int>("SessionID")
+                    b.Property<int>("SessionId")
                         .HasColumnType("int");
 
-                    b.Property<double>("X")
-                        .HasColumnType("float");
+                    b.Property<bool>("Visibility")
+                        .HasColumnType("bit");
 
-                    b.Property<double>("Y")
-                        .HasColumnType("float");
+                    b.Property<decimal>("X")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("zIndex")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Y")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ZIndex")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PieceID");
 
-                    b.HasIndex("SessionID");
+                    b.HasIndex("SessionId");
 
                     b.ToTable("Tokens");
 
                     b.HasData(
                         new
                         {
-                            Id = 4,
-                            IsVisible = true,
-                            Name = "Cleric",
-                            PieceID = 1,
-                            SessionID = 1,
-                            X = 50.0,
-                            Y = 15.0,
-                            zIndex = 3
-                        },
-                        new
-                        {
-                            Id = 5,
-                            IsVisible = true,
-                            Name = "Cleric",
-                            PieceID = 1,
-                            SessionID = 1,
-                            X = 50.0,
-                            Y = 20.0,
-                            zIndex = 4
-                        },
-                        new
-                        {
                             Id = 1,
-                            IsVisible = true,
                             Name = "Default Dungeon",
-                            PieceID = 2,
-                            SessionID = 1,
-                            X = 0.0,
-                            Y = 0.0,
-                            zIndex = 0
+                            Notes = "",
+                            PieceID = 1,
+                            SessionId = 1,
+                            Visibility = true,
+                            X = 0m,
+                            Y = 0m,
+                            ZIndex = 0m
                         },
                         new
                         {
                             Id = 2,
-                            IsVisible = true,
-                            Name = "Goblin Chief",
-                            PieceID = 3,
-                            SessionID = 1,
-                            X = 50.0,
-                            Y = 5.0,
-                            zIndex = 1
+                            Name = "Cleric",
+                            Notes = "",
+                            PieceID = 2,
+                            SessionId = 1,
+                            Visibility = true,
+                            X = 50m,
+                            Y = 15m,
+                            ZIndex = 3m
                         },
                         new
                         {
                             Id = 3,
-                            IsVisible = false,
+                            Name = "Goblin Chief",
+                            Notes = "",
+                            PieceID = 3,
+                            SessionId = 1,
+                            Visibility = true,
+                            X = 50m,
+                            Y = 5m,
+                            ZIndex = 1m
+                        },
+                        new
+                        {
+                            Id = 4,
                             Name = "Basic Chest",
+                            Notes = "",
                             PieceID = 4,
-                            SessionID = 1,
-                            X = 50.0,
-                            Y = 10.0,
-                            zIndex = 2
+                            SessionId = 1,
+                            Visibility = false,
+                            X = 50m,
+                            Y = 10m,
+                            ZIndex = 2m
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Beta Dungeon",
+                            Notes = "",
+                            PieceID = 6,
+                            SessionId = 2,
+                            Visibility = true,
+                            X = 0m,
+                            Y = 0m,
+                            ZIndex = 0m
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Cleric",
+                            Notes = "",
+                            PieceID = 2,
+                            SessionId = 2,
+                            Visibility = true,
+                            X = 50m,
+                            Y = 15m,
+                            ZIndex = 3m
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Cleric",
+                            Notes = "",
+                            PieceID = 2,
+                            SessionId = 2,
+                            Visibility = true,
+                            X = 50m,
+                            Y = 5m,
+                            ZIndex = 1m
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Cleric",
+                            Notes = "",
+                            PieceID = 2,
+                            SessionId = 2,
+                            Visibility = true,
+                            X = 50m,
+                            Y = 10m,
+                            ZIndex = 2m
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "Goblin Chief",
+                            Notes = "",
+                            PieceID = 3,
+                            SessionId = 2,
+                            Visibility = true,
+                            X = 50m,
+                            Y = 5m,
+                            ZIndex = 1m
                         });
                 });
 
@@ -424,14 +562,22 @@ namespace SAGroupAlphaSpring26.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Username")
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -443,41 +589,80 @@ namespace SAGroupAlphaSpring26.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 2, 17, 17, 50, 12, 338, DateTimeKind.Local).AddTicks(950),
-                            Email = "tjackson@students.ntc.edu",
-                            Username = "Tristan"
+                            Email = "local@demo.com",
+                            FirstName = "Local",
+                            IsAdmin = true,
+                            LastName = "DM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOo4mhuDm2R7rOsGbN9glHmkDUMZIeM+e2OHLgDPzcVBI2x7V3GMOF4uEr2FLLAN1w=="
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Email = "evankvang@gmail.com",
+                            FirstName = "Evan",
+                            IsAdmin = false,
+                            LastName = "Vang",
+                            PasswordHash = "AQAAAAIAAYagAAAAED/gmvbkG61Zn3N16R4ClGqB85/9PxJ3Db+XsqA+LzgNWyUGiv+Uvf1uvRX65CjTzA=="
                         });
                 });
 
-            modelBuilder.Entity("SAGroupAlphaSpring26.Models.Piece", b =>
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.UserPieces", b =>
                 {
-                    b.HasOne("SAGroupAlphaSpring26.Models.PieceType", "PieceType")
-                        .WithMany()
-                        .HasForeignKey("PieceTypeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("PieceId")
+                        .HasColumnType("int");
 
-                    b.HasOne("SAGroupAlphaSpring26.Models.Set", "Set")
-                        .WithMany("Pieces")
-                        .HasForeignKey("SetID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
-                    b.Navigation("PieceType");
+                    b.HasKey("PieceId", "UserId");
 
-                    b.Navigation("Set");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserPieces");
+
+                    b.HasData(
+                        new
+                        {
+                            PieceId = 1,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            PieceId = 2,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            PieceId = 3,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            PieceId = 4,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            PieceId = 5,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            PieceId = 6,
+                            UserId = 1
+                        });
                 });
 
-            modelBuilder.Entity("SAGroupAlphaSpring26.Models.Purchase", b =>
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.CartItem", b =>
                 {
                     b.HasOne("SAGroupAlphaSpring26.Models.Piece", "Piece")
-                        .WithMany()
+                        .WithMany("CartItems")
                         .HasForeignKey("PieceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SAGroupAlphaSpring26.Models.User", "User")
-                        .WithMany()
+                        .WithMany("CartItems")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -487,13 +672,100 @@ namespace SAGroupAlphaSpring26.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.CartItemSet", b =>
+                {
+                    b.HasOne("SAGroupAlphaSpring26.Models.Set", "Set")
+                        .WithMany("CartItemSets")
+                        .HasForeignKey("SetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SAGroupAlphaSpring26.Models.User", "User")
+                        .WithMany("CartItemSets")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Set");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.Piece", b =>
+                {
+                    b.HasOne("SAGroupAlphaSpring26.Models.PieceType", "PieceType")
+                        .WithMany("Pieces")
+                        .HasForeignKey("PieceTypeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PieceType");
+                });
+
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.PieceSets", b =>
+                {
+                    b.HasOne("SAGroupAlphaSpring26.Models.Piece", "Piece")
+                        .WithMany("Sets")
+                        .HasForeignKey("PieceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SAGroupAlphaSpring26.Models.Set", "Set")
+                        .WithMany("PiecesList")
+                        .HasForeignKey("SetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Piece");
+
+                    b.Navigation("Set");
+                });
+
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.Sale", b =>
+                {
+                    b.HasOne("SAGroupAlphaSpring26.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.SaleLine", b =>
+                {
+                    b.HasOne("SAGroupAlphaSpring26.Models.Piece", "Piece")
+                        .WithMany("SaleLines")
+                        .HasForeignKey("PieceID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SAGroupAlphaSpring26.Models.Sale", "Sale")
+                        .WithMany("SaleLines")
+                        .HasForeignKey("SaleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SAGroupAlphaSpring26.Models.Set", "Set")
+                        .WithMany("SaleLines")
+                        .HasForeignKey("SetID");
+
+                    b.Navigation("Piece");
+
+                    b.Navigation("Sale");
+
+                    b.Navigation("Set");
+                });
+
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Session", b =>
                 {
-                    b.HasOne("SAGroupAlphaSpring26.Models.User", null)
+                    b.HasOne("SAGroupAlphaSpring26.Models.User", "User")
                         .WithMany("Sessions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Token", b =>
@@ -506,13 +778,53 @@ namespace SAGroupAlphaSpring26.Migrations
 
                     b.HasOne("SAGroupAlphaSpring26.Models.Session", "Session")
                         .WithMany("Tokens")
-                        .HasForeignKey("SessionID")
+                        .HasForeignKey("SessionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Piece");
 
                     b.Navigation("Session");
+                });
+
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.UserPieces", b =>
+                {
+                    b.HasOne("SAGroupAlphaSpring26.Models.Piece", "Piece")
+                        .WithMany("Owners")
+                        .HasForeignKey("PieceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SAGroupAlphaSpring26.Models.User", "User")
+                        .WithMany("OwnedPieces")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Piece");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.Piece", b =>
+                {
+                    b.Navigation("CartItems");
+
+                    b.Navigation("Owners");
+
+                    b.Navigation("SaleLines");
+
+                    b.Navigation("Sets");
+                });
+
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.PieceType", b =>
+                {
+                    b.Navigation("Pieces");
+                });
+
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.Sale", b =>
+                {
+                    b.Navigation("SaleLines");
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Session", b =>
@@ -522,11 +834,21 @@ namespace SAGroupAlphaSpring26.Migrations
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Set", b =>
                 {
-                    b.Navigation("Pieces");
+                    b.Navigation("CartItemSets");
+
+                    b.Navigation("PiecesList");
+
+                    b.Navigation("SaleLines");
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.User", b =>
                 {
+                    b.Navigation("CartItemSets");
+
+                    b.Navigation("CartItems");
+
+                    b.Navigation("OwnedPieces");
+
                     b.Navigation("Sessions");
                 });
 #pragma warning restore 612, 618

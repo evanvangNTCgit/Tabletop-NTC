@@ -1,0 +1,26 @@
+﻿@model SAGroupAlphaSpring26.Models.Session
+
+<h2>Add Session</h2>
+<div class="form-horizontal">
+    <form method="post">
+        <div class="form-group">
+            <label asp-for="Name"> Name Of Session </label>
+            <input asp-for="Name" />
+            <span asp-validation-for="Name" />
+        </div>
+        <br />
+
+        <div class="form-group">
+            <label asp-for="Notes">Not Required: Starting Notes </label>
+            <input asp-for="Notes" />
+            <span asp-validation-for="Notes" />
+        </div>
+        <br />
+
+        <div asp-validation-summary="All"></div>
+        <p>
+            <button type="submit" class="btn btn-primary" role="button">Create</button>
+        </p>
+
+    </form>
+</div>

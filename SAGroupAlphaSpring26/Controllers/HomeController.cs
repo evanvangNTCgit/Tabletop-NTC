@@ -1,12 +1,16 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.Models;
 using SAGroupAlphaSpring26.Services;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace SAGroupAlphaSpring26.Controllers
 {
     [Route("")]
+    [AllowAnonymous]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -15,10 +19,10 @@ namespace SAGroupAlphaSpring26.Controllers
 
         private readonly DataService _dataService;
 
-        public HomeController(IOptions<AppConfig> appConfigWrapper, ILogger<HomeController> logger)
+        public HomeController(IOptions<AppConfig> appConfigWrapper, ILogger<HomeController> logger, DataService dataService)
         {
             _appConfig = appConfigWrapper.Value;
-            _dataService = new DataService();
+            _dataService = dataService;
             _logger = logger;
         }
 
@@ -27,7 +31,29 @@ namespace SAGroupAlphaSpring26.Controllers
         {
             ViewBag.ApplicationName = "SA Group Alpha Spring 2026";
 
-            return View();
+            //-------------------------------------------------------------------------
+            // Removed the hardcoded userId and replaced with dynamic userID retrieval.
+            //int userId = 1;
+            //-------------------------------------------------------------------------
+
+            // Checks if user is authenticated, if not redirects them to sign in.
+            if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("sign-in", "Account");
+            }
+
+            // Gets user ID from cookies as a string.
+            var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            // Check if user id exists and parse to an integer.
+            if (int.TryParse(userIdString, out int userId))
+            {
+                var model = _dataService.GetSessions(userId);
+                return View(model);
+            }
+
+            // if User ID is not found redirect to the sign in page.
+            return RedirectToAction("sign-in", "Account");
         }
 
         [Route("Privacy")]
@@ -41,10 +67,13 @@ namespace SAGroupAlphaSpring26.Controllers
         {
             ViewBag.ApplicationName = "SA Group Alpha Spring 2026";
 
-            // Pull all pieces from the static StoreData
-            var pieces = Models.StoreData.Pieces;
+            StoreViewModel model = new StoreViewModel
+            {
+                Pieces = this._dataService.GetPieces(),
+                Sets = this._dataService.GetAllSets()
+            };
 
-            return View(pieces); // pass the list to the view
+            return View(model);
         }
 
         // Gets a specific piece by ID.
@@ -52,6 +81,14 @@ namespace SAGroupAlphaSpring26.Controllers
         public IActionResult Piece(int id)
         {
             var model = _dataService.GetPiece(id);
+            return View(model);
+        }
+
+        // Gets a specific set by ID.
+        [Route("Set/{id}")]
+        public IActionResult Set(int id)
+        {
+            var model = _dataService.GetSet(id);
             return View(model);
         }
 

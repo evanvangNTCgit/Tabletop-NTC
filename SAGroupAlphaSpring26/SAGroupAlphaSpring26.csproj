@@ -8,6 +8,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="publish\**" />
+    <Compile Remove="wwwroot\fonts\**" />
+    <Content Remove="publish\**" />
+    <Content Remove="wwwroot\fonts\**" />
+    <EmbeddedResource Remove="publish\**" />
+    <EmbeddedResource Remove="wwwroot\fonts\**" />
+    <None Remove="publish\**" />
+    <None Remove="wwwroot\fonts\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="wwwroot\fonts\DragonHunter.otf" />
+    <Content Include="wwwroot\fonts\DragonHunter.ttf" />
+    <Content Include="wwwroot\fonts\Knights_Quest Callig.ttf" />
+    <Content Include="wwwroot\fonts\Knights_Quest.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.16">
       <PrivateAssets>all</PrivateAssets>
@@ -18,6 +36,16 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\images\Cleric.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\images\default.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+	  <Using Include="System.ComponentModel.DataAnnotations" />
   </ItemGroup>
 
 </Project>

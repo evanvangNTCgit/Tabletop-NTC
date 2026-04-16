@@ -1,0 +1,75 @@
+@model CartViewModel
+<link rel="stylesheet" href="~/css/pages/cart.css" asp-append-version="true" />
+
+<h2>Cart</h2>
+
+@if (Model != null && (Model.Pieces.Count > 0 || Model.Sets.Count > 0))
+{
+    <table class="table cart-table">
+        <tr>
+            <th scope="col">Item</th>
+            <th scope="col">Price</th>
+            <th scope="col">Change Your Mind?</th>
+            <th></th>
+        </tr>
+
+        @{
+            decimal totalPrice = 0;
+
+            if(Model.Pieces.Count > 0){
+            @foreach (var item in Model.Pieces)
+            {
+                totalPrice += item.Piece!.Price;
+                if(item.Piece!= null)
+                {
+                    <tr>
+                    <td>@item.Piece.Name</td>
+                        <td>@item.Piece.Price</td>
+                        <td>
+                            <a asp-controller="Cart" asp-action="RemoveFromCart" asp-route-id="@item.Piece.Id">Remove</a>
+                        </td>
+                    </tr>
+                }
+                }
+            }
+
+            if(Model.Sets.Count > 0)
+            {
+                @foreach(var set in Model.Sets)
+                {
+                    totalPrice += set.Set!.Price;
+
+                    <tr>
+                    <td>@set.Set.Name</td>
+                    <td>@set.Set.Price</td>
+                    <td>
+                    <a asp-controller="Cart" asp-action="RemoveSetFromCart" asp-route-id="@set.Set.Id">Remove</a>
+                    </td>
+                    </tr>
+                }
+            }
+
+            <tr>
+                <td></td>
+                <td>                    <strong>Total: $@Html.Raw(totalPrice)</strong></td>
+                <td>
+                </td>
+                <td></td>
+            </tr>
+        }
+    </table>
+
+    @* <div class="mt-4">
+        <form asp-controller="Cart" asp-action="Checkout" method="post">
+            <button type="submit" class="button-primary">Purchase Items</button>
+        </form>
+    </div> *@
+
+    <div>
+        <a asp-controller="Cart" asp-action="ViewSale" class="btn btn-primary" role="button">Review Sale</a>
+    </div>
+}
+else
+{
+    <p>It looks like your cart is empty. You should really add something...</p>
+}
