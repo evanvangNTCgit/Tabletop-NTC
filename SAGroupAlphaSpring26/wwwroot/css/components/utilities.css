@@ -1,0 +1,166 @@
+/* Utilities from site.css */
+
+.hidden {
+    display: none;
+}
+
+/* creates a little eye next to the tokens on the map*/
+.eye-badge {
+    position: absolute;
+    font-size: 14px;
+    background-color: #F5DEB3;
+    border: 1px solid #4a4a4a;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    /* Prevents the eye from blocking your drag clicks */
+    z-index: 1000;
+    color: #111827;
+}
+
+.dmOpacityToggle {
+    opacity: 0.5;
+}
+
+.dmOpacityToggle::after {
+    content: "Invis.";
+}
+
+#draggable {
+    width: 150px;
+    height: 150px;
+    padding: 0.5em;
+}
+
+/* Welcome Section */
+#WelcomeSection {
+    background-image: url("/images/dungeons_and_dragons_group_commission_art_by_envakenkaqti_de0nvqd-fullview.png");
+    background-position: center;
+    background-size: cover;
+    background-position-y: 10%;
+    position: relative;
+    height: 75vh;
+}
+
+/* Delete tokens area */
+.delete-drop-zone {
+    position: absolute;
+    bottom: 2%;
+    right: 2%;
+    width: 10%;
+    height: 10%;
+    background-color: rgba(220, 53, 69, 0.2);
+    border: 2px dashed #dc3545;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #dc3545;
+    z-index: 999;
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+
+.delete-drop-zone p {
+    font-size: clamp(0.35rem, 1.2vmin, 0.65rem);
+    text-align: center;
+    margin: 0;
+    padding: 2px;
+    line-height: 1.2;
+}
+
+/* Visual feedback when dragging over the bin */
+.delete-drop-zone.delete-hover {
+    background-color: rgba(220, 53, 69, 0.8);
+    transform: scale(1.1);
+    color: white;
+}
+
+.delete-drop-zone.delete-hover .ui-icon {
+    filter: brightness(0) invert(1);
+}
+
+/* pieceStoreImg */
+.pieceStoreImg {
+    max-width: 70vw;
+    max-height: 50vh
+}
+
+/* Advanced Options on Index Page */
+.advanced-wrapper {
+    display: inline-block;
+}
+
+/* Pill button */
+.advanced-pill {
+    background: linear-gradient(180deg, #3b2a1f, #2a1c14);
+    border: 1px solid #6b4a2b;
+    color: #e6d3a3;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.advanced-pill:hover {
+    border-color: #d4af37;
+    box-shadow: 0 0 6px rgba(212, 175, 55, 0.5);
+    color: #fff8dc;
+}
+
+/* Dropdown menu */
+.advanced-menu {
+    display: none;
+    margin-top: 0.5rem;
+}
+
+/* Show when open */
+.advanced-wrapper.open .advanced-menu {
+    display: block;
+}
+
+/* Smaller pill-style button inside */
+.small-pill {
+    display: inline-block;
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+/* Restore pill - always gold */
+.restore-pill {
+    display: inline-block;
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    text-decoration: none;
+    background: linear-gradient(180deg, #d4af37, #b8962e);
+    border: 1px solid #f5d76e;
+    color: #1a120d;
+    /* dark text for contrast */
+
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+}
+
+/* Glow on hover */
+.restore-pill:hover {
+    background: linear-gradient(180deg, #f5d76e, #d4af37);
+    color: #000;
+    box-shadow: 0 0 8px rgba(212, 175, 55, 0.7), 0 0 16px rgba(212, 175, 55, 0.4);
+    transform: translateY(-1px);
+}
+
+.restore-pill {
+    box-shadow: 0 0 4px rgba(212, 175, 55, 0.3);
+}
+

@@ -20,6 +20,9 @@
 
   <ItemGroup>
     <Content Include="wwwroot\fonts\DragonHunter.otf" />
+    <Content Include="wwwroot\fonts\DragonHunter.ttf" />
+    <Content Include="wwwroot\fonts\Knights_Quest Callig.ttf" />
+    <Content Include="wwwroot\fonts\Knights_Quest.ttf" />
   </ItemGroup>
 
   <ItemGroup>

@@ -20,7 +20,11 @@ namespace SAGroupAlphaSpring26.Models
         [Column(TypeName = "decimal(5,4)")]
         public decimal Discount { get; set; } = 0.1m; // 10% default
 
+        public bool IsArchived { get; set; }
+
         // Many to many for pieces and sets since a piece can be in many sets, and a set can have many pieces. We will need to create a join table for this relationship.
         public List<PieceSets>? PiecesList { get; set; } = new();
+
+        public List<CartItemSet>? CartItemSets { get; set; } = new();
     }
 }

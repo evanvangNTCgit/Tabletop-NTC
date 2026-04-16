@@ -1,4 +1,5 @@
-﻿@model PieceViewModel
+﻿@using System.Text
+@model PieceViewModel
 
 <h2>Edit Piece</h2>
 <div class="form-horizontal">
@@ -39,10 +40,23 @@
         <div class="form-group">
             @foreach (var imagename in Model.ImagePaths!)
             {
-                <div class="add-piece-div-image">
+                // Slight UX thing check the radio button already on the piece image 
+                // Model image path named as: /images/example.png 
+                // However imagename var just example.png
+                if (imagename == Model.Piece!.ImagePath.Split("/")[2])
+                    {
+                    <div class="add-piece-div-image">
+                        <img src="/images/@imagename" class="add-piece-image" />
+                        <input asp-for="Piece.ImagePath" value="@imagename" type="radio" checked/>
+                    </div>
+                    } else
+                    {
+                                            <div class="add-piece-div-image">
                     <img src="/images/@imagename" class="add-piece-image" />
                     <input asp-for="Piece.ImagePath" value="@imagename" type="radio" />
                 </div>
+                    }
+
             }
         </div>
         <br />

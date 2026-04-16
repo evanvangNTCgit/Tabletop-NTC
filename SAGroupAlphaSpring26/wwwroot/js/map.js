@@ -2,7 +2,7 @@
  * map.js
  * Now imports from PlayerMapFunctions.js for player view related logic, and MapAPI.js for tracking token data.
  */
-import { repositionToken, toggleTokenInvisibility, syncBoard, removeToken } from "./PlayerMapFunctions.js";
+import { repositionToken, toggleTokenInvisibility, syncBoard, removeToken, updateZIndex, setTokenVisibility } from "./PlayerMapFunctions.js";
 import { saveTokenPositions } from "./MapApi.js";
 
 // Stores session ID, gets from Razor view.
@@ -23,6 +23,7 @@ const bc = new BroadcastChannel('map_channel');
 
 // The Local State Dictionary - The "Source of Truth" for offline changes
 let tokenData = {};
+let selectedTokenId = null;
 
 if (mapBoard) {
     mapBoard.addEventListener('contextmenu', (e) => {
@@ -48,6 +49,12 @@ if (playerView === 'player') {
                 // Toggles the invisibility of a token on the player view. Currently bugged and doesn't respect the visibility bool.
                 toggleTokenInvisibility(e.data);
                 break;
+            case ("setVisibility"):
+                setTokenVisibility(e.data);
+                break;
+            case ("updateZIndex"):
+                updateZIndex(e.data);
+                break;
             case ("syncAll"):
                 // Sends ALL local token data to the player view for syncing.
                 syncBoard(e.data.allTokens);
@@ -57,8 +64,8 @@ if (playerView === 'player') {
                 console.log("DM Saved, reloading player view page...");
                 window.location.reload();
                 break;
-            case ("tokenDelete"): 
-            // deletes token from the player view.
+            case ("tokenDelete"):
+                // deletes token from the player view.
                 removeToken(e.data);
         }
     });
@@ -82,11 +89,11 @@ if (!isPlayerView) {
                 action: 'syncAll',
                 allTokens: tokenData
             });
-                }
-            });
+        }
+    });
 
     document.addEventListener('DOMContentLoaded', () => {
-        console.log('Hello! \nFrom -Mr. Vang (and the Clean Architecture!)');
+        console.log('Hello! \nFrom -Mr. Vang');
 
         if (!mapBoard) return console.error('Map board not found!');
 
@@ -101,7 +108,9 @@ if (!isPlayerView) {
                 src: token.attr('src'),
                 x: parseFloat(token[0].style.left) || 0,
                 y: parseFloat(token[0].style.top) || 0,
-                isVisible: !token.hasClass('dmOpacityToggle')
+                zIndex: parseInt(token[0].style.zIndex) || 1,
+                isVisible: !token.hasClass('dmOpacityToggle'),
+                name: token.data('name') || token.data('piecename') || ""
             };
         });
 
@@ -138,13 +147,18 @@ if (!isPlayerView) {
                     src: ui.draggable.attr('src'),
                     x: leftPerc,
                     y: topPerc,
-                    isVisible: true
+                    zIndex: 99,
+                    isVisible: true,
+                    name: ui.draggable.data('piecename') || ""
                 };
 
                 // Saves tokens to local dictionary
                 tokenData[localTokenData.id] = localTokenData;
 
                 makeNewToken(localTokenData);
+                selectedTokenId = localTokenData.id;
+                bringToFront(localTokenData.id);
+                updateInfoPanel();
             }
         });
 
@@ -160,7 +174,7 @@ if (!isPlayerView) {
                 const htmlId = ui.draggable.attr('id');
 
                 const dbId = ui.draggable.data('tokenid');
-                
+
                 // If it's a real token (not temp), stage it for DB deletion (temp tokens don't don't exist in the Database yet.)
                 if (dbId && !htmlId.startsWith('temp-')) {
                     tokensToDelete.push(dbId);
@@ -203,7 +217,7 @@ if (!isPlayerView) {
         tokenImg.style.top = `${data.y}%`;
         tokenImg.style.width = `5%`;
         tokenImg.style.height = `auto`;
-        tokenImg.style.zIndex = 99;
+        tokenImg.style.zIndex = data.zIndex || 99;
 
         mapBoard.appendChild(tokenImg);
 
@@ -236,9 +250,14 @@ if (!isPlayerView) {
                     src: event.target.src,
                     x: parseFloat(event.target.style.left) || 0,
                     y: parseFloat(event.target.style.top) || 0,
-                    isVisible: !event.target.classList.contains('dmOpacityToggle')
+                    zIndex: parseInt(event.target.style.zIndex) || 1,
+                    isVisible: !event.target.classList.contains('dmOpacityToggle'),
+                    name: event.target.dataset.name || event.target.dataset.piecename || ""
                 };
             }
+            selectedTokenId = tokenId;
+            bringToFront(tokenId);
+            updateInfoPanel();
         },
         stop: (event, ui) => {
 
@@ -260,7 +279,7 @@ if (!isPlayerView) {
             const topPerc = (ui.position.top / $board.height()) * 100;
             const leftPerc = (ui.position.left / $board.width()) * 100;
 
-            // Tells the Playerview to update the token's position. If this is too much to handle in 'drag' we can move it to 'stop'.
+            // Tells the Playerview to update the token's position. If this is too much to handle in 'drag' we can move it to 'stop' later.
             bc.postMessage({
                 tokenId: event.target.id,
                 tokenImgSrc: event.target.src,
@@ -271,7 +290,6 @@ if (!isPlayerView) {
         },
     };
 
-    // toggles opacity of tokens when right clicked (context menu)
     const attachContextMenu = (token) => {
         token.addEventListener('contextmenu', (e) => {
             e.preventDefault();
@@ -279,16 +297,123 @@ if (!isPlayerView) {
 
             const tId = token.id;
 
-            // respects the backends visibility bool.
+            // respect the backends visibility bool.
             if (tokenData[tId]) {
                 tokenData[tId].isVisible = !token.classList.contains("dmOpacityToggle");
             }
 
-            // send the toggleIn command to the playerview so it can make the tokens invisible on player view.
+            // send the toggleIn command to the playerview.
             bc.postMessage({
                 tokenId: tId,
                 action: 'toggleIn'
             });
+
+            // Syncs checkbox if the token is right clicked whilst selected.
+            if (selectedTokenId === tId) {
+                updateInfoPanel();
+            }
+        });
+
+        token.addEventListener('click', (e) => {
+            selectedTokenId = token.id;
+            updateInfoPanel();
         });
     };
+
+    // Function to bring a token to the front of the stack. (ontop of the other tokens)
+    const bringToFront = (tokenId) => {
+        if (!tokenData[tokenId]) return;
+
+        // Sort all active tokens by their current Z-Indexes
+        const tokensArray = Object.values(tokenData).sort((a, b) => {
+            const zA = parseInt(a.zIndex) || 1;
+            const zB = parseInt(b.zIndex) || 1;
+
+            // Failsafe for tokens with the same z-index...
+            if (zA === zB) return a.id.localeCompare(b.id);
+            return zA - zB;
+        });
+
+        const targetToken = tokenData[tokenId];
+        let currentZ = 1;
+
+        // Iterates through sorted tokens, updating and ordering by z index.
+        for (const token of tokensArray) {
+            if (token.id !== tokenId) {
+                if (token.zIndex !== currentZ) {
+                    token.zIndex = currentZ;
+                    const el = document.getElementById(token.id);
+                    if (el) el.style.zIndex = currentZ;
+                    bc.postMessage({ tokenId: token.id, zIndex: currentZ, action: 'updateZIndex' });
+                }
+                currentZ++;
+            }
+        }
+
+        // Z index set to the highest value (based on how many tokens exist)
+        if (targetToken.zIndex !== currentZ) {
+            targetToken.zIndex = currentZ;
+            const targetEl = document.getElementById(tokenId);
+            if (targetEl) targetEl.style.zIndex = currentZ;
+            bc.postMessage({ tokenId: tokenId, zIndex: currentZ, action: 'updateZIndex' });
+        }
+    };
+
+    const updateInfoPanel = () => {
+        const panel = document.getElementById('token-info-panel');
+        if (!panel || !selectedTokenId) return;
+
+        const data = tokenData[selectedTokenId];
+        if (!data) return;
+
+        panel.style.display = 'block';
+        document.getElementById('token-info-image').src = data.src;
+        document.getElementById('token-info-name').value = data.name || "";
+        document.getElementById('token-info-zindex').value = data.zIndex || 1;
+        document.getElementById('token-info-visibility').checked = data.isVisible;
+    };
+
+    // Bind panel events
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('token-info-name')?.addEventListener('input', (e) => {
+            if (selectedTokenId && tokenData[selectedTokenId]) {
+                tokenData[selectedTokenId].name = e.target.value;
+                const tokenEl = document.getElementById(selectedTokenId);
+                if (tokenEl) tokenEl.dataset.name = e.target.value;
+            }
+        });
+
+        document.getElementById('token-info-zindex')?.addEventListener('change', (e) => {
+            if (selectedTokenId && tokenData[selectedTokenId]) {
+                let newZ = parseInt(e.target.value) || 1;
+                tokenData[selectedTokenId].zIndex = newZ;
+                const tokenEl = document.getElementById(selectedTokenId);
+                if (tokenEl) tokenEl.style.zIndex = newZ;
+
+                bc.postMessage({
+                    tokenId: selectedTokenId,
+                    zIndex: newZ,
+                    action: 'updateZIndex'
+                });
+            }
+        });
+
+        document.getElementById('token-info-visibility')?.addEventListener('change', (e) => {
+            if (selectedTokenId && tokenData[selectedTokenId]) {
+                let isVis = e.target.checked;
+                tokenData[selectedTokenId].isVisible = isVis;
+                const tokenEl = document.getElementById(selectedTokenId);
+                if (tokenEl) {
+                    if (!isVis) tokenEl.classList.add("dmOpacityToggle");
+                    else tokenEl.classList.remove("dmOpacityToggle");
+                }
+
+                bc.postMessage({
+                    tokenId: selectedTokenId,
+                    isVisible: isVis,
+                    action: 'setVisibility'
+                });
+            }
+        });
+    });
 }

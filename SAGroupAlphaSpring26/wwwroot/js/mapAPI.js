@@ -1,4 +1,4 @@
-﻿// MapApi.js
+// MapApi.js
 
 /**
  * Converts the local tokenData dictionary into an array and saves to the C# Backend/calls the map controller.
@@ -40,8 +40,9 @@ export const saveTokenPositions = (tokenData, sessionId, tokensToDelete) => {
             SessionID: parseInt(sessionId) || 0,
             X: parseFloat(token.x) || 0,
             Y: parseFloat(token.y) || 0,
-            zIndex: 99,
-            Visibility: !!token.isVisible
+            zIndex: parseInt(token.zIndex) || 1,
+            Visibility: !!token.isVisible,
+            Name: token.name || ""
         }));
 
         return $.ajax({

@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
+using SAGroupAlphaSpring26.ViewModels;
 using System.Security.Claims;
 
 namespace SAGroupAlphaSpring26.Services
@@ -38,6 +39,28 @@ namespace SAGroupAlphaSpring26.Services
                 }
 
                 return piece;
+            }
+            catch
+            {
+                throw new Exception($"Piece of {id} not found");
+            }
+        }
+
+        public Set GetSet(int id)
+        {
+            try
+            {
+                var set = _dataContext.Sets
+                    .Include(p => p.PiecesList!)
+                    .ThenInclude(pl => pl.Piece)
+                    .FirstOrDefault(s => s.Id == id);
+
+                if (set == null)
+                {
+                    throw new Exception();
+                }
+
+                return set;
             }
             catch
             {
@@ -415,12 +438,40 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
+        public CartItemSet GetCartItemSet(int userId, int setId)
+        {
+            try
+            {
+                return this._dataContext.CartItemSets
+                    .Where(cis => cis.UserId == userId)
+                    .Where(cis => cis.SetId == setId)
+                    .Where(cis => cis.IsArchived == false)
+                    .Where(cis => cis.Set!.IsArchived == false)
+                    .Include(cis => cis.Set)
+                    .FirstOrDefault()!;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to get set\n{ex.Message}");
+            }
+        }
+
         public List<CartItem> GetCartItems(int userId)
         {
             return this._dataContext.CartItems
                 .Where(ci => ci.UserId == userId)
                 .Where(ci => ci.IsArchived == false)
                 .Include(ci => ci.Piece)
+                .ToList();
+        }
+
+        public List<CartItemSet> GetCartItemSet(int userId)
+        {
+            return this._dataContext.CartItemSets
+                .Where(cis => cis.UserId == userId)
+                .Where(cis => cis.IsArchived == false)
+                .Include(cis => cis.Set)
+                .ThenInclude(s => s.PiecesList)
                 .ToList();
         }
 
@@ -432,6 +483,17 @@ namespace SAGroupAlphaSpring26.Services
                 .Where(ci => ci.IsArchived == true)
                 .Where(ci => ci.PieceId == pieceId)
                 .FirstOrDefault()!;
+
+            // Also check if user has cartItem in cart since in our app. you can only buy things once.
+            CartItem alreadyInCart = this._dataContext.CartItems
+                .Where(ci => ci.UserId == userId)
+                .Where(ci => ci.IsArchived == false)
+                .Where(ci => ci.PieceId == pieceId)
+                .FirstOrDefault()!;
+            if (alreadyInCart != null)
+            {
+                return;
+            }
 
             if (userCartItem != null)
             {
@@ -457,12 +519,132 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
+        public void AddSetCartItem(int userId, int setId)
+        {
+            // Check if the user has an archived cartItem of same pieceId
+            CartItemSet userSetItem = this._dataContext.CartItemSets
+                .Where(cis => cis.UserId == userId)
+                .Where(cis => cis.IsArchived == true)
+                .Where(cis => cis.SetId == setId)
+                .FirstOrDefault()!;
+
+            // Also check if user already has this set in the cart they can only buy things once.
+            CartItemSet alreadyInCart = this._dataContext.CartItemSets
+                .Where(cis => cis.UserId == userId)
+                .Where(cis => cis.IsArchived == false)
+                .Where(cis => cis.SetId == setId)
+                .FirstOrDefault()!;
+            if(alreadyInCart != null)
+            {
+                return;
+            }
+
+
+            if (userSetItem != null)
+            {
+                userSetItem.IsArchived = false;
+                this._dataContext.Update(userSetItem);
+                this._dataContext.SaveChanges();
+            }
+            else
+            {
+                User user = this._dataContext.Users.FirstOrDefault(u => u.Id == userId)!;
+                if (user != null)
+                {
+                    CartItemSet newCartItemSet = new()
+                    {
+                        SetId = setId,
+                        UserId = userId,
+                        IsArchived = false
+                    };
+
+                    this._dataContext.Add(newCartItemSet);
+                    this._dataContext.SaveChanges();
+                }
+            }
+        }
+
         public void DeleteCartItem(int userId, int pieceId)
         {
             var userCartItem = this.GetCartItem(userId, pieceId);
             userCartItem.IsArchived = true;
             this._dataContext.Update(userCartItem);
             this._dataContext.SaveChanges();
+        }
+
+        public void DeleteSetCartItem(int userId, int setId)
+        {
+            var userCartSetItem = this.GetCartItemSet(userId, setId);
+            userCartSetItem.IsArchived = true;
+            this._dataContext.Update(userCartSetItem);
+            this._dataContext.SaveChanges();
+        }
+
+        // Checks out the user's cart, adding all pieces to their collection and archiving the cart items.
+        public void CheckoutCart(int userId)
+        {
+            try
+            {
+                // Get pieces from the cart
+                var cartItems = this.GetCartItems(userId);
+                foreach (var item in cartItems)
+                {
+                    // If user doesn't already own it, add it
+                    if (!this._dataContext.UserPieces.Any(up => up.UserId == userId && up.PieceId == item.PieceId))
+                    {
+                        this._dataContext.UserPieces.Add(new UserPieces { UserId = userId, PieceId = item.PieceId });
+                    }
+                    // Archive the cart item
+                    item.IsArchived = true;
+                    this._dataContext.Update(item);
+                }
+
+                // Get sets from the cart
+                // We need to retrieve the sets with the PiecesList included to get the PieceIds
+                var cartSets = this._dataContext.CartItemSets
+                    .Where(cis => cis.UserId == userId && cis.IsArchived == false)
+                    .Include(cis => cis.Set)
+                    .ThenInclude(s => s!.PiecesList)
+                    .ToList();
+
+                foreach (var setItem in cartSets)
+                {
+                    // Add all pieces from the set to the user account
+                    if (setItem.Set != null && setItem.Set.PiecesList != null)
+                    {
+                        foreach (var pieceSet in setItem.Set.PiecesList)
+                        {
+                            if (!this._dataContext.UserPieces.Any(up => up.UserId == userId && up.PieceId == pieceSet.PieceId))
+                            {
+                                this._dataContext.UserPieces.Add(new UserPieces { UserId = userId, PieceId = pieceSet.PieceId });
+                            }
+                        }
+                    }
+                    setItem.IsArchived = true;
+                    this._dataContext.Update(setItem);
+                }
+
+                this._dataContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to checkout cart for user {userId}: {ex.Message}");
+            }
+        }
+
+        public List<PurchaseStatsViewModel> GetPiecePurchaseStats()
+        {
+            return _dataContext.SaleLines
+                .Include(sl => sl.Piece)
+                .ThenInclude(p => p.PieceType)
+                .GroupBy(sl => sl.PieceID)
+                .Select(g => new PurchaseStatsViewModel 
+                { 
+                    Piece = g.First().Piece, 
+                    TotalPurchased = g.Count() 
+                })
+                .OrderByDescending(x => x.TotalPurchased)
+                .ToList();
         }
     }
 }

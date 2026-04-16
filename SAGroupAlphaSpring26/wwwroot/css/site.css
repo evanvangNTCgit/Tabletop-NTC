@@ -1,16 +1,8 @@
-/* =========================================
-   GLOBAL
-========================================= */
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+/* Main site.css - Store grid, utilities, remaining overrides */
 
 @font-face {
-    font-family: 'DragonHunter';
-    src: url('../fonts/DragonHunter.otf') format('truetype');
+    font-family: 'Knights Quest';
+    src: url('../fonts/Knights_Quest.ttf') format('truetype');
 }
 
 body {
@@ -19,14 +11,17 @@ body {
     background-repeat: no-repeat;
     background-position: center;
     background-attachment: fixed;
-    font-family: 'DragonHunter', sans-serif;
-    color: #111827; /* dark text for tan paper bg */
+    font-family: 'Knights Quest', sans-serif;
+    color: #111827;
+    /* dark text for tan paper bg */
     letter-spacing: 2px;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
     color: #111827 !important;
-    text-shadow: 1px 1px 2px rgba(255,255,255,0.7);
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7);
 }
 
 input[type="text"],
@@ -48,23 +43,27 @@ input[type="password"] {
 /* Sidebar */
 .sidebar {
     width: 240px;
-    background-color: #0a0a0a; /* D&D dark */
+    background-color: #0a0a0a;
+    /* D&D dark */
     color: #F4E4BC;
     padding: 1.5rem 1rem;
     /* Make sidebar sticky */
     position: sticky;
-    top: 0; /* sticks to top of viewport when scrolling */
-    height: 100vh; /* full viewport height */
-    overflow-y: auto; /* scroll if sidebar content is long */
+    top: 0;
+    /* sticks to top of viewport when scrolling */
+    height: 100vh;
+    /* full viewport height */
+    overflow-y: auto;
+    /* scroll if sidebar content is long */
 }
 
-    .sidebar h2 {
-        margin-bottom: 1.5rem;
-        font-size: 1.1rem;
-        font-weight: 600;
-        letter-spacing: 2px;
-        color: #FFD700;
-    }
+.sidebar h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #FFD700;
+}
 
 /* Main Content */
 .main-content {
@@ -93,6 +92,12 @@ input[type="password"] {
     color: #111827;
 }
 
+.saBackground {
+    background-color: #F5DEB3;
+    border-radius: 10px;
+    border: 1px solid #4a4a4a;
+}
+
 .card {
     background-color: #F5DEB3;
     border-radius: 10px;
@@ -102,10 +107,10 @@ input[type="password"] {
     color: #111827;
 }
 
-    .card .list-group-item.list-group-item-action {
-        background: transparent;
-        border: transparent;
-    }
+.card .list-group-item.list-group-item-action {
+    background: transparent;
+    border: transparent;
+}
 
 /* =========================================
    BUTTONS (Stronger Contrast)
@@ -161,9 +166,9 @@ input[type="password"] {
     font-weight: 600;
 }
 
-    .button-danger:hover {
-        background-color: #660000;
-    }
+.button-danger:hover {
+    background-color: #660000;
+}
 
 .button-disabled {
     background-color: #696969;
@@ -215,9 +220,11 @@ input[type="password"] {
 
 .store-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr); /* exactly 5 items per row */
+    grid-template-columns: repeat(5, 1fr);
+    /* exactly 5 items per row */
     gap: 1.5rem;
-    margin-bottom: 3rem; /* spacing between types */
+    margin-bottom: 3rem;
+    /* spacing between types */
 }
 
 .store-item {
@@ -231,21 +238,63 @@ input[type="password"] {
     color: #111827;
 }
 
-    .store-item:hover {
-        border-color: #D4AF37;
-    }
+.store-item:hover {
+    border-color: #D4AF37;
+}
 
-    .store-item img {
-        width: 100%;
-        max-height: 200px;
-        max-width: 200px;
-        object-fit: cover;
-        border-radius: 8px;
-    }
+.store-item img {
+    width: 100%;
+    max-height: 200px;
+    max-width: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+}
 
 .buy-button {
     margin-top: 0.75rem;
     width: 100%;
+}
+
+/* Additional classes for extracted inline styles (fallback if page CSS not loaded) */
+.store-set-item {
+    grid-column: span 2;
+}
+
+.set-card {
+    margin: 15px;
+}
+
+.set-card-img {
+    height: 10vh;
+    width: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+}
+
+.set-price {
+    background-color: #F5DEB3;
+    font-size: 20px;
+    width: auto;
+}
+
+.piece-detail-section {
+    background-color: #F5DEB3;
+}
+
+.piece-price-desc {
+    font-size: 20px;
+}
+
+.cart-warning {
+    background-color: black;
+    padding: 1px;
+}
+
+.cart-table {
+    background-color: #F5DEB3;
+    border-radius: 10px;
+    border: 1px solid #4a4a4a;
+    color: #111827;
 }
 
 
@@ -292,9 +341,10 @@ input[type="password"] {
     flex-grow: 1;
     overflow: hidden;
 }
-    .map-board[draggable] {
-        cursor: grabbing !important;
-    }
+
+.map-board[draggable] {
+    cursor: grabbing !important;
+}
 
 /* Piece Bar */
 .piece-bar {
@@ -309,30 +359,30 @@ input[type="password"] {
 
 .sidebar-piece {
     border: 2px solid #696969;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-    .sidebar-piece:hover {
-        border-color: #D4AF37;
-        transform: scale(1.1);
-    }
+.sidebar-piece:hover {
+    border-color: #D4AF37;
+    transform: scale(1.1);
+}
 
 .draggable-token {
     border: 2px solid #D4AF37;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     user-select: none;
-    width:5%;
-    height:5%;
+    width: 5%;
+    height: 5%;
 }
 
-    .draggable-token:hover {
-        border-color: #FFD700;
-    }
+.draggable-token:hover {
+    border-color: #FFD700;
+}
 
-    .draggable-token:active,
-    .map-board.drag-over {
-        cursor: grabbing !important;
-    }
+.draggable-token:active,
+.map-board.drag-over {
+    cursor: grabbing !important;
+}
 
 .map-piece:active,
 .map-piece[draggable="true"]:active {
@@ -362,9 +412,9 @@ input[type="password"] {
     position: relative;
 }
 
-    .map-piece:hover {
-        transform: scale(1.08);
-    }
+.map-piece:hover {
+    transform: scale(1.08);
+}
 
 /*.map-main-area {
     flex-grow: 1;
@@ -403,9 +453,9 @@ input[type="password"] {
     font-weight: 500;
 }
 
-    .zoom-btn:hover {
-        background: #D2B48C;
-    }
+.zoom-btn:hover {
+    background: #D2B48C;
+}
 
 #zoom-level {
     color: #111827 !important;
@@ -436,10 +486,10 @@ input[type="password"] {
     padding: 5px;
 }
 
-    .add-piece-div-image:hover {
-        box-shadow: 10px 10px rgba(212, 175, 55, 0.5);
-        transition: .5s;
-    }
+.add-piece-div-image:hover {
+    box-shadow: 10px 10px rgba(212, 175, 55, 0.5);
+    transition: .5s;
+}
 
 /* =========================================
    SIDEBAR NAVIGATION BUTTONS
@@ -478,9 +528,9 @@ input[type="password"] {
     padding-bottom: 1rem;
 }
 
-    .sidebar .brand:hover {
-        color: #FFD700;
-    }
+.sidebar .brand:hover {
+    color: #FFD700;
+}
 
 /* Navigation list */
 .nav-list {
@@ -489,9 +539,9 @@ input[type="password"] {
     margin: 0;
 }
 
-    .nav-list li {
-        margin-bottom: 0.5rem;
-    }
+.nav-list li {
+    margin-bottom: 0.5rem;
+}
 
 /* Navigation button styling */
 .nav-button {
@@ -512,47 +562,47 @@ input[type="password"] {
     font-family: inherit;
 }
 
-    .nav-button:hover {
-        background-color: #D4AF37;
-        border-color: #D4AF37;
-        color: #000000;
-        transform: translateX(4px);
-        box-shadow: 0 4px 6px rgba(212, 175, 55, 0.4);
-        text-decoration: none;
-    }
+.nav-button:hover {
+    background-color: #D4AF37;
+    border-color: #D4AF37;
+    color: #000000;
+    transform: translateX(4px);
+    box-shadow: 0 4px 6px rgba(212, 175, 55, 0.4);
+    text-decoration: none;
+}
 
-    .nav-button.active {
-        background-color: #D4AF37;
-        border-color: #D4AF37;
-        color: #000000;
-    }
+.nav-button.active {
+    background-color: #D4AF37;
+    border-color: #D4AF37;
+    color: #000000;
+}
 
-    /* Sign in button - green */
-    .nav-button.signin {
-        background-color: #D4AF37;
-        border-color: #D4AF37;
-        color: #000000;
-        text-align: center;
-    }
+/* Sign in button - green */
+.nav-button.signin {
+    background-color: #D4AF37;
+    border-color: #D4AF37;
+    color: #000000;
+    text-align: center;
+}
 
-        .nav-button.signin:hover {
-            background-color: #B8860B;
-            border-color: #B8860B;
-            transform: translateX(4px);
-        }
+.nav-button.signin:hover {
+    background-color: #B8860B;
+    border-color: #B8860B;
+    transform: translateX(4px);
+}
 
-    /* Logout button - red */
-    .nav-button.logout {
-        background-color: #8B0000;
-        border-color: #8B0000;
-        color: #ffffff;
-    }
+/* Logout button - red */
+.nav-button.logout {
+    background-color: #8B0000;
+    border-color: #8B0000;
+    color: #ffffff;
+}
 
-        .nav-button.logout:hover {
-            background-color: #660000;
-            border-color: #660000;
-            transform: translateX(4px);
-        }
+.nav-button.logout:hover {
+    background-color: #660000;
+    border-color: #660000;
+    transform: translateX(4px);
+}
 
 /* Admin dropdown */
 .admin-section {
@@ -578,17 +628,17 @@ input[type="password"] {
     cursor: pointer;
 }
 
-    .admin-toggle:hover {
-        background-color: #660000;
-        border-color: #660000;
-        transform: translateX(4px);
-        text-decoration: none;
-    }
+.admin-toggle:hover {
+    background-color: #660000;
+    border-color: #660000;
+    transform: translateX(4px);
+    text-decoration: none;
+}
 
-    /* Hide Bootstrap's default caret on admin-toggle */
-    .admin-toggle::after {
-        display: none !important;
-    }
+/* Hide Bootstrap's default caret on admin-toggle */
+.admin-toggle::after {
+    display: none !important;
+}
 
 .admin-menu {
     padding-left: 0.5rem;
@@ -596,18 +646,18 @@ input[type="password"] {
     list-style: none;
 }
 
-    .admin-menu .nav-button {
-        font-size: 0.9rem;
-        padding: 0.5rem 0.75rem;
-        margin-bottom: 0.25rem;
-        background-color: #4a4a4a;
-        border-color: #696969;
-    }
+.admin-menu .nav-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.25rem;
+    background-color: #4a4a4a;
+    border-color: #696969;
+}
 
-        .admin-menu .nav-button:hover {
-            background-color: #D4AF37;
-            border-color: #D4AF37;
-        }
+.admin-menu .nav-button:hover {
+    background-color: #D4AF37;
+    border-color: #D4AF37;
+}
 
 /* User greeting */
 .user-greeting {
@@ -635,10 +685,10 @@ input[type="password"] {
     transition: all 0.2s ease;
 }
 
-    .dropdown-menu-dark .dropdown-item:hover {
-        background-color: #D4AF37;
-        color: #000000;
-    }
+.dropdown-menu-dark .dropdown-item:hover {
+    background-color: #D4AF37;
+    color: #000000;
+}
 
 /* Dropdown arrow flip animation - Bootstrap Icons caret */
 .admin-toggle .bi-caret-down-fill {
@@ -646,7 +696,7 @@ input[type="password"] {
     font-size: 0.75rem;
 }
 
-.dropdown.show > .admin-toggle .bi-caret-down-fill {
+.dropdown.show>.admin-toggle .bi-caret-down-fill {
     transform: rotate(180deg);
 }
 
@@ -672,8 +722,9 @@ input[type="password"] {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    pointer-events: none; /* Prevents the eye from blocking your drag clicks */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    /* Prevents the eye from blocking your drag clicks */
     z-index: 1000;
     color: #111827;
 }
@@ -682,9 +733,9 @@ input[type="password"] {
     opacity: 0.5;
 }
 
-    .dmOpacityToggle::after {
-        content: "Invis.";
-    }
+.dmOpacityToggle::after {
+    content: "Invis.";
+}
 
 #draggable {
     width: 150px;
@@ -716,11 +767,11 @@ input[type="password"] {
     transition: all 0.2s ease;
 }
 
-    .advanced-pill:hover {
-        border-color: #d4af37;
-        box-shadow: 0 0 6px rgba(212, 175, 55, 0.5);
-        color: #fff8dc;
-    }
+.advanced-pill:hover {
+    border-color: #d4af37;
+    box-shadow: 0 0 6px rgba(212, 175, 55, 0.5);
+    color: #fff8dc;
+}
 
 /* Dropdown menu */
 .advanced-menu {
@@ -751,7 +802,8 @@ input[type="password"] {
     text-decoration: none;
     background: linear-gradient(180deg, #d4af37, #b8962e);
     border: 1px solid #f5d76e;
-    color: #1a120d; /* dark text for contrast */
+    color: #1a120d;
+    /* dark text for contrast */
 
     font-weight: 600;
     letter-spacing: 0.5px;
@@ -765,6 +817,7 @@ input[type="password"] {
     box-shadow: 0 0 8px rgba(212, 175, 55, 0.7), 0 0 16px rgba(212, 175, 55, 0.4);
     transform: translateY(-1px);
 }
+
 .restore-pill {
     box-shadow: 0 0 4px rgba(212, 175, 55, 0.3);
 }
@@ -779,10 +832,10 @@ input[type="password"] {
 
 .delete-drop-zone {
     position: absolute;
-    bottom: 20px;
-    right: 20px;
-    width: 80px;
-    height: 80px;
+    bottom: 2%;
+    right: 2%;
+    width: 10%;
+    height: 10%;
     background-color: rgba(220, 53, 69, 0.2);
     border: 2px dashed #dc3545;
     border-radius: 10px;
@@ -791,23 +844,20 @@ input[type="password"] {
     align-items: center;
     justify-content: center;
     color: #dc3545;
-    z-index: 999; /* Ensure it stays above tokens */
+    z-index: 999;
     transition: all 0.2s ease;
+    overflow: hidden;
 }
 
-/*I CANT GET THIS TRASH ICON TO SHOW UP */
-/*    jquery trash icon*/
-    .delete-drop-zone .ui-icon {
-        transform: scale(3);
-        margin-bottom: 15px;
-        background-image: url("https://code.jquery.com/ui/1.13.2/themes/base/images/ui-icons_444444_256x240.png");
-    }
+.delete-drop-zone p {
+    font-size: clamp(0.35rem, 1.2vmin, 0.65rem);
+    text-align: center;
+    margin: 0;
+    padding: 2px;
+    line-height: 1.2;
+}
 
-    .delete-drop-zone .delete-icon-trash {
-        display: block;
-    }
-
- /* Visual feedback when dragging over the bin */
+/* Visual feedback when dragging over the bin */
 .delete-drop-zone.delete-hover {
     background-color: rgba(220, 53, 69, 0.8);
     transform: scale(1.1);
@@ -819,7 +869,115 @@ input[type="password"] {
 }
 
 /* For when you look at the piece on the store page. */
-.pieceStoreImg{
+.pieceStoreImg {
     max-width: 70vw;
     max-height: 50vh
+}
+
+
+/* Store */
+.store-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.store-item {
+    background-color: #F5DEB3;
+    border-radius: 10px;
+    border: 1px solid #4a4a4a;
+    padding: 1rem;
+    text-align: center;
+    transition: 0.2s ease;
+    min-width: 135px;
+    color: #111827;
+}
+
+    .store-item:hover {
+        border-color: #D4AF37;
+    }
+
+    .store-item img {
+        width: 100%;
+        max-height: 200px;
+        max-width: 200px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+.store-set-item {
+    grid-column: span 2;
+}
+
+/* Utilities from extracted inlines */
+.set-card {
+    margin: 15px;
+}
+
+.set-card-img {
+    height: 10vh;
+    width: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+}
+
+.set-price {
+    background-color: #F5DEB3;
+    font-size: 20px;
+    width: auto;
+}
+
+.piece-detail-section {
+    background-color: #F5DEB3;
+}
+
+.piece-price-desc {
+    font-size: 20px;
+}
+
+.cart-warning {
+    background-color: black;
+    padding: 1px;
+}
+
+.cart-table {
+    background-color: #F5DEB3;
+    border-radius: 10px;
+    border: 1px solid #4a4a4a;
+    color: #111827;
+}
+
+.pieceStoreImg {
+    max-width: 70vw;
+    max-height: 50vh;
+}
+
+.session-notes {
+    width: 100%;
+    min-height: 400px;
+    border-radius: 8px;
+    border: 1px solid #4a4a4a;
+    padding: 1rem;
+    font-size: 1rem;
+    background-color: #F5DEB3;
+    color: #111827;
+}
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 6rem;
+    gap: 1.5rem;
+}
+
+#WelcomeSection {
+    background-image: url("/images/dungeons_and_dragons_group_commission_art_by_envakenkaqti_de0nvqd-fullview.png");
+    background-position: center;
+    background-size: cover;
+    background-position-y: 10%;
+    position: relative;
+    height: 75vh;
 }

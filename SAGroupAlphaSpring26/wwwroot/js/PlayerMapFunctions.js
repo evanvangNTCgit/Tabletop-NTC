@@ -1,4 +1,4 @@
-﻿// PlayerMapFunctions.js
+// PlayerMapFunctions.js
 
 /**
  * Takes the broadcast data and positions tokens on player map accordingly. 
@@ -38,6 +38,26 @@ export const toggleTokenInvisibility = (broadCastData) => {
     }
 };
 
+// Explicitly sets the visibility instead of toggling to avoid sync issues.
+export const setTokenVisibility = (broadCastData) => {
+    const tokenGettingToggled = document.getElementById(broadCastData.tokenId);
+    if (tokenGettingToggled) {
+        if (!broadCastData.isVisible) {
+            tokenGettingToggled.classList.add('hidden');
+        } else {
+            tokenGettingToggled.classList.remove('hidden');
+        }
+    }
+};
+
+// Updates the Z-Index of a token
+export const updateZIndex = (broadCastData) => {
+    const token = document.getElementById(broadCastData.tokenId);
+    if (token) {
+        token.style.zIndex = broadCastData.zIndex;
+    }
+};
+
 // For syncing the player board to the DM board. Runs on initial load and after every save so that the player board stays up to date with the DM board.
 export const syncBoard = (allTokens) => {
     const board = document.getElementById('map-board');
@@ -64,7 +84,7 @@ export const syncBoard = (allTokens) => {
             tokenImg.src = token.src;
             tokenImg.classList.add('draggable-token');
             tokenImg.style.position = 'absolute';
-            tokenImg.style.zIndex = 99;
+            tokenImg.style.zIndex = parseInt(token.zIndex) || 99;
             board.appendChild(tokenImg);
         }
 
@@ -73,6 +93,7 @@ export const syncBoard = (allTokens) => {
             tokenImg.style.top = `${token.y}%`;
             tokenImg.style.width = '5%';
             tokenImg.style.height = 'auto';
+            tokenImg.style.zIndex = parseInt(token.zIndex) || 99;
 
             if (!token.isVisible) {
                 tokenImg.classList.add('hidden');

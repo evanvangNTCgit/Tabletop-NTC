@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SAGroupAlphaSpring26.Data;
 
@@ -11,9 +12,11 @@ using SAGroupAlphaSpring26.Data;
 namespace SAGroupAlphaSpring26.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260407134852_CartItemSets")]
+    partial class CartItemSets
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -71,7 +74,7 @@ namespace SAGroupAlphaSpring26.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CartItemSets");
+                    b.ToTable("CartItemSet");
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Piece", b =>
@@ -337,7 +340,7 @@ namespace SAGroupAlphaSpring26.Migrations
                         {
                             Id = 1,
                             IsArchived = false,
-                            LastUpdated = new DateTime(2026, 4, 7, 9, 46, 56, 10, DateTimeKind.Local).AddTicks(4780),
+                            LastUpdated = new DateTime(2026, 4, 7, 8, 48, 51, 603, DateTimeKind.Local).AddTicks(4571),
                             Name = "Test Session",
                             Notes = "Local Test Session",
                             UserId = 1
@@ -346,7 +349,7 @@ namespace SAGroupAlphaSpring26.Migrations
                         {
                             Id = 2,
                             IsArchived = false,
-                            LastUpdated = new DateTime(2026, 4, 7, 9, 46, 56, 10, DateTimeKind.Local).AddTicks(4787),
+                            LastUpdated = new DateTime(2026, 4, 7, 8, 48, 51, 603, DateTimeKind.Local).AddTicks(4575),
                             Name = "Test Session 2",
                             Notes = "Local Test Session 2",
                             UserId = 1
@@ -364,9 +367,6 @@ namespace SAGroupAlphaSpring26.Migrations
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(5,4)");
 
-                    b.Property<bool>("IsArchived")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -383,7 +383,6 @@ namespace SAGroupAlphaSpring26.Migrations
                         {
                             Id = 1,
                             Discount = 0.1m,
-                            IsArchived = false,
                             Name = "Evans Beginner Pack",
                             Price = 0.00m
                         });
@@ -568,7 +567,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             FirstName = "Local",
                             IsAdmin = true,
                             LastName = "DM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEIzne0/mg1aI4lyyM8Xg4Vr+gfEYIT/aP8GeP3Qc+7mom4rDrIVHM4nqQEiushzi6g=="
+                            PasswordHash = "AQAAAAIAAYagAAAAEHHEvViQWY5KxLpO0te7UcdBXMR9XoHeBQa06+vzDUMxZS0gTe42L2kI/rzwJWLFww=="
                         },
                         new
                         {
@@ -577,7 +576,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             FirstName = "Evan",
                             IsAdmin = false,
                             LastName = "Vang",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAyPaITFylwfXRsGYKK3WuAFf0SaInBEeP4UMouvEqEj6EQfDOaq8DRdTDG3cbGfsQ=="
+                            PasswordHash = "AQAAAAIAAYagAAAAEKi+qia6UmdkzqcPBYqokY8upSUKTIGavIPMbY7C27bn5awQ4XYoapnaTbkQKKkrKQ=="
                         });
                 });
 
@@ -656,7 +655,7 @@ namespace SAGroupAlphaSpring26.Migrations
                         .IsRequired();
 
                     b.HasOne("SAGroupAlphaSpring26.Models.User", "User")
-                        .WithMany("CartItemSets")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -808,8 +807,6 @@ namespace SAGroupAlphaSpring26.Migrations
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.User", b =>
                 {
-                    b.Navigation("CartItemSets");
-
                     b.Navigation("CartItems");
 
                     b.Navigation("OwnedPieces");
