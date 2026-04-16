@@ -160,3 +160,16 @@
     transition: .5s;
 }
 
+
+/* Token Info Panel */
+.token-info-panel {
+    width: 250px;
+    min-width: 200px;
+    background-color: #0a0a0a;
+    border-left: 2px solid #4a4a4a;
+    display: flex;
+    flex-direction: column;
+    padding-top: 10px;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.5);
+}
+

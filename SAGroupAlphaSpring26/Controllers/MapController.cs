@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
@@ -38,6 +38,7 @@ namespace SAGroupAlphaSpring26.Controllers
                         token.Y = update.Y;
                         token.ZIndex = update.zIndex;
                         token.Visibility = update.Visibility;
+                        token.Name = update.Name;
 
                         var session = _dataService.GetSession(token.SessionId);
                         if (session != null) session.LastUpdated = DateTime.Now;
