@@ -42,8 +42,11 @@ export const saveTokenPositions = (tokenData, sessionId, tokensToDelete) => {
             Y: parseFloat(token.y) || 0,
             zIndex: parseInt(token.zIndex) || 1,
             Visibility: !!token.isVisible,
-            Name: token.name || ""
+            Name: token.name || "",
+            Notes: token.notes || ""
         }));
+
+        console.log("Sending updates to server:", updates);
 
         return $.ajax({
             url: '/Map/SavePositions',
