@@ -9,6 +9,7 @@
             <th scope="col">Item(s)</th>
             <th scope="col">Price</th>
             <th scope="col">Tax</th>
+            <th scope="col">Total</th>
             <th></th>
         </tr>
     @foreach(var sale in Model)
@@ -29,6 +30,7 @@
                 <td>@stringBuilder.ToString()</td>
                 <td>@sale.UnTaxedPrice</td>
                 <td>@sale.Tax</td>
+                <td>@sale.Price</td>
         </tr>
     }
     </table>
