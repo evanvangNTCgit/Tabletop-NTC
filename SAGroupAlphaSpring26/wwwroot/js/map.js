@@ -2,8 +2,8 @@
  * map.js
  * Now imports from PlayerMapFunctions.js for player view related logic, and MapAPI.js for tracking token data.
  */
-import { repositionToken, toggleTokenInvisibility, syncBoard, removeToken, updateZIndex, setTokenVisibility } from "./PlayerMapFunctions.js";
-import { saveTokenPositions } from "./MapApi.js";
+import { repositionToken, toggleTokenInvisibility, syncBoard, removeToken, updateZIndex, setTokenVisibility } from "./PlayerMapFunctions.js?v=999";
+import { saveTokenPositions } from "./MapApi.js?v=999";
 
 // Stores session ID, gets from Razor view.
 const sessionId = window.sessionId;

@@ -98,6 +98,8 @@ input[type="password"] {
     border: 1px solid #4a4a4a;
 }
 
+
+
 .card {
     background-color: #F5DEB3;
     border-radius: 10px;
@@ -980,4 +982,11 @@ input[type="password"] {
     background-position-y: 10%;
     position: relative;
     height: 75vh;
+}
+
+.saBackground2 {
+    border-radius: 10px;
+    border: 1px solid #4a4a4a;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
 }
