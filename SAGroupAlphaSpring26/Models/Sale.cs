@@ -37,5 +37,14 @@ namespace SAGroupAlphaSpring26.Models
                 return Math.Round(SaleLines.Sum(ol => ol.TotalCost), 2);
             }
         }
+
+        [NotMapped]
+        public decimal UnTaxedPrice
+        {
+            get
+            {
+                return Math.Round(SaleLines.Sum(sl => sl.TotalPrice), 2);
+            }
+        }
     }
 }
