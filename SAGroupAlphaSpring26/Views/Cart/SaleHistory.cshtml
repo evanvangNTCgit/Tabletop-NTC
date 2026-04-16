@@ -3,7 +3,7 @@
 
 @if(Model != null && Model.Count > 0)
 {
-    <table class="table" style="background-color: #F5DEB3; border-radius: 10px; border: 1px solid #4a4a4a; color: #111827;">
+    <table class="table cart-table">
         <tr>
             <th scope="col">Date</th>
             <th scope="col">Item(s)</th>
@@ -37,7 +37,7 @@
 }
 else
 {
-    <div style="background-color: #F5DEB3; border-radius: 10px; padding: 4px; border: 1px solid #4a4a4a; color: #111827;">
+    <div class="evan-no-sale-div">
     <p>You seem to have no transaction history</p>
     <p>Please contact The SA Alpha Spring 26' group if this is an issue.</p>
     </div>
