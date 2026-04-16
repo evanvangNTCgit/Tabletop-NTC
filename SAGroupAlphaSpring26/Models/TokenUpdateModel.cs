@@ -11,5 +11,6 @@ namespace SAGroupAlphaSpring26.Models
         public string Name { get; set; } = string.Empty; // added "= string.Empty" to get rid of warning
         public int PieceId { get; set; }
         public bool Visibility { get; set; }
+        public string Notes { get; set; } = string.Empty;
     }
 }

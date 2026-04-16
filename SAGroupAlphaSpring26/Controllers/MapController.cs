@@ -39,6 +39,7 @@ namespace SAGroupAlphaSpring26.Controllers
                         token.ZIndex = update.zIndex;
                         token.Visibility = update.Visibility;
                         token.Name = update.Name;
+                        token.Notes = update.Notes;
 
                         var session = _dataService.GetSession(token.SessionId);
                         if (session != null) session.LastUpdated = DateTime.Now;
@@ -57,7 +58,8 @@ namespace SAGroupAlphaSpring26.Controllers
                             X = update.X,
                             Y = update.Y,
                             ZIndex = update.zIndex,
-                            Visibility = update.Visibility
+                            Visibility = update.Visibility,
+                            Notes = update.Notes
                         });
 
                         var session = _dataService.GetSession(update.SessionID);

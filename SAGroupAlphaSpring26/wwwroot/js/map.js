@@ -46,12 +46,14 @@ if (playerView === 'player') {
                 repositionToken(e.data);
                 break;
             case ("toggleIn"):
-                // Toggles the invisibility of a token on the player view. Currently bugged and doesn't respect the visibility bool.
+                // Toggles the invisibility of a token on the player view.
                 toggleTokenInvisibility(e.data);
                 break;
+            // Sets the visibility of a token on the playerview, this should replace toggleIn, but I'm keeping both for now just in case.
             case ("setVisibility"):
                 setTokenVisibility(e.data);
                 break;
+                // Updates the z index of a token for the playerview.
             case ("updateZIndex"):
                 updateZIndex(e.data);
                 break;
@@ -110,7 +112,8 @@ if (!isPlayerView) {
                 y: parseFloat(token[0].style.top) || 0,
                 zIndex: parseInt(token[0].style.zIndex) || 1,
                 isVisible: !token.hasClass('dmOpacityToggle'),
-                name: token.data('name') || token.data('piecename') || ""
+                name: token.data('name') || token.data('piecename') || "",
+                notes: token.data('notes') || ""
             };
         });
 
@@ -149,7 +152,8 @@ if (!isPlayerView) {
                     y: topPerc,
                     zIndex: 99,
                     isVisible: true,
-                    name: ui.draggable.data('piecename') || ""
+                    name: ui.draggable.data('piecename') || "",
+                    notes: ""
                 };
 
                 // Saves tokens to local dictionary
@@ -252,7 +256,8 @@ if (!isPlayerView) {
                     y: parseFloat(event.target.style.top) || 0,
                     zIndex: parseInt(event.target.style.zIndex) || 1,
                     isVisible: !event.target.classList.contains('dmOpacityToggle'),
-                    name: event.target.dataset.name || event.target.dataset.piecename || ""
+                    name: event.target.dataset.name || event.target.dataset.piecename || "",
+                    notes: event.target.dataset.notes || ""
                 };
             }
             selectedTokenId = tokenId;
@@ -290,6 +295,7 @@ if (!isPlayerView) {
         },
     };
 
+    // Right Click Function for tokens.
     const attachContextMenu = (token) => {
         token.addEventListener('contextmenu', (e) => {
             e.preventDefault();
@@ -314,6 +320,7 @@ if (!isPlayerView) {
             }
         });
 
+        // Left click selects the token and updates the info panel.
         token.addEventListener('click', (e) => {
             selectedTokenId = token.id;
             updateInfoPanel();
@@ -359,6 +366,7 @@ if (!isPlayerView) {
         }
     };
 
+    // Updates the InfoPanel based on currently selected token. Panel is hidden if no token is selected.
     const updateInfoPanel = () => {
         const panel = document.getElementById('token-info-panel');
         if (!panel || !selectedTokenId) return;
@@ -370,6 +378,7 @@ if (!isPlayerView) {
         document.getElementById('token-info-image').src = data.src;
         document.getElementById('token-info-name').value = data.name || "";
         document.getElementById('token-info-zindex').value = data.zIndex || 1;
+        document.getElementById('token-info-notes').value = data.notes || "";
         document.getElementById('token-info-visibility').checked = data.isVisible;
     };
 
@@ -380,6 +389,14 @@ if (!isPlayerView) {
                 tokenData[selectedTokenId].name = e.target.value;
                 const tokenEl = document.getElementById(selectedTokenId);
                 if (tokenEl) tokenEl.dataset.name = e.target.value;
+            }
+        });
+
+        document.getElementById('token-info-notes')?.addEventListener('input', (e) => {
+            if (selectedTokenId && tokenData[selectedTokenId]) {
+                tokenData[selectedTokenId].notes = e.target.value;
+                const tokenEl = document.getElementById(selectedTokenId);
+                if (tokenEl) tokenEl.dataset.notes = e.target.value;
             }
         });
 

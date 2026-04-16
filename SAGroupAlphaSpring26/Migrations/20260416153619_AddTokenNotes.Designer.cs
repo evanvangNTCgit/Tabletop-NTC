@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SAGroupAlphaSpring26.Data;
 
@@ -11,9 +12,11 @@ using SAGroupAlphaSpring26.Data;
 namespace SAGroupAlphaSpring26.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260416153619_AddTokenNotes")]
+    partial class AddTokenNotes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -281,8 +284,7 @@ namespace SAGroupAlphaSpring26.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("PieceID")
-                        .IsRequired()
+                    b.Property<int>("PieceID")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
@@ -291,22 +293,11 @@ namespace SAGroupAlphaSpring26.Migrations
                     b.Property<int>("SaleID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SetID")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Tax")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalCost")
-                        .HasColumnType("decimal(18,2)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("PieceID");
 
                     b.HasIndex("SaleID");
-
-                    b.HasIndex("SetID");
 
                     b.ToTable("SaleLines");
                 });
@@ -349,7 +340,7 @@ namespace SAGroupAlphaSpring26.Migrations
                         {
                             Id = 1,
                             IsArchived = false,
-                            LastUpdated = new DateTime(2026, 4, 14, 11, 48, 5, 721, DateTimeKind.Local).AddTicks(1127),
+                            LastUpdated = new DateTime(2026, 4, 16, 10, 36, 18, 877, DateTimeKind.Local).AddTicks(4079),
                             Name = "Test Session",
                             Notes = "Local Test Session",
                             UserId = 1
@@ -358,7 +349,7 @@ namespace SAGroupAlphaSpring26.Migrations
                         {
                             Id = 2,
                             IsArchived = false,
-                            LastUpdated = new DateTime(2026, 4, 14, 11, 48, 5, 721, DateTimeKind.Local).AddTicks(1131),
+                            LastUpdated = new DateTime(2026, 4, 16, 10, 36, 18, 877, DateTimeKind.Local).AddTicks(4083),
                             Name = "Test Session 2",
                             Notes = "Local Test Session 2",
                             UserId = 1
@@ -593,7 +584,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             FirstName = "Local",
                             IsAdmin = true,
                             LastName = "DM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOo4mhuDm2R7rOsGbN9glHmkDUMZIeM+e2OHLgDPzcVBI2x7V3GMOF4uEr2FLLAN1w=="
+                            PasswordHash = "AQAAAAIAAYagAAAAEF/3vgHejIoHPahn78j3GsdgvNC67DUmfn/VejBDrFnYuuaUtuIcOoHHrE/ppTySmQ=="
                         },
                         new
                         {
@@ -602,7 +593,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             FirstName = "Evan",
                             IsAdmin = false,
                             LastName = "Vang",
-                            PasswordHash = "AQAAAAIAAYagAAAAED/gmvbkG61Zn3N16R4ClGqB85/9PxJ3Db+XsqA+LzgNWyUGiv+Uvf1uvRX65CjTzA=="
+                            PasswordHash = "AQAAAAIAAYagAAAAEEQvDf6iO5qIRZYnGpPF1uqhjrVL5cNQFEvhP+I5eWZ5/HqIW+P9IMqnqyemy4yP1Q=="
                         });
                 });
 
@@ -735,7 +726,7 @@ namespace SAGroupAlphaSpring26.Migrations
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.SaleLine", b =>
                 {
                     b.HasOne("SAGroupAlphaSpring26.Models.Piece", "Piece")
-                        .WithMany("SaleLines")
+                        .WithMany()
                         .HasForeignKey("PieceID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -746,15 +737,9 @@ namespace SAGroupAlphaSpring26.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SAGroupAlphaSpring26.Models.Set", "Set")
-                        .WithMany("SaleLines")
-                        .HasForeignKey("SetID");
-
                     b.Navigation("Piece");
 
                     b.Navigation("Sale");
-
-                    b.Navigation("Set");
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Session", b =>
@@ -812,8 +797,6 @@ namespace SAGroupAlphaSpring26.Migrations
 
                     b.Navigation("Owners");
 
-                    b.Navigation("SaleLines");
-
                     b.Navigation("Sets");
                 });
 
@@ -837,8 +820,6 @@ namespace SAGroupAlphaSpring26.Migrations
                     b.Navigation("CartItemSets");
 
                     b.Navigation("PiecesList");
-
-                    b.Navigation("SaleLines");
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.User", b =>
