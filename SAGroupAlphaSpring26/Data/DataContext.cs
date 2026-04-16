@@ -75,12 +75,20 @@ namespace SAGroupAlphaSpring26.Data
                 .WithOne(s => s.User)
                 .HasForeignKey(s => s.UserId);
 
-            // A sale can have many sale Lines, but a sale line can only have one sale.
-            // Review sale.salelines property for further understanding.
-            modelBuilder.Entity<Sale>()
-                .HasMany(s => s.SaleLines)
-                .WithOne(sl => sl.Sale)
-                .HasForeignKey(sl => sl.SaleID);
+            modelBuilder.Entity<Sale>() // A sale can have many saleliens
+                .HasMany(sa => sa.SaleLines)
+                .WithOne(s => s.Sale)
+                .HasForeignKey(s => s.SaleID);
+
+            modelBuilder.Entity<Piece>() // Piece can have many salelines
+                .HasMany(pi => pi.SaleLines)
+                .WithOne(sl => sl.Piece)
+                .HasForeignKey(pi => pi.PieceID);
+
+            modelBuilder.Entity<Set>() // Set can have many salelines
+                .HasMany(se => se.SaleLines)
+                .WithOne(sl => sl.Set)
+                .HasForeignKey(se => se.SetID);
 
             // Initial piece types
             modelBuilder.Entity<PieceType>().HasData(

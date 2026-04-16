@@ -1,0 +1,40 @@
+﻿@using System.Text
+@model List<Sale>
+
+@if(Model != null && Model.Count > 0)
+{
+    <table class="table" style="background-color: #F5DEB3; border-radius: 10px; border: 1px solid #4a4a4a; color: #111827;">
+        <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Item(s)</th>
+            <th scope="col">Price</th>
+            <th></th>
+        </tr>
+    @foreach(var sale in Model)
+    {
+        @* <div>
+        <p>@sale.Price</p>
+        <p>@sale.Date</p>
+        </div> *@
+        <tr>
+            <td>@sale.Date</td>
+                @{
+                    StringBuilder stringBuilder = new();
+                }
+                @foreach(SaleLine saleLine in sale.SaleLines)
+                {
+                    stringBuilder.AppendLine(saleLine.Piece.Name);
+                }
+                <td>@stringBuilder.ToString()</td>
+                <td>@sale.Price</td>
+        </tr>
+    }
+    </table>
+}
+else
+{
+    <div style="background-color: #F5DEB3; border-radius: 10px; padding: 4px; border: 1px solid #4a4a4a; color: #111827;">
+    <p>You seem to have no transaction history</p>
+    <p>Please contact The SA Alpha Spring 26' group if this is an issue.</p>
+    </div>
+}

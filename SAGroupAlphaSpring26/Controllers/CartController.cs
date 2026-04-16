@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.Services;
 using System.Security.Claims;
@@ -75,15 +76,101 @@ namespace SAGroupAlphaSpring26.Controllers
             return RedirectToAction(nameof(ViewCart));
         }
 
+        [HttpGet("view-Sale")]
+        public IActionResult ViewSale()
+        {
+            int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            Sale userSale = this.BuildSale();
+            List<CartItemSet> userSets = _dataService.GetCartItemSet(userId);
+
+            // Dont want to keep making DB reads, I will pass in the list of sets right in the model.
+            SaleViewModel model = new()
+            {
+                Sale = userSale,
+                Sets = userSets
+            };
+
+            return View(model);
+        }
+
         [HttpPost("checkout")]
         public IActionResult Checkout()
         {
             int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
+            Sale userSale = this.BuildSale();
+            _dataService.AddSale(userSale);
             _dataService.CheckoutCart(userId);
 
             // Redirect back to the cart or profile, could also add TempData message here.
             return RedirectToAction(nameof(ViewCart));
+        }
+
+        [HttpGet("salehistory")]
+        public IActionResult SaleHistory()
+        {
+            int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            var UsersSales = this._dataService.GetUserSales(userId);
+
+            return View(UsersSales);
+        }
+
+        private Sale BuildSale() 
+        {
+            int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            List<CartItem> userCartItems = _dataService.GetCartItems(userId);
+            List<CartItemSet> userSets = _dataService.GetCartItemSet(userId);
+
+            Sale userSale = new();
+            userSale.UserID = userId;
+
+            if (userCartItems != null && userCartItems.Count > 0)
+            {
+                foreach (CartItem cartItem in userCartItems)
+                {
+                    SaleLine saleLine = new();
+                    saleLine.PieceID = cartItem.PieceId;
+                    saleLine.Piece = cartItem.Piece;
+                    saleLine.Price = cartItem.Piece.Price;
+                    saleLine.Tax = cartItem.Piece.Price * 0.05m;
+                    saleLine.TotalCost = saleLine.Price + saleLine.TotalTax;
+
+                    userSale.SaleLines.Add(saleLine);
+                }
+            }
+
+            if (userSets != null && userSets.Count > 0) 
+            {
+                // We agreed on making a set just a normal salline.
+                // So just loop through all pieces in a set and make a saleline.
+                foreach(CartItemSet cartSet in userSets) 
+                {
+                    foreach(var piece in cartSet.Set.PiecesList) 
+                    {
+                        // Using steam as a reference whenever you refund a bundle you have to do the whole bundle.
+                        // Thus I think a workaournd for sets is to set piece price to set price divided by set pieces amount
+                        // Ex: A set of 10 skeletons at $20
+                        // One Skeleton in the sale line can then just be $2
+
+                        SaleLine saleLine = new();
+
+                        saleLine.PieceID = piece.PieceId;
+                        Piece piece1 = this._dataService.GetPiece(piece.PieceId);
+
+                        saleLine.Piece = piece1;
+                        // saleLine.Price = piece1.Price;
+                        saleLine.Price = piece.Set.Price / piece.Set.PiecesList.Count();
+                        saleLine.Tax = saleLine.Price * 0.05m;
+                        saleLine.TotalCost = saleLine.Price + saleLine.TotalTax;
+                        saleLine.SetID = cartSet.SetId;
+
+                        userSale.SaleLines.Add(saleLine);
+                    }
+                }
+            }
+
+            return userSale;
         }
     }
 }

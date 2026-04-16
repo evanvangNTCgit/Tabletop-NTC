@@ -1,0 +1,49 @@
+﻿<!--Need this injection to read the set.-->
+@model SaleViewModel
+@{
+    List<int> ListOfSetIds = [];
+}
+
+<h2>Your Purchase:</h2>
+
+@if(Model != null)
+{
+    <table class="table" style="background-color: #F5DEB3; border-radius: 10px; border: 1px solid #4a4a4a; color: #111827;">
+        <tr>
+        <th>Item</th>
+        <th>Price</th>
+        </tr>
+        @foreach(CartItemSet cis in Model.Sets)
+        {
+            <tr>
+                @* <td>@set.Piece.Id</td>
+                <td>@set.Piece.Name</td>
+                <td>@set.Piece.Price</td> *@
+                <td>@cis.Set.Name</td>
+                <td>@cis.Set.Price</td>
+            </tr>
+        }
+        @foreach(var item in Model.Sale.SaleLines)
+        {
+            // If its in a set.
+            @if(item.SetID > 0 && item.SetID != null)
+            {
+                // skip it already displayed.
+            }
+            else {
+
+            <tr>
+            <td>@item.Piece.Name</td>
+            <td>@item.Piece.Price</td>
+            </tr>
+            }
+        }
+    </table>    
+    <form asp-controller="Cart" asp-action="checkout">
+        <p>
+            <button type="submit" class="btn btn-primary" role="button">Place Order</button>
+        </p>
+    </form>
+} else {
+    <p>You seem to have nothing to purchase. You should add something to your cart!</p>
+}

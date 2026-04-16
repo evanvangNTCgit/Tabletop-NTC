@@ -472,6 +472,7 @@ namespace SAGroupAlphaSpring26.Services
                 .Where(cis => cis.IsArchived == false)
                 .Include(cis => cis.Set)
                 .ThenInclude(s => s.PiecesList)
+                .ThenInclude(pl => pl.Piece)
                 .ToList();
         }
 
@@ -630,6 +631,28 @@ namespace SAGroupAlphaSpring26.Services
             {
                 throw new Exception($"Failed to checkout cart for user {userId}: {ex.Message}");
             }
+        }
+    
+        public void AddSale(Sale sale)
+        {
+            foreach (SaleLine sl in sale.SaleLines) 
+            {
+                // So EF does not freak out.
+                sl.Piece = null;
+                sl.Set = null;
+            }
+
+            this._dataContext.Sales.Add(sale);
+            this._dataContext.SaveChanges();
+        }
+
+        public List<Sale> GetUserSales(int userId) 
+        {
+            return this._dataContext.Sales
+                .Where(sa => sa.UserID == userId)
+                .Include(sa => sa.SaleLines)
+                .ThenInclude(sl => sl.Piece)
+                .ToList();
         }
 
         public List<PurchaseStatsViewModel> GetPiecePurchaseStats()
