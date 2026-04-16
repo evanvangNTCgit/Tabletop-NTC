@@ -207,7 +207,7 @@ input[type="password"] {
 
 .session-notes {
     width: 100%;
-    min-height: 400px;
+    min-height: 200px;
     border-radius: 8px;
     border: 1px solid #4a4a4a;
     padding: 1rem;
