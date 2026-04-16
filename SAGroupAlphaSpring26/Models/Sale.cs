@@ -34,7 +34,7 @@ namespace SAGroupAlphaSpring26.Models
         {
             get
             {
-                return Math.Round(SaleLines.Sum(ol => ol.TotalPrice), 2);
+                return Math.Round(SaleLines.Sum(ol => ol.TotalCost), 2);
             }
         }
     }

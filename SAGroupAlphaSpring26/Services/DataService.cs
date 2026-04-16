@@ -644,6 +644,15 @@ namespace SAGroupAlphaSpring26.Services
             this._dataContext.Sales.Add(sale);
             this._dataContext.SaveChanges();
         }
+
+        public List<Sale> GetUserSales(int userId) 
+        {
+            return this._dataContext.Sales
+                .Where(sa => sa.UserID == userId)
+                .Include(sa => sa.SaleLines)
+                .ThenInclude(sl => sl.Piece)
+                .ToList();
+        }
     }
 }
 

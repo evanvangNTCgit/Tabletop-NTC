@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.Services;
 using System.Security.Claims;
@@ -105,6 +106,16 @@ namespace SAGroupAlphaSpring26.Controllers
             return RedirectToAction(nameof(ViewCart));
         }
 
+        [HttpGet("salehistory")]
+        public IActionResult SaleHistory()
+        {
+            int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            var UsersSales = this._dataService.GetUserSales(userId);
+
+            return View(UsersSales);
+        }
+
         private Sale BuildSale() 
         {
             int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
@@ -137,14 +148,20 @@ namespace SAGroupAlphaSpring26.Controllers
                 {
                     foreach(var piece in cartSet.Set.PiecesList) 
                     {
+                        // Using steam as a reference whenever you refund a bundle you have to do the whole bundle.
+                        // Thus I think a workaournd for sets is to set piece price to set price divided by set pieces amount
+                        // Ex: A set of 10 skeletons at $20
+                        // One Skeleton in the sale line can then just be $2
+
                         SaleLine saleLine = new();
 
                         saleLine.PieceID = piece.PieceId;
                         Piece piece1 = this._dataService.GetPiece(piece.PieceId);
 
                         saleLine.Piece = piece1;
-                        saleLine.Price = piece1.Price;
-                        saleLine.Tax = piece1.Price * 0.05m;
+                        // saleLine.Price = piece1.Price;
+                        saleLine.Price = piece.Set.Price / piece.Set.PiecesList.Count();
+                        saleLine.Tax = saleLine.Price * 0.05m;
                         saleLine.TotalCost = saleLine.Price + saleLine.TotalTax;
                         saleLine.SetID = cartSet.SetId;
 
