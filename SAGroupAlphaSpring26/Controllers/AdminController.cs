@@ -208,21 +208,21 @@ namespace SAGroupAlphaSpring26.Controllers
             return View(session);
         }
 
-            // Letting the admin see the list of piece types currently.
-            [HttpGet("PieceTypes")]
-            public IActionResult PieceTypes()
-            {
-                return View(this._dataService.GetPieceTypes());
-            }
+        // Letting the admin see the list of piece types currently.
+        [HttpGet("PieceTypes")]
+        public IActionResult PieceTypes()
+        {
+            return View(this._dataService.GetPieceTypes());
+        }
 
-            [HttpGet("Pieces")]
-            public IActionResult Pieces()
-            {
-                return View(this._dataService.GetPieces());
-            }
+        [HttpGet("Pieces")]
+        public IActionResult Pieces()
+        {
+            return View(this._dataService.GetPieces());
+        }
 
-[HttpGet("Sets")]
-        public IActionResult Sets() 
+        [HttpGet("Sets")]
+        public IActionResult Sets()
         {
             return View(this._dataService.GetAllSets());
         }
@@ -234,67 +234,135 @@ namespace SAGroupAlphaSpring26.Controllers
             return View(stats);
         }
 
-            // Adding a parameter for ID so we know what piece type to edit.
-[HttpGet("edit-piecetype/{id:int}")]
-            public IActionResult EditPieceType(int id)
-            {
-                return View(_dataService.GetPieceType(id));
-            }
 
-            [HttpPost("edit-piecetype/{id:int}")]
-            public IActionResult EditPieceType(PieceType pt)
+        /// <summary>
+        /// Displays PieceUsage view with top 10 stats, optional type filter.
+        /// Computes totalTokens for %, binds to PieceUsageViewModel.
+        /// </summary>
+        [HttpGet("PieceUsage")]
+        public IActionResult PieceUsage(int? pieceTypeId = null)
+        {
+            // Get filtered and ordered stats
+            var stats = _dataService.GetPieceUsageStats(pieceTypeId);
+
+            // Get all types for dropdown
+            var types = _dataService.GetPieceTypes();
+
+            // Filtered total for display
+            int totalTokens = stats.Sum(s => s.TotalUsed);
+            // Global total for % 
+            int globalTotalTokens = _dataService.GetTotalTokens();
+
+            // Limit to top 10
+            var topStats = stats.Take(10).ToList();
+
+            // Bind view model
+            return View(new PieceUsageViewModel
             {
-                // If not valid send user back to view with the piece type for correction.
-                if (!ModelState.IsValid)
-                {
-                    return View(pt);
-                }
-                else
-                {
-                    _dataService.UpdatePieceType(pt);
+                Stats = topStats,
+                Types = types,
+                FilterTypeId = pieceTypeId,
+                TotalTokens = totalTokens,
+                GlobalTotalTokens = globalTotalTokens
+            });
+        }
+
+        [HttpGet("PieceUsageJson")]
+        public IActionResult PieceUsageJson(int? pieceTypeId = null)
+        {
+            // Reuse exact logic but project to DTOs to avoid EF serialization issues
+            var stats = _dataService.GetPieceUsageStats(pieceTypeId);
+            var types = _dataService.GetPieceTypes();
+            int totalTokens = stats.Sum(s => s.TotalUsed);
+            var topStats = stats.Take(10).ToList();
+
+            var statsDto = topStats.Select(s => new
+            {
+                pieceId = s.PieceId,
+                pieceName = s.PieceName,
+                imagePath = s.ImagePath,
+                pieceTypeName = s.PieceTypeName,
+                totalUsed = s.TotalUsed
+            }).ToList();
+
+            var typesDto = types.Select(t => new
+            {
+                Id = t.Id,
+                Name = t.Name
+            }).ToList();
+
+            return Json(new
+            {
+                stats = statsDto,
+                types = typesDto,
+                totalTokens,
+                filterTypeId = pieceTypeId
+            });
+        }
+
+
+
+        // Adding a parameter for ID so we know what piece type to edit.
+        [HttpGet("edit-piecetype/{id:int}")]
+        public IActionResult EditPieceType(int id)
+        {
+            return View(_dataService.GetPieceType(id));
+        }
+
+        [HttpPost("edit-piecetype/{id:int}")]
+        public IActionResult EditPieceType(PieceType pt)
+        {
+            // If not valid send user back to view with the piece type for correction.
+            if (!ModelState.IsValid)
+            {
+                return View(pt);
+            }
+            else
+            {
+                _dataService.UpdatePieceType(pt);
 
                 // Send user back to view of piece types to see their changes.
                 return RedirectToAction(nameof(PieceTypes));
-                }
             }
+        }
 
-            [HttpGet("AddSet")]
-            public IActionResult AddSet()
+        [HttpGet("AddSet")]
+        public IActionResult AddSet()
+        {
+            SetViewModel svm = new();
+            svm.AvailablePieces = this._dataService.GetAllPieces();
+
+            string pathForImages = Path.Combine(this._webHostEnvironment.WebRootPath, "images/");
+            // Note: Images are already in Piece.ImagePath, but list for consistency if needed
+            // svm.ImagePaths = Directory.EnumerateFiles(pathForImages).Select(fn => Path.GetFileName(fn)).ToList();
+
+            return View(svm);
+        }
+
+        [HttpPost("AddSet")]
+        public async Task<IActionResult> AddSet(SetViewModel svm)
+        {
+            if (!ModelState.IsValid || svm.SelectedPieceIds == null || svm.SelectedPieceIds.Count == 0)
             {
-                SetViewModel svm = new();
                 svm.AvailablePieces = this._dataService.GetAllPieces();
-
-                string pathForImages = Path.Combine(this._webHostEnvironment.WebRootPath, "images/");
-                // Note: Images are already in Piece.ImagePath, but list for consistency if needed
-                // svm.ImagePaths = Directory.EnumerateFiles(pathForImages).Select(fn => Path.GetFileName(fn)).ToList();
-
                 return View(svm);
             }
 
-            [HttpPost("AddSet")]
-            public async Task<IActionResult> AddSet(SetViewModel svm)
+            try
             {
-                if (!ModelState.IsValid || svm.SelectedPieceIds == null || svm.SelectedPieceIds.Count == 0)
-                {
-                    svm.AvailablePieces = this._dataService.GetAllPieces();
-                    return View(svm);
-                }
-
-                try
-                {
-                    this._dataService.CreateSet(svm.NewSet!, svm.SelectedPieceIds);
-                    return RedirectToAction("Index", "Home");
-                }
-                catch (Exception e)
-                {
-                    ModelState.AddModelError("", e.Message);
-                    svm.AvailablePieces = this._dataService.GetAllPieces();
-                    return View(svm);
-                }
+                this._dataService.CreateSet(svm.NewSet!, svm.SelectedPieceIds);
+                return RedirectToAction("Index", "Home");
             }
+            catch (Exception e)
+            {
+                ModelState.AddModelError("", e.Message);
+                svm.AvailablePieces = this._dataService.GetAllPieces();
+                return View(svm);
+            }
+        }
 
         [HttpGet("deletepiececonfirmation/{id:int}")]
-        public IActionResult DeletePieceConfirmation(int id) 
+        public IActionResult DeletePieceConfirmation(int id)
         {
             return View(this._dataService.GetPiece(id));
         }
@@ -307,7 +375,7 @@ namespace SAGroupAlphaSpring26.Controllers
         }
 
         [HttpGet("RecoverPiece")]
-        public IActionResult RecoverPiece() 
+        public IActionResult RecoverPiece()
         {
             return View(this._dataService.GetDeletedPieces());
         }

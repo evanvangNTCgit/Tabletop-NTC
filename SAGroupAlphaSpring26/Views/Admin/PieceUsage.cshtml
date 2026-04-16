@@ -1,0 +1,73 @@
+@model SAGroupAlphaSpring26.ViewModels.PieceUsageViewModel
+
+@{
+    ViewData["Title"] = "Piece Usage Statistics";
+}
+
+
+<!-- Title with current filter type or 'All Types' -->
+<h1 id="filterTitle">Piece Usage Statistics @(Model.FilterTypeId.HasValue ? " - " + Model.Types.FirstOrDefault(t => t.Id == Model.FilterTypeId)?.Name : "All Types")</h1>
+
+
+<!-- Page description with features -->
+<p>This view shows the top 10 most used pieces across all sessions. Filter by type and see usage %.</p>
+
+
+
+<!-- Filter form: dropdown for PieceType filter, AJAX on change -->
+<form id="filterForm" asp-action="PieceUsage" method="get" class="mb-4">
+    <div class="row align-items-center">
+        <label for="filterSelect" class="col-form-label col-md-2">Filter Type:</label>
+        <div class="col-md-4">
+            <select id="filterSelect" name="FilterTypeId" class="form-select" onchange="filterPieces(this.value)">
+                <option value="">All Types</option>
+                @foreach (var type in Model.Types)
+                {
+                    <option value="@type.Id" selected="@(Model.FilterTypeId == type.Id)">@type.Name</option>
+                }
+            </select>
+        </div>
+    </div>
+</form>
+
+<script src="~/js/piece-usage.js"></script>
+
+@if (Model.Stats.Any())
+{
+
+    <div class="table-responsive">
+        <table class="table table-striped admin-table saBackground">
+            <thead>
+
+                <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Total Used</th>
+                    <th>% of Type</th>
+                </tr>
+
+            </thead>
+                <tbody id="statsTableBody">
+@foreach (var item in Model.Stats)
+{
+    <tr class="saBackground">
+        <td>
+            <img src="@item.ImagePath" alt="@item.PieceName" style="width: 50px; height: 50px; object-fit: cover;" />
+        </td>
+        <td>
+            <a asp-controller="Home" asp-action="Piece" asp-route-id="@item.PieceId">@item.PieceName</a>
+        </td>
+        <td>@item.PieceTypeName</td>
+        <td><strong>@item.TotalUsed</strong></td>
+        <td><strong>@((item.TotalUsed / (double)Model.TotalTokens * 100).ToString("F1"))%</strong></td>
+    </tr>
+}
+                </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p>No piece usage found yet.</p>
+}
