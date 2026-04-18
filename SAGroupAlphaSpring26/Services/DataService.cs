@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
-using SAGroupAlphaSpring26.ViewModels;
 using System.Security.Claims;
 
 namespace SAGroupAlphaSpring26.Services
@@ -535,7 +534,7 @@ namespace SAGroupAlphaSpring26.Services
                 .Where(cis => cis.IsArchived == false)
                 .Where(cis => cis.SetId == setId)
                 .FirstOrDefault()!;
-            if(alreadyInCart != null)
+            if (alreadyInCart != null)
             {
                 return;
             }
@@ -632,10 +631,10 @@ namespace SAGroupAlphaSpring26.Services
                 throw new Exception($"Failed to checkout cart for user {userId}: {ex.Message}");
             }
         }
-    
+
         public void AddSale(Sale sale)
         {
-            foreach (SaleLine sl in sale.SaleLines) 
+            foreach (SaleLine sl in sale.SaleLines)
             {
                 // So EF does not freak out.
                 sl.Piece = null;
@@ -646,7 +645,7 @@ namespace SAGroupAlphaSpring26.Services
             this._dataContext.SaveChanges();
         }
 
-        public List<Sale> GetUserSales(int userId) 
+        public List<Sale> GetUserSales(int userId)
         {
             return this._dataContext.Sales
                 .Where(sa => sa.UserID == userId)
@@ -661,10 +660,25 @@ namespace SAGroupAlphaSpring26.Services
                 .Include(sl => sl.Piece)
                 .ThenInclude(p => p.PieceType)
                 .GroupBy(sl => sl.PieceID)
-                .Select(g => new PurchaseStatsViewModel 
-                { 
-                    Piece = g.First().Piece, 
-                    TotalPurchased = g.Count() 
+                .Select(g => new PurchaseStatsViewModel
+                {
+                    Piece = g.First().Piece,
+                    TotalPurchased = g.Count()
+                })
+                .OrderByDescending(x => x.TotalPurchased)
+                .ToList();
+        }
+
+        public List<SetStatsViewModel> GetSetPurchaseStats()
+        {
+            return _dataContext.SaleLines
+                .Include(sl => sl.Set)
+                .GroupBy(sl => sl.SetID)
+                .Select(g => new SetStatsViewModel
+                {
+                    Set = g.First().Set,
+                    // Count unique SaleIDs associated with this SetID
+                    TotalPurchased = g.Select(sl => sl.SaleID).Distinct().Count()
                 })
                 .OrderByDescending(x => x.TotalPurchased)
                 .ToList();

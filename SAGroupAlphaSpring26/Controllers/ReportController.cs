@@ -19,10 +19,18 @@ namespace SAGroupAlphaSpring26.Controllers
             return View();
         }
 
-        [HttpGet("MostPurchased")]
-        public IActionResult MostPurchased() 
+        [HttpGet("MostPurchasedPieces")]
+        public IActionResult MostPurchasedPieces() 
         {
             List<PurchaseStatsViewModel> saleLines = this._dataService.GetPiecePurchaseStats();
+
+            return View(saleLines);
+        }
+
+        [HttpGet("MostPurchasedSets")]
+        public IActionResult MostPurchasedSets()
+        {
+            List<SetStatsViewModel> saleLines = this._dataService.GetSetPurchaseStats();
 
             return View(saleLines);
         }
