@@ -693,6 +693,16 @@ namespace SAGroupAlphaSpring26.Services
                 .Include(sl => sl.Set)
                 .ToList();
         }
+
+        public bool UserOwnsPiece(int userId, int PieceId) 
+        {
+            var piece = this._dataContext.UserPieces
+                .Where(up => up.PieceId == PieceId)
+                .Where(up => up.UserId == userId)
+                .FirstOrDefault();
+
+            return piece != null;
+        }
     }
 }
 
