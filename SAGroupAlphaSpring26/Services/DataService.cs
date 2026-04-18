@@ -673,6 +673,8 @@ namespace SAGroupAlphaSpring26.Services
         {
             return _dataContext.SaleLines
                 .Include(sl => sl.Set)
+                .ThenInclude(s => s.PiecesList)
+                .ThenInclude(pl => pl.Piece)
                 .GroupBy(sl => sl.SetID)
                 .Select(g => new SetStatsViewModel
                 {
