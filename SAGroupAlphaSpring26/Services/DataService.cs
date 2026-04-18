@@ -669,6 +669,14 @@ namespace SAGroupAlphaSpring26.Services
                 .OrderByDescending(x => x.TotalPurchased)
                 .ToList();
         }
+
+        public List<SaleLine> GetAllSaleLines()
+        {
+            return this._dataContext.SaleLines
+                .Include(sl => sl.Piece)
+                .Include(sl => sl.Set)
+                .ToList();
+        }
     }
 }
 
