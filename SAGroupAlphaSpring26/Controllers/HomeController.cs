@@ -63,15 +63,35 @@ namespace SAGroupAlphaSpring26.Controllers
         }
 
         [Route("Store")]
-        public IActionResult Store()
+        public IActionResult Store(string sortOrder)
         {
+            ViewBag.SortOrder = String.IsNullOrEmpty(sortOrder) ? "piece_desc" : "";
+
             ViewBag.ApplicationName = "SA Group Alpha Spring 2026";
 
-            StoreViewModel model = new StoreViewModel
-            {
-                Pieces = this._dataService.GetPieces(),
-                Sets = this._dataService.GetAllSets()
-            };
+            StoreViewModel model = new StoreViewModel();
+            //{
+            //    Pieces = this._dataService.GetPieces(),
+            //    Sets = this._dataService.GetAllSets()
+            //};
+
+            // Get the sets and pieces once...
+            var pieces = _dataService.GetPieces();
+            var sets = _dataService.GetAllSets();
+
+            switch(sortOrder)
+                {
+                case "piece_desc":
+                    model.Pieces = pieces.OrderBy(p => p.Name).ToList();
+                    break;
+                case "piece_asc":
+                    model.Pieces = pieces.OrderBy(p => p.Name).ToList();
+                    break;
+                default:
+                    model.Pieces = pieces;
+                    model.Sets = sets;
+                break;
+            }
 
             return View(model);
         }

@@ -8,6 +8,14 @@
 <div class="text-center">
     <h1>Welcome to @ViewBag.ApplicationName!</h1>
 
+    <table>
+        <tr>
+            <th>
+                @Html.ActionLink("Piece Name", "Store", new { sortOrder = ViewBag.SortOrder })
+            </th>
+        </tr>
+    </table>
+
     <h1 style="margin-top: 20px">Sets</h1>
     <div class="store-grid">
         @foreach (var set in Model.Sets)
