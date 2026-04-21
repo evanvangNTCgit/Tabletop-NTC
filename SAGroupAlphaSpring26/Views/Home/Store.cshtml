@@ -5,7 +5,7 @@
 }
 <link rel="stylesheet" href="~/css/pages/store.css" asp-append-version="true" />
 
-<div class="text-center">
+<div class="text-center justify-content-center" style="margin-bottom: 20px;">
     <h1>Welcome to @ViewBag.ApplicationName!</h1>
 
     <table>
@@ -53,7 +53,7 @@
         }
     </div>
 
-    @foreach (var typeGroup in Model.Pieces.GroupBy(p => p.PieceTypeID))
+    @* @foreach (var typeGroup in Model.Pieces.GroupBy(p => p.PieceTypeID))
     {
         <h2>@GetTypeName(typeGroup.Key)</h2>
         <div class="store-grid">
@@ -68,14 +68,37 @@
                     <h3>@piece.Name</h3>
                     <p>@piece.Description</p>
                     <p>Price: $@piece.Price</p>
-                    @* <button class="button-primary">View</button> *@
+                    <!-- <button class="button-primary">View</button> -->
                     <div>
                     <a class="button-primary" asp-controller="Home" asp-action="Piece" asp-route-id="@piece.Id">View</a>
                     </div>
                 </div>
             }
         </div>
-    }
+    } *@
+
+     <!-- https://getbootstrap.com/docs/4.4/layout/grid/ --> 
+        <div class="row row-cols-2 row-cols-md-4">
+        @foreach (Piece piece in Model.Pieces)
+        {
+            <div class="col">
+                <!-- Updated the img src tag to include the /images folder. Added onerror so that the imagepath defaults to our placeholder image.-->
+                <div class="store-item" style="margin: 5px;">
+                    <!-- Sets the image path. | "onerror" sets image to default.png | this.onerror=null prevents infinite looping. -->
+                    <img src="@piece.ImagePath" alt="@piece.Name"
+                         onerror="this.onerror=null; this.src='/images/default.png';" />
+
+                    <h3>@piece.Name</h3>
+                    <p>@piece.Description</p>
+                    <p>Price: $@piece.Price</p>
+                    <!-- <button class="button-primary">View</button> -->
+                    <div>
+                        <a class="button-primary" asp-controller="Home" asp-action="Piece" asp-route-id="@piece.Id">View</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>
 
 @functions {

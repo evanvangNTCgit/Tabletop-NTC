@@ -91,20 +91,20 @@ namespace SAGroupAlphaSpring26.Controllers
             switch(sortOrder)
                 {
                 case "name_asc":
-                    model.Pieces = pieces.OrderByDescending(p => p.Name).ToList();
-                    model.Sets = sets.OrderByDescending(s => s.Name).ToList();
-                    break;
-                case "name_desc":
                     model.Pieces = pieces.OrderBy(p => p.Name).ToList();
                     model.Sets = sets.OrderBy(s => s.Name).ToList();
                     break;
-                case "price_desc":
-                    model.Pieces = pieces.OrderBy(p => p.Price).ToList();
-                    model.Sets = sets.OrderBy(s => s.Price).ToList();
+                case "name_desc":
+                    model.Pieces = pieces.OrderByDescending(p => p.Name).ToList();
+                    model.Sets = sets.OrderByDescending(s => s.Name).ToList();
                     break;
-                case "price_asc":
+                case "price_desc":
                     model.Pieces = pieces.OrderByDescending(p => p.Price).ToList();
                     model.Sets = sets.OrderByDescending(s => s.Price).ToList();
+                    break;
+                case "price_asc":
+                    model.Pieces = pieces.OrderBy(p => p.Price).ToList();
+                    model.Sets = sets.OrderBy(s => s.Price).ToList();
                     break;
                 default:
                     model.Pieces = pieces;
