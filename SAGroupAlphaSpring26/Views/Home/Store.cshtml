@@ -11,8 +11,16 @@
     <table>
         <tr>
             <th>
-                @Html.ActionLink("Piece Name", "Store", new { sortOrder = ViewBag.SortOrder })
+                @* @Html.ActionLink("Piece Name", "Store", new { sortOrder = ViewBag.SortOrder }) *@
+                <!--                                                                  Setting the sort route (gets passed from controller)     Also keepin the filter route so user can do both. -->
+                <p>Sort by: <a asp-controller="Home" asp-action="Store" asp-route-sortOrder='@ViewData["PriceSort"]' asp-route-filter='@Context.Request.Query["filter"]'>Price</a></p>
             </th>
+            <th>
+                <p>Sort by: <a asp-controller="Home" asp-action="Store" asp-route-sortOrder='@ViewData["NameSort"]' asp-route-filter='@Context.Request.Query["filter"]'>Name</a></p>
+            </th>
+        </tr>
+        <tr>
+            <td><partial name="_SearchPartial" /></td>
         </tr>
     </table>
 

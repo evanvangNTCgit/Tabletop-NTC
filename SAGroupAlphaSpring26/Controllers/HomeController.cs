@@ -63,9 +63,12 @@ namespace SAGroupAlphaSpring26.Controllers
         }
 
         [Route("Store")]
-        public IActionResult Store(string sortOrder)
+        public IActionResult Store(string sortOrder, string filter)
         {
-            ViewBag.SortOrder = String.IsNullOrEmpty(sortOrder) ? "piece_desc" : "";
+            //ViewBag.SortOrder = String.IsNullOrEmpty(sortOrder) ? "piece_desc" : "";
+
+            ViewData["NameSort"] = (sortOrder == "name_asc") ? "name_desc" : "name_asc";
+            ViewData["PriceSort"] = (sortOrder == "price_asc") ? "price_desc" : "price_asc";
 
             ViewBag.ApplicationName = "SA Group Alpha Spring 2026";
 
@@ -79,13 +82,29 @@ namespace SAGroupAlphaSpring26.Controllers
             var pieces = _dataService.GetPieces();
             var sets = _dataService.GetAllSets();
 
+            if (!string.IsNullOrEmpty(filter)) 
+            {
+                pieces = pieces.Where(p => p.Name.ToUpper().Contains(filter.ToUpper())).ToList();
+                sets = sets.Where(p => p.Name.ToUpper().Contains(filter.ToUpper())).ToList();
+            }
+
             switch(sortOrder)
                 {
-                case "piece_desc":
-                    model.Pieces = pieces.OrderBy(p => p.Name).ToList();
+                case "name_asc":
+                    model.Pieces = pieces.OrderByDescending(p => p.Name).ToList();
+                    model.Sets = sets.OrderByDescending(s => s.Name).ToList();
                     break;
-                case "piece_asc":
+                case "name_desc":
                     model.Pieces = pieces.OrderBy(p => p.Name).ToList();
+                    model.Sets = sets.OrderBy(s => s.Name).ToList();
+                    break;
+                case "price_desc":
+                    model.Pieces = pieces.OrderBy(p => p.Price).ToList();
+                    model.Sets = sets.OrderBy(s => s.Price).ToList();
+                    break;
+                case "price_asc":
+                    model.Pieces = pieces.OrderByDescending(p => p.Price).ToList();
+                    model.Sets = sets.OrderByDescending(s => s.Price).ToList();
                     break;
                 default:
                     model.Pieces = pieces;

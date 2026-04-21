@@ -1,0 +1,9 @@
+﻿<form method="GET" asp-controller="Home" asp-action="Store" class="form-inline my-2 my-lg-0">
+    <div class="input-group">
+        <input name="filter" class="form-control" value='@Context.Request.Query["filter"]' />
+        <input type="hidden" name="sort" value='@Context.Request.Query["sort"]' class="w-100" />
+        <div class="input-group-append">
+            <input type="submit" value="Search" class="btn btn-secondary" />
+        </div>
+    </div>
+</form>
