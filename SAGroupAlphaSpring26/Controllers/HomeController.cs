@@ -63,7 +63,7 @@ namespace SAGroupAlphaSpring26.Controllers
         }
 
         [Route("Store")]
-        public IActionResult Store(string sortOrder, string filter)
+        public IActionResult Store(string sortOrder, string filter, string storeitemtype)
         {
             //ViewBag.SortOrder = String.IsNullOrEmpty(sortOrder) ? "piece_desc" : "";
 
@@ -110,6 +110,22 @@ namespace SAGroupAlphaSpring26.Controllers
                     model.Pieces = pieces;
                     model.Sets = sets;
                 break;
+            }
+
+            switch (storeitemtype)
+            {
+                case "sets":
+                    model.Pieces.Clear();
+                    break;
+                case "pieces":
+                    model.Sets.Clear();
+                    break;
+                case "all":
+                    model.Sets = model.Sets;
+                    model.Pieces = model.Pieces;
+                    break;
+                default:
+                    break;
             }
 
             return View(model);

@@ -1,0 +1,12 @@
+﻿<form method="GET" asp-controller="Home" asp-action="Store" class="form-inline my-2 my-lg-0">
+    <div class="input-group">
+        <input type="hidden" name="sort" value='@Context.Request.Query["sort"]' class="w-100" />
+        <input type="hidden" name="filter" value='@Context.Request.Query["filter"]' class="w-100" />
+        <div class="input-group-append">
+            @* <input type="submit" value="Sets" class="btn btn-primary" /> *@
+            <button type="submit" name="storeitemtype" value="sets" class="btn btn-primary">Sets</button>
+            <button type="submit" name="storeitemtype" value="pieces" class="btn btn-primary">Pieces</button>
+            <button type="submit" name="storeitemtype" value="all" class="btn btn-primary">all</button>
+        </div>
+    </div>
+</form>
