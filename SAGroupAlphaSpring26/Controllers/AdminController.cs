@@ -68,7 +68,11 @@ namespace SAGroupAlphaSpring26.Controllers
                 {
                     // Get the file name and copy it to the wwwroot folder.
                     var fileName = Path.GetFileName(pvm.UserImageUpload.FileName);
-                    var filePath = Path.Combine(this._webHostEnvironment.WebRootPath, "images/", fileName);
+
+                    // Should add a GUID so file names do not get overwritten.
+                    Guid g = Guid.NewGuid();
+
+                    var filePath = Path.Combine(this._webHostEnvironment.WebRootPath, "images/",g.ToString(),fileName);
 
                     // Initializing a new file stream that directs to the wwwroot/image, then filemode.create says to essentially create a new file in it.
                     using (var filestream = new FileStream(filePath, FileMode.Create))
