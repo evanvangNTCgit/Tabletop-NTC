@@ -24,7 +24,15 @@
         </tr>
     </table>
 
-    <h1 style="margin-top: 20px">Sets</h1>
+    @if(Model.Sets.Count <= 0 && Model.Pieces.Count <= 0)
+    {
+        <p>Nothing seemed to have fit your filter(s), please modify your search.</p>
+    }
+
+    @if (Model.Sets.Count > 0)
+    {
+        <h1 style="margin-top: 20px">Sets</h1>
+    }
     <div class="store-grid">
         @foreach (var set in Model.Sets)
         {
