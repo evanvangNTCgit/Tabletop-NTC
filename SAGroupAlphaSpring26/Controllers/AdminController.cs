@@ -319,6 +319,70 @@ namespace SAGroupAlphaSpring26.Controllers
 
             return RedirectToAction(nameof(Pieces));
         }
+
+        /// <summary>
+        /// Displays PieceUsage view with top 10 stats, optional type filter.
+        /// Computes totalTokens for %, binds to PieceUsageViewModel.
+        /// </summary>
+        [HttpGet("PieceUsage")]
+        public IActionResult PieceUsage(int? pieceTypeId = null)
+        {
+            // Get filtered and ordered stats
+            var stats = _dataService.GetPieceUsageStats(pieceTypeId);
+
+            // Get all types for dropdown
+            var types = _dataService.GetPieceTypes();
+
+            // Filtered total for display
+            int totalTokens = stats.Sum(s => s.TotalUsed);
+            // Global total for % 
+            int globalTotalTokens = _dataService.GetTotalTokens();
+
+            // Limit to top 10
+            var topStats = stats.Take(10).ToList();
+
+            // Bind view model
+            return View(new PieceUsageViewModel
+            {
+                Stats = topStats,
+                Types = types,
+                FilterTypeId = pieceTypeId,
+                TotalTokens = totalTokens,
+                GlobalTotalTokens = globalTotalTokens
+            });
+        }
+
+        [HttpGet("PieceUsageJson")]
+        public IActionResult PieceUsageJson(int? pieceTypeId = null)
+        {
+            // Reuse exact logic but project to DTOs to avoid EF serialization issues
+            var stats = _dataService.GetPieceUsageStats(pieceTypeId);
+            var types = _dataService.GetPieceTypes();
+            int totalTokens = stats.Sum(s => s.TotalUsed);
+            var topStats = stats.Take(10).ToList();
+
+            var statsDto = topStats.Select(s => new
+            {
+                pieceId = s.PieceId,
+                pieceName = s.PieceName,
+                imagePath = s.ImagePath,
+                pieceTypeName = s.PieceTypeName,
+                totalUsed = s.TotalUsed
+            }).ToList();
+
+            var typesDto = types.Select(t => new
+            {
+                Id = t.Id,
+                Name = t.Name
+            }).ToList();
+
+            return Json(new
+            {
+                stats = statsDto,
+                types = typesDto,
+                totalTokens,
+                filterTypeId = pieceTypeId
+            });
+        }
     }
 }
-

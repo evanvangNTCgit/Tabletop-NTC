@@ -74,6 +74,9 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="adminDropdown">
                             <li>
+                                <a asp-controller="Admin" asp-action="Index" class="dropdown-item" role="button">Admin Dashboard</a>
+                            </li>
+                            <li>
                                 <a asp-controller="Admin" asp-action="Pieces" class="dropdown-item" role="button">Pieces</a>
                             </li>
                             <li>
@@ -81,6 +84,9 @@
                             </li>
                             <li>
                                 <a asp-controller="Admin" asp-action="Sets" class="dropdown-item" role="button">Sets</a>
+                            </li>
+                            <li>
+                                <a asp-controller="Admin" asp-action="Purchases" class="dropdown-item" role="button">Purchases</a>
                             </li>
                             @* <li>
                                 <a asp-controller="Admin" asp-action="Purchases" class="dropdown-item" role="button">Purchases</a>
@@ -102,6 +108,9 @@
                                 Most Purchased Sets
                             </a>
                         </li>
+                    <li>
+                        <a asp-controller="Admin" asp-action="PieceUsage" class="dropdown-item" role="button">Most Used Pieces</a>
+                    </li>
                     </ul>
             }
         </ul>
