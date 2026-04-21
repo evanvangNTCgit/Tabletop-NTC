@@ -333,11 +333,19 @@ if (!isPlayerView) {
 
         // Sort all active tokens by their current Z-Indexes
         const tokensArray = Object.values(tokenData).sort((a, b) => {
+            // zA = z index of token a, zB = z index of token b.
             const zA = parseInt(a.zIndex) || 1;
             const zB = parseInt(b.zIndex) || 1;
 
             // Failsafe for tokens with the same z-index...
-            if (zA === zB) return a.id.localeCompare(b.id);
+            if (zA === zB) { 
+                // convert to strings.
+                const zAString = String(a.id || "");
+                const zBString = String(b.id || "");
+                return zAString.localeCompare(zBString);
+            }
+
+                
             return zA - zB;
         });
 
