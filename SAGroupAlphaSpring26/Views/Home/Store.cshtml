@@ -1,4 +1,5 @@
-﻿@model SAGroupAlphaSpring26.ViewModels.StoreViewModel
+﻿@* @model SAGroupAlphaSpring26.ViewModels.StoreViewModel *@
+@model PaginatedPieceList
 
 @{
     ViewData["Title"] = "Store Page";
@@ -25,7 +26,7 @@
         </tr>
     </table>
 
-    @if(Model.Sets.Count <= 0 && Model.Pieces.Count <= 0)
+    @* @if(Model.Sets.Count <= 0 && Model.Pieces.Count <= 0)
     {
         <p>Nothing seemed to have fit your filter(s), please modify your search.</p>
     }
@@ -38,49 +39,20 @@
         @foreach (var set in Model.Sets)
         {
             decimal totalPrice = set.PiecesList?.Sum(ps => ps.Piece.Price) ?? 0m;
-            @* decimal discountedPrice = totalPrice * (1 - set.Discount); *@
             <div class="store-item store-set-item">
                 <h3>@set.Name</h3>
                 <p>Pieces (@(set.PiecesList?.Count ?? 0)): @string.Join(", ", set.PiecesList?.Select(ps => ps.Piece.Name) ?? Enumerable.Empty<string>())</p>
                 <p>Total: $@set.Price.ToString("F2")</p>
-                @* <p>Discounted (@((set.Discount * 100).ToString("F1") + "%")): $@discountedPrice.ToString("F2")</p> *@
-                <!-- Placeholder for owned pieces discount -->
-                @* <p class="text-muted">Owned pieces discount: $0.00 (TODO)</p> *@
-                @* <button class="button-primary">View</button> *@
                 <div>
                     <a class="button-primary" asp-controller="Home" asp-action="Set" asp-route-id="@set.Id">View</a>
                 </div>
             </div>
         }
-    </div>
-
-    @* @foreach (var typeGroup in Model.Pieces.GroupBy(p => p.PieceTypeID))
-    {
-        <h2>@GetTypeName(typeGroup.Key)</h2>
-        <div class="store-grid">
-            @foreach (var piece in typeGroup)
-            {
-                <!-- Updated the img src tag to include the /images folder. Added onerror so that the imagepath defaults to our placeholder image.-->
-                <div class="store-item">
-                    <!-- Sets the image path. | "onerror" sets image to default.png | this.onerror=null prevents infinite looping. -->
-                    <img src="@piece.ImagePath" alt="@piece.Name" 
-                    onerror="this.onerror=null; this.src='/images/default.png';" />
-
-                    <h3>@piece.Name</h3>
-                    <p>@piece.Description</p>
-                    <p>Price: $@piece.Price</p>
-                    <!-- <button class="button-primary">View</button> -->
-                    <div>
-                    <a class="button-primary" asp-controller="Home" asp-action="Piece" asp-route-id="@piece.Id">View</a>
-                    </div>
-                </div>
-            }
-        </div>
-    } *@
+    </div> *@
 
      <!-- https://getbootstrap.com/docs/4.4/layout/grid/ --> 
         <div class="row row-cols-2 row-cols-md-4">
-        @foreach (Piece piece in Model.Pieces)
+        @foreach (Piece piece in Model.PiecesList)
         {
             <div class="col">
                 <!-- Updated the img src tag to include the /images folder. Added onerror so that the imagepath defaults to our placeholder image.-->

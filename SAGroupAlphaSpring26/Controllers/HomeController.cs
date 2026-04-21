@@ -63,7 +63,7 @@ namespace SAGroupAlphaSpring26.Controllers
         }
 
         [Route("Store")]
-        public IActionResult Store(string sortOrder, string filter, string storeitemtype)
+        public IActionResult Store(string sortOrder, string filter, string storeitemtype, int pageNumber)
         {
             //ViewBag.SortOrder = String.IsNullOrEmpty(sortOrder) ? "piece_desc" : "";
 
@@ -73,10 +73,6 @@ namespace SAGroupAlphaSpring26.Controllers
             ViewBag.ApplicationName = "SA Group Alpha Spring 2026";
 
             StoreViewModel model = new StoreViewModel();
-            //{
-            //    Pieces = this._dataService.GetPieces(),
-            //    Sets = this._dataService.GetAllSets()
-            //};
 
             // Get the sets and pieces once...
             var pieces = _dataService.GetPieces();
@@ -128,7 +124,15 @@ namespace SAGroupAlphaSpring26.Controllers
                     break;
             }
 
-            return View(model);
+            // return View(model);
+            if(pageNumber < 1)
+            {
+                pageNumber = 1;
+            }
+
+            int pageSize = 4;
+
+            return View(PaginatedPieceList.Create(model.Pieces, pageNumber, pageSize));
         }
 
         // Gets a specific piece by ID.
