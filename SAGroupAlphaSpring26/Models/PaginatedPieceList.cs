@@ -21,7 +21,7 @@
 
         public bool HasPreviousPage => (PageIndex > 1);
 
-        public bool HasNexPage => (PageIndex < TotalPages);
+        public bool HasNextPage => (PageIndex < TotalPages);
 
         public int FirstItemIndex => (PageIndex - 1) * PageSize + 1;
 

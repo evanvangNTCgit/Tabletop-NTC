@@ -72,6 +72,29 @@
             </div>
         }
     </div>
+    <nav>
+        <ul>
+            @if (Model.HasPreviousPage)
+            {
+                <li>
+                <a asp-route-pageNumber="@(Model.PageIndex - 1)">
+                    <span>Previous</span>
+                </a>
+            </li>
+            }
+            @if (Model.HasNextPage)
+            {
+                <li>
+                <a asp-route-pageNumber="@(Model.PageIndex + 1)">
+                    <span>Next</span>
+                </a>
+            </li>
+            }
+            <li>
+                    <span>@Model.TotalPages</span>
+            </li>
+        </ul>
+    </nav>
 </div>
 
 @functions {
