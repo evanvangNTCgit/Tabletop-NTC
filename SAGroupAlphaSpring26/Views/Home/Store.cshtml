@@ -26,10 +26,10 @@
         </tr>
     </table>
 
-    @* @if(Model.Sets.Count <= 0 && Model.Pieces.Count <= 0)
+    @if(Model.PaginatedSets.SetsList.Count <= 0 && Model.PaginatedPieces.PiecesList.Count <= 0)
     {
         <p>Nothing seemed to have fit your filter(s), please modify your search.</p>
-    } *@
+    }
 
     @if (Model.PaginatedSets.SetsList.Count > 0)
     {
