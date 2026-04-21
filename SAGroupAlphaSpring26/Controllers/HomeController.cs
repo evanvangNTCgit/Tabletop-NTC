@@ -63,33 +63,27 @@ namespace SAGroupAlphaSpring26.Controllers
         }
 
         [Route("Store")]
-        public IActionResult Store(string sortOrder, string filter, string storeitemtype)
+        public IActionResult Store(string sortOrder, string filter, string storeitemtype, int pageNumber)
         {
-            //ViewBag.SortOrder = String.IsNullOrEmpty(sortOrder) ? "piece_desc" : "";
-
             ViewData["NameSort"] = (sortOrder == "name_asc") ? "name_desc" : "name_asc";
             ViewData["PriceSort"] = (sortOrder == "price_asc") ? "price_desc" : "price_asc";
 
             ViewBag.ApplicationName = "SA Group Alpha Spring 2026";
 
             StoreViewModel model = new StoreViewModel();
-            //{
-            //    Pieces = this._dataService.GetPieces(),
-            //    Sets = this._dataService.GetAllSets()
-            //};
 
             // Get the sets and pieces once...
             var pieces = _dataService.GetPieces();
             var sets = _dataService.GetAllSets();
 
-            if (!string.IsNullOrEmpty(filter)) 
+            if (!string.IsNullOrEmpty(filter))
             {
                 pieces = pieces.Where(p => p.Name.ToUpper().Contains(filter.ToUpper())).ToList();
                 sets = sets.Where(p => p.Name.ToUpper().Contains(filter.ToUpper())).ToList();
             }
 
-            switch(sortOrder)
-                {
+            switch (sortOrder)
+            {
                 case "name_asc":
                     model.Pieces = pieces.OrderBy(p => p.Name).ToList();
                     model.Sets = sets.OrderBy(s => s.Name).ToList();
@@ -109,7 +103,7 @@ namespace SAGroupAlphaSpring26.Controllers
                 default:
                     model.Pieces = pieces;
                     model.Sets = sets;
-                break;
+                    break;
             }
 
             switch (storeitemtype)
@@ -127,8 +121,14 @@ namespace SAGroupAlphaSpring26.Controllers
                 default:
                     break;
             }
+            if (pageNumber < 1)
+            {
+                pageNumber = 1;
+            }
 
-            return View(model);
+            int pageSize = 4;
+            var PaginatedStoreModel = new PaginatedStoreViewModel(PaginatedSetList.Create(model.Sets, pageNumber, pageSize), PaginatedPieceList.Create(model.Pieces, pageNumber, pageSize));
+            return View(PaginatedStoreModel);
         }
 
         // Gets a specific piece by ID.
@@ -149,9 +149,9 @@ namespace SAGroupAlphaSpring26.Controllers
 
         [Route("Session/{id}")]
         public IActionResult Session(int id)
-            {
+        {
             var model = _dataService.GetSession(id);
-        return View(model);
+            return View(model);
         }
 
         [Route("Error")]
