@@ -1,5 +1,6 @@
 ﻿namespace SAGroupAlphaSpring26.Models
 {
+    // https://www.youtube.com/watch?v=L9VtwtoLvy8
     public class PaginatedPieceList
     {
         public List<Piece> PiecesList { get; set; }
