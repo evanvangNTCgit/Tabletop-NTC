@@ -3,6 +3,7 @@
         <input name="filter" class="form-control" value='@Context.Request.Query["filter"]' />
         <input type="hidden" name="sort" value='@Context.Request.Query["sortOrder"]' class="w-100" />
         <input type="hidden" name="storeitemtype" value='@Context.Request.Query["storeitemtype"]' class="w-100" />
+        <input type="hidden" name="pageNumber" value='@Context.Request.Query["pageNumber"]' class="w-100" />
         <div class="input-group-append">
             <input type="submit" value="Search" class="btn btn-primary" />
         </div>
