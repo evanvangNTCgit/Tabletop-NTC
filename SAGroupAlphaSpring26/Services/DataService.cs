@@ -703,6 +703,40 @@ namespace SAGroupAlphaSpring26.Services
 
             return piece != null;
         }
+
+        /// <summary>
+        /// Gets piece usage statistics, optionally filtered by piece type.
+        /// Counts total tokens per piece across non-archived sessions.
+        /// </summary>
+        /// <param name="pieceTypeId">Optional PieceType ID to filter; null for all.</param>
+        /// <returns>Ordered list of PieceUsageStatsViewModel (Piece, TotalUsed).</returns>
+        public List<PieceUsageStatDto> GetPieceUsageStats(int? pieceTypeId = null)
+        {
+            return _dataContext.Tokens
+                .Include(t => t.Piece)
+                .ThenInclude(p => p.PieceType)
+                .Include(t => t.Session)
+                .Where(t => t.Session != null && !t.Session!.IsArchived && (!pieceTypeId.HasValue || t.Piece!.PieceTypeID == pieceTypeId.Value))
+                .GroupBy(t => t.PieceID)
+                .Select(g => new PieceUsageStatDto
+                {
+                    PieceId = g.Key,
+                    PieceName = g.First().Piece.Name ?? "",
+                    ImagePath = g.First().Piece.ImagePath ?? "/images/default.png",
+                    PieceTypeName = g.First().Piece.PieceType.Name ?? "",
+                    TotalUsed = g.Count()
+                })
+                .OrderByDescending(x => x.TotalUsed)
+                .ToList();
+        }
+
+        public int GetTotalTokens()
+        {
+            return _dataContext.Tokens
+                .Include(t => t.Session)
+                .Where(t => t.Session != null && !t.Session!.IsArchived)
+                .Count();
+        }
     }
 }
 
