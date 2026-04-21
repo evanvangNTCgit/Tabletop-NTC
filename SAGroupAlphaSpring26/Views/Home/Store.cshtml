@@ -83,6 +83,13 @@
                         <input type="submit" value="Previous" class="btn btn-primary" />
                     </form>
             </li>
+            } else if (Model.PaginatedSets.HasPreviousPage) {
+                <form method="GET" asp-controller="Home" asp-action="Store">
+                        <input type="hidden" name="pageNumber" value=@(Model.PaginatedSets.PageIndex - 1) class="w-100" />
+                        <input type="hidden" name="sort" value='@Context.Request.Query["sortOrder"]' class="w-100" />
+                        <input type="hidden" name="storeitemtype" value='@Context.Request.Query["storeitemtype"]' class="w-100" />
+                        <input type="submit" value="Previous" class="btn btn-primary" />
+                    </form>
             }
             @if (Model.PaginatedPieces.HasNextPage)
             {
@@ -94,6 +101,16 @@
                         <input type="submit" value="Next" class="btn btn-primary"/>
                     </form>
             </li>
+            } else if (Model.PaginatedSets.HasNextPage)
+            {
+                <li>
+                    <form method="GET" asp-controller="Home" asp-action="Store">
+                        <input type="hidden" name="pageNumber" value=@(Model.PaginatedSets.PageIndex + 1) class="w-100" />
+                        <input type="hidden" name="sort" value='@Context.Request.Query["sortOrder"]' class="w-100" />
+                        <input type="hidden" name="storeitemtype" value='@Context.Request.Query["storeitemtype"]' class="w-100" />
+                        <input type="submit" value="Next" class="btn btn-primary" />
+                    </form>
+                </li>
             }
             <li>
                 <p>Page: @Context.Request.Query["pageNumber"]</p>
