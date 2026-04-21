@@ -188,6 +188,12 @@ if (!isPlayerView) {
                 delete tokenData[htmlId];
                 ui.draggable.remove();
 
+                if (selectedTokenId === htmlId) {
+                    selectedTokenId = null;
+                    const panel = document.getElementById('token-info-panel');
+                    if (panel) panel.style.display = 'none';
+                }
+
                 // Broadcast deletion to player view.
                 bc.postMessage({
                     action: 'tokenDelete',
@@ -345,7 +351,6 @@ if (!isPlayerView) {
                 return zAString.localeCompare(zBString);
             }
 
-                
             return zA - zB;
         });
 
@@ -410,7 +415,14 @@ if (!isPlayerView) {
 
         document.getElementById('token-info-zindex')?.addEventListener('change', (e) => {
             if (selectedTokenId && tokenData[selectedTokenId]) {
-                let newZ = parseInt(e.target.value) || 1;
+                let newZ = Math.max(0, parseInt(e.target.value) || 0);
+
+                if (newZ <= 0) {
+                    newZ = 1;
+                }
+
+                e.target.value = newZ;
+
                 tokenData[selectedTokenId].zIndex = newZ;
                 const tokenEl = document.getElementById(selectedTokenId);
                 if (tokenEl) tokenEl.style.zIndex = newZ;
