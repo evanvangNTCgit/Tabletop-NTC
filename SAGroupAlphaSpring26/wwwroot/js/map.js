@@ -338,7 +338,10 @@ if (!isPlayerView) {
         if (!tokenData[tokenId]) return;
 
         // Sort all active tokens by their current Z-Indexes
-        const tokensArray = Object.values(tokenData).sort((a, b) => {
+        const tokensArray = Object.entries(tokenData).map(([key, val]) => {
+            val.htmlId = key;
+            return val;
+        }).sort((a, b) => {
             // zA = z index of token a, zB = z index of token b.
             const zA = parseInt(a.zIndex) || 1;
             const zB = parseInt(b.zIndex) || 1;
@@ -359,12 +362,12 @@ if (!isPlayerView) {
 
         // Iterates through sorted tokens, updating and ordering by z index.
         for (const token of tokensArray) {
-            if (token.id !== tokenId) {
+            if (token.htmlId !== tokenId) {
                 if (token.zIndex !== currentZ) {
                     token.zIndex = currentZ;
-                    const el = document.getElementById(token.id);
+                    const el = document.getElementById(token.htmlId);
                     if (el) el.style.zIndex = currentZ;
-                    bc.postMessage({ tokenId: token.id, zIndex: currentZ, action: 'updateZIndex' });
+                    bc.postMessage({ tokenId: token.htmlId, zIndex: currentZ, action: 'updateZIndex' });
                 }
                 currentZ++;
             }
