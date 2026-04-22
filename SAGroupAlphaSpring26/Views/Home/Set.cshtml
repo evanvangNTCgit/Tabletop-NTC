@@ -37,9 +37,9 @@
 
             if(i % 2 == 0)
             {
-                @:<div class="row">
+                @:<div class="row justify-content-center">
             }
-            <div class="card col" style="margin: 15px">
+            <div class="card col" style="margin: 15px; max-width: 25vw;">
                 <img src="@piece.ImagePath" class="card-img-top" style="height: 10vh; width: auto; aspect-ratio: 16 / 9; object-fit: contain;" />
                 <div class="card-body align-self-center">
                     <h5 class="card-title">@piece.Name</h5>
@@ -47,15 +47,7 @@
                     </div>
             </div>
 
-            @* <div class="col">
-                <img src="@piece.ImagePath" style="height: 10vh; width: auto; aspect-ratio: 16 / 9; object-fit: contain;" />
-                <div>
-                    <h5>@piece.Name</h5>
-                    <p>@piece.Description</p>
-                </div>
-            </div> *@
-
-             if(i % 2 == 1)
+             if(i % 2 == 1 || i == Model.PiecesList.Count() - 1)
             {
                 // Then after two piece in the row close it.
                 @:</div>
