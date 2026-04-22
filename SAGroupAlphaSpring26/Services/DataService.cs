@@ -598,6 +598,9 @@ namespace SAGroupAlphaSpring26.Services
                     item.IsArchived = true;
                     this._dataContext.Update(item);
                 }
+                // https://stackoverflow.com/questions/27423059/how-do-i-clear-tracked-entities-in-entity-framework
+                this._dataContext.SaveChanges();
+                this._dataContext.ChangeTracker.Clear();
 
                 // Get sets from the cart
                 // We need to retrieve the sets with the PiecesList included to get the PieceIds
