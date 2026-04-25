@@ -2,17 +2,17 @@
 <h2>Update Piece Type</h2>
 <div class="form-horizontal">
     <form method="post">
-        <input type="hidden" asp-for="SetToEdit.Id" />
-        <div asp-validation-summary="All"></div>
+        <input type="hidden" asp-for="SetToEdit.Id"/>
+        <div asp-validation-summary="All" class="bg-danger"></div>
         <div class="form-group mb-3">
             <label asp-for="SetToEdit.Name"></label>
             <input asp-for="SetToEdit.Name" class="form-control" />
-            <span asp-validation-for="SetToEdit.Name"></span>
+            <span asp-validation-for="SetToEdit.Name" class="bg-danger"></span>
         </div>
         <div class="form-group mb-3">
             <label asp-for="SetToEdit.Price"></label>
             <input asp-for="SetToEdit.Price" class="form-control" />
-            <span asp-validation-for="SetToEdit.Price"></span>
+            <span asp-validation-for="SetToEdit.Price" class="bg-danger"></span>
         </div>
         <div class="row">
             @foreach (Piece piece in Model.PiecesAvailable)
@@ -39,9 +39,14 @@
                 </div>
             }
         </div>
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <p>
             <button type="submit" class="btn btn-primary" role="button">Save</button>
         </p>
     </form>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

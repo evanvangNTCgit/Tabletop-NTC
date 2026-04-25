@@ -172,7 +172,7 @@ namespace SAGroupAlphaSpring26.Controllers
         {
             try
             {
-                if (!ModelState.IsValid)
+                if (!ModelState.IsValid || esvm.SelectedPieceIds.Count <= 0)
                 {
                     esvm.PiecesAvailable = this._dataService.GetAllPieces();
                     esvm.SelectedPieceIds.Clear();
@@ -201,9 +201,9 @@ namespace SAGroupAlphaSpring26.Controllers
 
                 return RedirectToAction("Index", "Home");
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                return RedirectToAction("Index", "Home");
             }
         }
 
