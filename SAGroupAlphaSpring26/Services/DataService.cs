@@ -585,46 +585,69 @@ namespace SAGroupAlphaSpring26.Services
         {
             try
             {
-                // Get pieces from the cart
+                // First get the users cart items and cart item sets.
                 var cartItems = this.GetCartItems(userId);
-                foreach (var item in cartItems)
-                {
-                    // If user doesn't already own it, add it
-                    if (!this._dataContext.UserPieces.Any(up => up.UserId == userId && up.PieceId == item.PieceId))
-                    {
-                        this._dataContext.UserPieces.Add(new UserPieces { UserId = userId, PieceId = item.PieceId });
-                    }
-                    // Archive the cart item
-                    item.IsArchived = true;
-                    this._dataContext.Update(item);
-                }
-                // https://stackoverflow.com/questions/27423059/how-do-i-clear-tracked-entities-in-entity-framework
-                this._dataContext.SaveChanges();
-                this._dataContext.ChangeTracker.Clear();
-
-                // Get sets from the cart
-                // We need to retrieve the sets with the PiecesList included to get the PieceIds
                 var cartSets = this._dataContext.CartItemSets
                     .Where(cis => cis.UserId == userId && cis.IsArchived == false)
                     .Include(cis => cis.Set)
                     .ThenInclude(s => s!.PiecesList)
                     .ToList();
 
-                foreach (var setItem in cartSets)
+                // We can iterate over a list of pieces, then add it to user cart.
+                List<Piece> pieces = new();
+
+                foreach (CartItem p in cartItems)
                 {
-                    // Add all pieces from the set to the user account
-                    if (setItem.Set != null && setItem.Set.PiecesList != null)
+                    if (p.Piece != null)
                     {
-                        foreach (var pieceSet in setItem.Set.PiecesList)
+                        if (pieces.Contains(p.Piece))
+                            continue;
+
+                        pieces.Add(p.Piece);
+                    }
+
+                    // Now archive/remove the cart item.
+                    p.IsArchived = true;
+                }
+                foreach (CartItemSet cis in cartSets)
+                {
+                    // If the set or pieces list is null for some reason just go to next iteration.
+                    if (cis.Set == null || cis.Set.PiecesList == null)
+                        continue;
+
+                    // Now for each set in the cart iterate over the pieces list and add to the pieces list.
+                    foreach (PieceSets p in cis.Set.PiecesList)
+                    {
+                        if (p.Piece != null)
                         {
-                            if (!this._dataContext.UserPieces.Any(up => up.UserId == userId && up.PieceId == pieceSet.PieceId))
-                            {
-                                this._dataContext.UserPieces.Add(new UserPieces { UserId = userId, PieceId = pieceSet.PieceId });
-                            }
+                            // If the pieces already contains the piece, continue.
+                            if (pieces.Contains(p.Piece))
+                                continue;
+
+                            pieces.Add(p.Piece);
                         }
                     }
-                    setItem.IsArchived = true;
-                    this._dataContext.Update(setItem);
+
+                    // Now archive/remove the cart item.
+                    cis.IsArchived = true;
+                }
+
+                // Now get the users current pieces...
+                List<Piece> usersCurrentPieces = this.GetUserPieces(userId);
+
+                // Now check to see what pieces user already owns and remove that off of the piece list made from reading user cart.
+                foreach (Piece p in pieces)
+                {
+                    if (usersCurrentPieces.Contains(p))
+                    {
+                        pieces.Remove(p);
+                    }
+                }
+
+                // NOW we can add to the UserPieces table.
+                foreach (Piece p in pieces)
+                {
+                    this._dataContext.UserPieces.Add(new UserPieces { PieceId = p.Id, UserId = userId });
                 }
 
                 this._dataContext.SaveChanges();
