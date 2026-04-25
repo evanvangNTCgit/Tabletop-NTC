@@ -151,7 +151,6 @@ namespace SAGroupAlphaSpring26.Controllers
         public IActionResult UserPieceInventory()
         {
             int userId = 0;
-
             try
             {
                 userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
