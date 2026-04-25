@@ -50,6 +50,12 @@
             @if (User.Identity?.IsAuthenticated ?? false)
             {
                 <li>
+                    <form asp-controller="Account" asp-action="user-pieces-inventory" method="get">
+                        <button type="submit" class="nav-button">Inventory</button>
+                    </form>
+                </li>
+
+                <li>
                     <form asp-controller="Account" asp-action="Logout" method="post">
                         <button type="submit" class="nav-button logout">Logout</button>
                     </form>
@@ -60,7 +66,7 @@
                         View Sale History
                     </a>
                 </li>
-            }
+                }
 
             <!-- If user is logged in and is an admin... -->
             @if (User.Identity!.IsAuthenticated && User.IsInRole("Admin"))
