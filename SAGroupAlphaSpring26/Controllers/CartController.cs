@@ -160,9 +160,9 @@ namespace SAGroupAlphaSpring26.Controllers
 
                         saleLine.Piece = piece1;
                         // saleLine.Price = piece1.Price;
-                        saleLine.Price = piece.Set.Price / piece.Set.PiecesList.Count();
+                        saleLine.Price = piece.Set.Price / (decimal)piece.Set.PiecesList.Count();
                         saleLine.Tax = saleLine.Price * 0.05m;
-                        saleLine.TotalCost = saleLine.Price + saleLine.TotalTax;
+                        saleLine.TotalCost = saleLine.Price + saleLine.Tax;
                         saleLine.SetID = cartSet.SetId;
 
                         userSale.SaleLines.Add(saleLine);

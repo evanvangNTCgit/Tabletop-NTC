@@ -662,11 +662,13 @@ namespace SAGroupAlphaSpring26.Services
             return _dataContext.SaleLines
                 .Include(sl => sl.Piece)
                 .ThenInclude(p => p.PieceType)
+                .Where(pi => pi.SetID == null) // I would like the ones that are not in a set.
                 .GroupBy(sl => sl.PieceID)
                 .Select(g => new PurchaseStatsViewModel
                 {
                     Piece = g.First().Piece,
-                    TotalPurchased = g.Count()
+                    TotalPurchased = g.Count(),
+                    PurchasedAmountTotal = g.Sum(g => g.Price)
                 })
                 .OrderByDescending(x => x.TotalPurchased)
                 .ToList();
@@ -675,6 +677,7 @@ namespace SAGroupAlphaSpring26.Services
         public List<SetStatsViewModel> GetSetPurchaseStats()
         {
             return _dataContext.SaleLines
+                .Where(sl => sl.SetID != null || sl.SetID > 0)
                 .Include(sl => sl.Set)
                 .ThenInclude(s => s.PiecesList)
                 .ThenInclude(pl => pl.Piece)
@@ -683,7 +686,9 @@ namespace SAGroupAlphaSpring26.Services
                 {
                     Set = g.First().Set,
                     // Count unique SaleIDs associated with this SetID
-                    TotalPurchased = g.Select(sl => sl.SaleID).Distinct().Count()
+                    TotalPurchased = g.Select(sl => sl.SaleID).Distinct().Count(),
+
+                    PurchasedAmountTotal = g.Sum(g => g.Price)
                 })
                 .OrderByDescending(x => x.TotalPurchased)
                 .ToList();
