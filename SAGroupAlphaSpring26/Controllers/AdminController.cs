@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.Services;
 using SAGroupAlphaSpring26.ViewModels;
+using System.Reflection.Metadata.Ecma335;
 
 namespace SAGroupAlphaSpring26.Controllers
 {
@@ -131,6 +132,78 @@ namespace SAGroupAlphaSpring26.Controllers
             catch (Exception e)
             {
                 throw new Exception($"Failed to add piece type: {e.Message}");
+            }
+        }
+
+        [HttpGet("EditSet/{id:int}")]
+        public IActionResult EditSet(int id)
+        {
+            try
+            {
+                EditSetViewModel model = new();
+
+                Set existingSet = this._dataService.GetSet(id);
+                if (existingSet == null) return NotFound();
+                else model.SetToEdit = existingSet;
+
+                List<Piece> existingPieces = this._dataService.GetAllPieces();
+
+                if (existingPieces != null)
+                    model.PiecesAvailable = existingPieces;
+
+                if (existingSet.PiecesList != null)
+                {
+                    model.SelectedPieceIds.Clear();
+                    foreach (PieceSets p in existingSet.PiecesList)
+                    {
+                        model.SelectedPieceIds.Add(p.PieceId);
+                    }
+                }
+                return View(model);
+            }
+            catch
+            {
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
+        [HttpPost("EditSet/{id:int}")]
+        public IActionResult EditSet(EditSetViewModel esvm)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    esvm.PiecesAvailable = this._dataService.GetAllPieces();
+                    esvm.SelectedPieceIds.Clear();
+                    foreach (PieceSets p in esvm.SetToEdit.PiecesList)
+                    {
+                        esvm.SelectedPieceIds.Add(p.PieceId);
+                    }
+                }
+
+                // ASP.NET will not include the Pieces list on the POST so I will just get the set again and provide the editing.
+                Set SetToEdit = this._dataService.GetSet(esvm.SetToEdit.Id);
+                SetToEdit.Name = esvm.SetToEdit.Name;
+                SetToEdit.Price = esvm.SetToEdit.Price;
+
+                List<PieceSets> piecesToAdd = new();
+                foreach (int pieceId in esvm.SelectedPieceIds)
+                {
+                    Piece p = this._dataService.GetPiece(pieceId);
+                    if (p != null)
+                        piecesToAdd.Add(new PieceSets { Piece = p, PieceId = p.Id, Set = SetToEdit, SetId = SetToEdit.Id });
+                }
+
+                SetToEdit.PiecesList = piecesToAdd;
+
+                this._dataService.UpdateSet(SetToEdit);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
 

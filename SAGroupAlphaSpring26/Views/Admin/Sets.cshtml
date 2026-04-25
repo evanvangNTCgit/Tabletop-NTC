@@ -18,7 +18,7 @@
             <tr class="saBackground">
                 <td>@item.Name</td>
                 <td>
-                    <a href="#" class="admin-edit-btn">Edit</a>
+                    <a asp-controller="admin" asp-action="editset" asp-route-id="@item.Id" class="admin-edit-btn">Edit</a>
                 </td>
                 <td>
                     @if (item.PiecesList != null && item.PiecesList.Any())
@@ -38,3 +38,9 @@
         }
     </table>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

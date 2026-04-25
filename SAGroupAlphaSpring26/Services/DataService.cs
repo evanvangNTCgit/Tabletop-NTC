@@ -275,6 +275,36 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
+        public void UpdateSet(Set set)
+        {
+            try
+            {
+                // First get the old piecesets for that set and delete them.
+                List<PieceSets> oldPieceSets = this._dataContext.PieceSets
+                    .Where(ps => ps.SetId == set.Id)
+                    .ToList();
+
+                foreach(PieceSets oldPieceSet in oldPieceSets)
+                {
+                    this._dataContext.Remove(oldPieceSet);
+                }
+
+                // Now we can add the new piecesets.
+                foreach(PieceSets newPieceSets in set.PiecesList)
+                {
+                    this._dataContext.PieceSets.Add(newPieceSets);
+                }
+
+                this._dataContext.Update(set);
+
+                this._dataContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to update set\n{ex.Message}");
+            }
+        }
+
 
         // used to delete a session by it's ID
         public void DeleteSession(int id)
