@@ -53,7 +53,7 @@ if (playerView === 'player') {
             case ("setVisibility"):
                 setTokenVisibility(e.data);
                 break;
-                // Updates the z index of a token for the playerview.
+            // Updates the z index of a token for the playerview.
             case ("updateZIndex"):
                 updateZIndex(e.data);
                 break;
@@ -347,7 +347,7 @@ if (!isPlayerView) {
             const zB = parseInt(b.zIndex) || 1;
 
             // Failsafe for tokens with the same z-index...
-            if (zA === zB) { 
+            if (zA === zB) {
                 // convert to strings.
                 const zAString = String(a.id || "");
                 const zBString = String(b.id || "");
@@ -452,6 +452,33 @@ if (!isPlayerView) {
                     tokenId: selectedTokenId,
                     isVisible: isVis,
                     action: 'setVisibility'
+                });
+            }
+        });
+
+        document.getElementById('token-info-delete')?.addEventListener('click', (e) => {
+            if (selectedTokenId && tokenData[selectedTokenId]) {
+                const htmlId = selectedTokenId;
+                const dbId = tokenData[selectedTokenId].id;
+
+                // If it's a real token (not temp), stage it for DB deletion
+                if (dbId && !String(htmlId).startsWith('temp-')) {
+                    tokensToDelete.push(dbId);
+                }
+
+                // Remove from local data
+                delete tokenData[htmlId];
+                const tokenEl = document.getElementById(htmlId);
+                if (tokenEl) tokenEl.remove();
+
+                selectedTokenId = null;
+                const panel = document.getElementById('token-info-panel');
+                if (panel) panel.style.display = 'none';
+
+                // Broadcast deletion to player view.
+                bc.postMessage({
+                    action: 'tokenDelete',
+                    tokenId: htmlId
                 });
             }
         });
