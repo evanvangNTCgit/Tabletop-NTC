@@ -11,7 +11,6 @@
     <table class="saBackground" style="">
         <tr>
             <th>
-                @* @Html.ActionLink("Piece Name", "Store", new { sortOrder = ViewBag.SortOrder }) *@
                 <!--                                                                  Setting the sort route (gets passed from controller)     Also keepin the filter route so user can do both. -->
                 <p>Sort by: <a asp-controller="Home" asp-action="Store" asp-route-sortOrder='@ViewData["PriceSort"]' asp-route-pageNumber="@Context.Request.Query["pageNumber"]" asp-route-filter='@Context.Request.Query["filter"]' asp-route-storeitemtype='@Context.Request.Query["storeitemtype"]'>Price</a></p>
             </th>
@@ -27,13 +26,13 @@
 
     @if(Model.PaginatedSets.SetsList.Count <= 0 && Model.PaginatedPieces.PiecesList.Count <= 0)
     {
-        <p>Nothing seemed to have fit your filter(s), please modify your search.</p>
+        <p class="bg-warning" style="font-size: 25px;">Nothing seemed to fit your filter(s), please modify your search.</p>
     }
 
     @if (Model.PaginatedSets.SetsList.Count > 0)
     {
-        <h1 style="margin-top: 20px">Sets</h1>
-    }
+        <h1>Sets</h1>
+    
     <div class="store-grid">
         @foreach (var set in Model.PaginatedSets.SetsList)
         {
@@ -48,6 +47,10 @@
             </div>
         }
     </div>
+    }
+
+    @if(Model.PaginatedPieces.PiecesList.Count > 0){
+                <h1 style="margin-top: 20px">Pieces</h1>
 
      <!-- https://getbootstrap.com/docs/4.4/layout/grid/ --> 
         <div class="row row-cols-2 row-cols-md-4">
@@ -71,65 +74,43 @@
             </div>
         }
     </div>
-    <nav>
-        <ul>
+    }
+    <div class="d-flex justify-content-center">
             @if (Model.PaginatedPieces.HasPreviousPage)
             {
-                <li>
                     <form method="GET" asp-controller="Home" asp-action="Store">
                         <input type="hidden" name="pageNumber" value=@(Model.PaginatedPieces.PageIndex - 1) class="w-100" />
-                        <input type="hidden" name="sort" value='@Context.Request.Query["sortOrder"]' class="w-100" />
+                        <input type="hidden" name="sortOrder" value='@Context.Request.Query["sortOrder"]' class="w-100" />
                         <input type="hidden" name="storeitemtype" value='@Context.Request.Query["storeitemtype"]' class="w-100" />
-                        <input type="submit" value="Previous" class="btn btn-primary" />
+                        <input type="submit" value="Previous" class="btn-primary store-next-prev-button" />
                     </form>
-            </li>
             } else if (Model.PaginatedSets.HasPreviousPage) {
                 <form method="GET" asp-controller="Home" asp-action="Store">
                         <input type="hidden" name="pageNumber" value=@(Model.PaginatedSets.PageIndex - 1) class="w-100" />
-                        <input type="hidden" name="sort" value='@Context.Request.Query["sortOrder"]' class="w-100" />
+                        <input type="hidden" name="sortOrder" value='@Context.Request.Query["sortOrder"]' class="w-100" />
                         <input type="hidden" name="storeitemtype" value='@Context.Request.Query["storeitemtype"]' class="w-100" />
-                        <input type="submit" value="Previous" class="btn btn-primary" />
+                <input type="submit" value="Previous" class="btn-primary store-next-prev-button" />
                     </form>
             }
             @if (Model.PaginatedPieces.HasNextPage)
             {
-                <li>
                     <form method="GET" asp-controller="Home" asp-action="Store">
                         <input type="hidden" name="pageNumber" value=@(Model.PaginatedPieces.PageIndex + 1) class="w-100" />
-                        <input type="hidden" name="sort" value='@Context.Request.Query["sortOrder"]' class="w-100" />
+                        <input type="hidden" name="sortOrder" value='@Context.Request.Query["sortOrder"]' class="w-100" />
                         <input type="hidden" name="storeitemtype" value='@Context.Request.Query["storeitemtype"]' class="w-100" />
-                        <input type="submit" value="Next" class="btn btn-primary"/>
+                <input type="submit" value="Next" class="btn-primary store-next-prev-button" />
                     </form>
-            </li>
             } else if (Model.PaginatedSets.HasNextPage)
             {
-                <li>
                     <form method="GET" asp-controller="Home" asp-action="Store">
                         <input type="hidden" name="pageNumber" value=@(Model.PaginatedSets.PageIndex + 1) class="w-100" />
-                        <input type="hidden" name="sort" value='@Context.Request.Query["sortOrder"]' class="w-100" />
+                        <input type="hidden" name="sortOrder" value='@Context.Request.Query["sortOrder"]' class="w-100" />
                         <input type="hidden" name="storeitemtype" value='@Context.Request.Query["storeitemtype"]' class="w-100" />
-                        <input type="submit" value="Next" class="btn btn-primary" />
+                <input type="submit" value="Next" class="btn-primary store-next-prev-button" />
                     </form>
-                </li>
             }
-            <li>
-                <p>Page: @Context.Request.Query["pageNumber"]</p>
-            </li>
-        </ul>
-    </nav>
+            <br/>
+    </div>
+                <em>Page: @Context.Request.Query["pageNumber"]</em>
+
 </div>
-
-@functions {
-    private string GetTypeName(int typeId)
-    {
-        return typeId switch
-        {
-            1 => "Enemies",
-            2 => "Maps",
-            3 => "Characters",
-            4 => "Shops & Interactables",
-            _ => "Misc"
-        };
-    }
-}
-
