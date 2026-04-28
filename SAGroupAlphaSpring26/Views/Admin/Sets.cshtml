@@ -1,7 +1,8 @@
-﻿@model IEnumerable<Set>
+﻿@using System.Text
+@model IEnumerable<Set>
 @{
     // This is for the string to show that represents the piece in the set.
-    string piecesToShow = "";
+    StringBuilder stringBuilder = new();
 }
 <div>
     <p>
@@ -25,9 +26,11 @@
                     {
                         foreach(var piece in item.PiecesList)
                         {
-                        piecesToShow += $"{piece.Piece.Name}, ";    
+                        // piecesToShow += $"{piece.Piece.Name}, ";   
+                        stringBuilder.Append($"{piece.Piece.Name}, ");
                         }
-                        <p>@piecesToShow</p>
+                        <p>@stringBuilder.ToString()</p>
+                        stringBuilder.Clear();
                     }
                     else
                     {
