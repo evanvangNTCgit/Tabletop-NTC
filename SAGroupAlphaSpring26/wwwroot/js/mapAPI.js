@@ -42,8 +42,8 @@ export const saveTokenPositions = (tokenData, sessionId, tokensToDelete) => {
             Y: parseFloat(token.y) || 0,
             zIndex: parseInt(token.zIndex) || 1,
             Visibility: !!token.isVisible,
-            Name: token.name || "",
-            Notes: token.notes || ""
+            Name: token.name != null ? String(token.name) : "",
+            Notes: token.notes != null ? String(token.notes) : ""
         }));
 
         console.log("Sending token updates to server:", updates);

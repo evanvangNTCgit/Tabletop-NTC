@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -65,53 +65,58 @@
             <!-- If user is logged in and is an admin... -->
             @if (User.Identity!.IsAuthenticated && User.IsInRole("Admin"))
             {
-                <div class="user-greeting">Hello, @User.Identity.Name</div>
+                <li>
+                    <div class="user-greeting">Hello, @User.Identity.Name</div>
+                </li>
 
-                <div class="admin-section">
+                <li>
+                    <div class="admin-section">
+                        <div class="dropdown">
+                            <a class="admin-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" id="adminDropdown1">
+                                <span>Admin</span> <i class="bi bi-caret-down-fill"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="adminDropdown1">
+                                <li>
+                                    <a asp-controller="Admin" asp-action="Index" class="dropdown-item" role="button">Admin Dashboard</a>
+                                </li>
+                                <li>
+                                    <a asp-controller="Admin" asp-action="Pieces" class="dropdown-item" role="button">Pieces</a>
+                                </li>
+                                <li>
+                                    <a asp-controller="Admin" asp-action="PieceTypes" class="dropdown-item" role="button">Piece Types</a>
+                                </li>
+                                <li>
+                                    <a asp-controller="Admin" asp-action="Sets" class="dropdown-item" role="button">Sets</a>
+                                </li>
+                                <li>
+                                    <a asp-controller="Admin" asp-action="Purchases" class="dropdown-item" role="button">Purchases</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li>
                     <div class="dropdown">
-                        <a class="admin-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" id="adminDropdown">
-                            <span>Admin</span> <i class="bi bi-caret-down-fill"></i>
+                        <a class="admin-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" id="adminDropdown2">
+                            <span>Report</span> <i class="bi-caret-down-fill"></i>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="adminDropdown">
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="adminDropdown2">
                             <li>
-                                <a asp-controller="Admin" asp-action="Index" class="dropdown-item" role="button">Admin Dashboard</a>
+                                <a class="dropdown-item" asp-controller="Report" asp-action="MostPurchasedPieces">
+                                    Most Purchased Pieces
+                                </a>
                             </li>
                             <li>
-                                <a asp-controller="Admin" asp-action="Pieces" class="dropdown-item" role="button">Pieces</a>
+                                <a class="dropdown-item" asp-controller="Report" asp-action="MostPurchasedSets">
+                                    Most Purchased Sets
+                                </a>
                             </li>
                             <li>
-                                <a asp-controller="Admin" asp-action="PieceTypes" class="dropdown-item" role="button">Piece Types</a>
+                                <a asp-controller="Admin" asp-action="PieceUsage" class="dropdown-item" role="button">Most Used Pieces</a>
                             </li>
-                            <li>
-                                <a asp-controller="Admin" asp-action="Sets" class="dropdown-item" role="button">Sets</a>
-                            </li>
-                            <li>
-                                <a asp-controller="Admin" asp-action="Purchases" class="dropdown-item" role="button">Purchases</a>
-                            </li>
-                            @* <li>
-                                <a asp-controller="Admin" asp-action="Purchases" class="dropdown-item" role="button">Purchases</a>
-                            </li> *@
                         </ul>
                     </div>
-                </div>
-                    <a class="admin-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" id="adminDropdown">
-                        <span>Report</span> <i class="bi bi-caret-down-fill"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="adminDropdown">
-                        <li>
-                            <a class="dropdown-item" asp-controller="Report" asp-action="MostPurchasedPieces">
-                                Most Purchased Pieces
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" asp-controller="Report" asp-action="MostPurchasedSets">
-                                Most Purchased Sets
-                            </a>
-                        </li>
-                    <li>
-                        <a asp-controller="Admin" asp-action="PieceUsage" class="dropdown-item" role="button">Most Used Pieces</a>
-                    </li>
-                    </ul>
+                </li>
             }
         </ul>
     </nav>
