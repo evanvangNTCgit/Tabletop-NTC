@@ -4,23 +4,22 @@
 <link rel="stylesheet" href="~/css/map-general.css" asp-append-version="true" />
 
 <div class="map-toolbar">
-    @* <div class="zoom-controls">
-        <button id="zoom-in" class="zoom-btn button-primary">+</button>
-        <button id="zoom-out" class="zoom-btn">-</button>
-        <span id="zoom-level" style="font-size: 0.9rem; margin: 0 10px;">1x</span>
-        <button id="zoom-reset" class="zoom-btn button-primary">1:1</button>
-    </div> *@
-    <button id="btn-save" class="button-primary">Save Changes</button>
-    <a asp-controller="Home" asp-action="Index" class="button-primary">Cancel</a>
-    <button id="btn-toggle-token-info" class="button-primary">Token Info</button>
-    <button id="btn-toggle-notes" class="button-primary">Session Notes</button>
-    <a asp-controller="Map"
-           asp-action="Playerview"
-           target="_blank"
-           asp-route-id="@Model.CurrentSession.Id"
-           class="button-success player-view-btn">
-        Player View
-    </a>
+    <div class="toolbar-group">
+        <button id="btn-save" class="button-primary">Save Changes</button>
+        <a asp-controller="Home" asp-action="Index" class="button-primary">Cancel</a>
+    </div>
+
+    <div class="toolbar-group">
+        <button id="btn-toggle-token-info" class="button-primary">Token Info</button>
+        <button id="btn-toggle-notes" class="button-primary">Session Notes</button>
+        <a asp-controller="Map"
+               asp-action="Playerview"
+               target="_blank"
+               asp-route-id="@Model.CurrentSession.Id"
+               class="button-success player-view-btn">
+            Player View
+        </a>
+    </div>
 </div>
 
 @* I created a wrapper div for the map and piece bar. *@
