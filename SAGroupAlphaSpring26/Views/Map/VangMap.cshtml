@@ -12,6 +12,8 @@
     </div> *@
     <button id="btn-save" class="button-primary">Save Changes</button>
     <a asp-controller="Home" asp-action="Index" class="button-primary">Cancel</a>
+    <button id="btn-toggle-token-info" class="button-primary">Token Info</button>
+    <button id="btn-toggle-notes" class="button-primary">Session Notes</button>
     <a asp-controller="Map"
            asp-action="Playerview"
            target="_blank"
@@ -112,6 +114,18 @@
 
             <div class="token-info-button-container">
                 <button id="token-info-delete" class="btn btn-danger token-info-delete-btn">Delete Token</button>
+            </div>
+        </div>
+    </div>
+
+    @* Session Notes Panel *@
+    <div class="session-notes-panel" id="session-notes-panel">
+        <h4 class="token-info-header">Session Notes</h4>
+        <div class="token-info-content" style="flex-grow: 1; gap: 5px;">
+            <textarea id="session-notes-textarea" class="session-notes-textarea">@Model.CurrentSession?.Notes</textarea>
+            
+            <div class="token-info-button-container">
+                <button id="btn-save-notes" class="btn btn-success" style="width: 100%;">Save Notes</button>
             </div>
         </div>
     </div>
