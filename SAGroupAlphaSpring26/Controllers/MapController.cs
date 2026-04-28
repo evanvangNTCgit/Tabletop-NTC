@@ -76,7 +76,7 @@ namespace SAGroupAlphaSpring26.Controllers
         {
             if (model == null || model.SessionId <= 0) return BadRequest("Invalid session notes data.");
 
-            var session = _context.Sessions.Find(model.SessionId);
+            var session = _dataService.GetSession(model.SessionId);
             if (session != null)
             {
                 session.Notes = model.Notes ?? "";
