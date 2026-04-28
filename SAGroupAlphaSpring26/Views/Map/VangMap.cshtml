@@ -23,11 +23,11 @@
 
 @* I created a wrapper div for the map and piece bar. *@
 
-<div class="map-layout-wrapper map-container" style="--zoom: 1; transform: scale(var(--zoom)); transform-origin: top left; height: 90vh; overflow: hidden;">
+<div class="map-layout-wrapper map-container" style="--zoom: 1; transform: scale(var(--zoom));">
 
     @* I moved the piece bar before the map board. *@
     <div class="piece-bar">
-        <h4 style="color: white; padding: 10px; font-size: 0.9rem;">Collection</h4>
+        <h4 class="collection-header">Collection</h4>
         <div class="token-list">
             @foreach (var piece in Model.PlayablePieces)
             {
@@ -54,18 +54,17 @@
     </div>
 
     <!-- https://stackoverflow.com/questions/26438388/maintain-div-aspect-ratio-according-to-height -->
-        <div class="map-container"
+        <div class="map-container vang-map-board"
              id="map-board"
-             style="position: relative; height: auto; width: 100%; align-self: center; justify-self: center; max-height: 90vh; max-width: 90vh; aspect-ratio: 1 / 1;"
              data-role="dm">
 
-             <img src="@Model.MapImagePath" style="width: 100%; height: 100%; display: block;"/>
+             <img src="@Model.MapImagePath" class="vang-map-bg-image"/>
 
             @foreach (var token in Model.Tokens.Where(t => t.Piece?.PieceType?.Name != "Map"))
             {
                     <img src="@(string.IsNullOrEmpty(token.Piece?.ImagePath) ? "/images/BetaMap1.png" : token.Piece.ImagePath)"
                          class="draggable-token @(!token.Visibility ? "dmOpacityToggle" : "")"
-                         style="position: absolute; left: @(token.X)%; top: @(token.Y)%; z-index: @token.ZIndex; width: 5%;"
+                         style="left: @(token.X)%; top: @(token.Y)%; z-index: @token.ZIndex;"
                          id="token-placed-@token.Id"
                          data-tokenid="@token.Id"
                          data-pieceid="@token.PieceID"
@@ -83,32 +82,36 @@
         </div>
 
     @* Token Information Panel *@
-    <div class="token-info-panel" id="token-info-panel" style="display: none;">
-        <h4 style="color: white; padding: 10px; font-size: 1.1rem; border-bottom: 1px solid #4a4a4a; margin-bottom: 10px; text-align:center;">Token Info</h4>
+    <div class="token-info-panel" id="token-info-panel">
+        <h4 class="token-info-header">Token Info</h4>
         
-        <div style="padding: 0 10px; display: flex; flex-direction: column; gap: 15px;">
-            <div style="display: flex; justify-content: center;">
-                <img id="token-info-image" src="" alt="Token Graphic" style="width: 80px; height: 80px; object-fit: contain; border-radius: 8px; border: 2px solid #D4AF37;"/>
+        <div class="token-info-content">
+            <div class="token-info-image-container">
+                <img id="token-info-image" src="" alt="Token Graphic" />
             </div>
 
             <div>
-                <label for="token-info-name" style="color: #f4e4bc; font-size: 0.9rem;">Name:</label>
-                <input type="text" id="token-info-name" class="form-control" style="background: #0a0a0a; color: #fff; border: 1px solid #4a4a4a; border-radius: 4px; padding: 5px; width: 100%;" />
+                <label for="token-info-name" class="token-info-label">Name:</label>
+                <input type="text" id="token-info-name" class="form-control token-info-input" />
             </div>
 
             <div>
-                <label for="token-info-zindex" style="color: #f4e4bc; font-size: 0.9rem;">Z-Index:</label>
-                <input type="number" id="token-info-zindex" min="0" class="form-control" style="background: #0a0a0a; color: #fff; border: 1px solid #4a4a4a; border-radius: 4px; padding: 5px; width: 100%;" />
+                <label for="token-info-zindex" class="token-info-label">Z-Index:</label>
+                <input type="number" id="token-info-zindex" min="0" class="form-control token-info-input" />
             </div>
 
             <div>
-                <label for="token-info-notes" style="color: #f4e4bc; font-size: 0.9rem;">Notes:</label>
-                <textarea id="token-info-notes" class="form-control" style="background: #0a0a0a; color: #fff; border: 1px solid #4a4a4a; border-radius: 4px; padding: 5px; width: 100%; min-height: 60px; resize: vertical;"></textarea>
+                <label for="token-info-notes" class="token-info-label">Notes:</label>
+                <textarea id="token-info-notes" class="form-control token-info-input token-info-textarea"></textarea>
             </div>
 
-            <div style="display:flex; align-items:center; gap: 10px; margin-top:5px;">
-                <label for="token-info-visibility" style="color: #f4e4bc; font-size: 0.9rem; margin:0;">Is Visible:</label>
-                <input type="checkbox" id="token-info-visibility" style="transform: scale(1.3); accent-color: #D4AF37; margin:0;"/>
+            <div class="token-info-checkbox-container">
+                <label for="token-info-visibility" class="token-info-checkbox-label">Is Visible:</label>
+                <input type="checkbox" id="token-info-visibility" class="token-info-checkbox"/>
+            </div>
+
+            <div class="token-info-button-container">
+                <button id="token-info-delete" class="btn btn-danger token-info-delete-btn">Delete Token</button>
             </div>
         </div>
     </div>
