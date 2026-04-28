@@ -42,8 +42,8 @@ export const saveTokenPositions = (tokenData, sessionId, tokensToDelete) => {
             Y: parseFloat(token.y) || 0,
             zIndex: parseInt(token.zIndex) || 1,
             Visibility: !!token.isVisible,
-            Name: token.name || "",
-            Notes: token.notes || ""
+            Name: token.name != null ? String(token.name) : "",
+            Notes: token.notes != null ? String(token.notes) : ""
         }));
 
         console.log("Sending token updates to server:", updates);
@@ -54,6 +54,13 @@ export const saveTokenPositions = (tokenData, sessionId, tokensToDelete) => {
             contentType: 'application/json',
             data: JSON.stringify(updates)
         });
+    }).then(() => {
+        // Also save the session notes
+        const notesTextArea = document.getElementById('session-notes-textarea');
+        if (notesTextArea && sessionId) {
+            return saveSessionNotes(sessionId, notesTextArea.value);
+        }
+        return $.Deferred().resolve();
     }).then(() => {
         const bc = new BroadcastChannel('map_channel');
         bc.postMessage({ action: 'reload' });
@@ -66,5 +73,22 @@ export const saveTokenPositions = (tokenData, sessionId, tokensToDelete) => {
             saveBtn.disabled = false;
             saveBtn.innerText = "Save Positions";
         }
+    });
+};
+
+/**
+ * Saves just the session notes to the C# Backend.
+ * @param {number} sessionId - The current active session ID
+ * @param {string} notes - The session notes string
+ */
+export const saveSessionNotes = (sessionId, notes) => {
+    return $.ajax({
+        url: '/Map/SaveSessionNotes',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            SessionId: parseInt(sessionId),
+            Notes: notes
+        })
     });
 };

@@ -4,21 +4,22 @@
 <link rel="stylesheet" href="~/css/map-general.css" asp-append-version="true" />
 
 <div class="map-toolbar">
-    @* <div class="zoom-controls">
-        <button id="zoom-in" class="zoom-btn button-primary">+</button>
-        <button id="zoom-out" class="zoom-btn">-</button>
-        <span id="zoom-level" style="font-size: 0.9rem; margin: 0 10px;">1x</span>
-        <button id="zoom-reset" class="zoom-btn button-primary">1:1</button>
-    </div> *@
-    <button id="btn-save" class="button-primary">Save Changes</button>
-    <a asp-controller="Home" asp-action="Index" class="button-primary">Cancel</a>
-    <a asp-controller="Map"
-           asp-action="Playerview"
-           target="_blank"
-           asp-route-id="@Model.CurrentSession.Id"
-           class="button-success player-view-btn">
-        Player View
-    </a>
+    <div class="toolbar-group">
+        <button id="btn-save" class="button-primary">Save Changes</button>
+        <a asp-controller="Home" asp-action="Index" class="button-primary">Cancel</a>
+    </div>
+
+    <div class="toolbar-group">
+        <button id="btn-toggle-token-info" class="button-primary">Token Info</button>
+        <button id="btn-toggle-notes" class="button-primary">Session Notes</button>
+        <a asp-controller="Map"
+               asp-action="Playerview"
+               target="_blank"
+               asp-route-id="@Model.CurrentSession.Id"
+               class="button-success player-view-btn">
+            Player View
+        </a>
+    </div>
 </div>
 
 @* I created a wrapper div for the map and piece bar. *@
@@ -112,6 +113,18 @@
 
             <div class="token-info-button-container">
                 <button id="token-info-delete" class="btn btn-danger token-info-delete-btn">Delete Token</button>
+            </div>
+        </div>
+    </div>
+
+    @* Session Notes Panel *@
+    <div class="session-notes-panel" id="session-notes-panel">
+        <h4 class="token-info-header">Session Notes</h4>
+        <div class="token-info-content" style="flex-grow: 1; gap: 5px;">
+            <textarea id="session-notes-textarea" class="session-notes-textarea">@Model.CurrentSession?.Notes</textarea>
+            
+            <div class="token-info-button-container">
+                <button id="btn-save-notes" class="btn btn-success" style="width: 100%;">Save Notes</button>
             </div>
         </div>
     </div>

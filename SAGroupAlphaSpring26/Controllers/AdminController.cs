@@ -349,7 +349,7 @@ namespace SAGroupAlphaSpring26.Controllers
             }
 
             [HttpPost("AddSet")]
-            public async Task<IActionResult> AddSet(SetViewModel svm)
+            public IActionResult AddSet(SetViewModel svm)
             {
                 if (!ModelState.IsValid || svm.SelectedPieceIds == null || svm.SelectedPieceIds.Count == 0)
                 {
