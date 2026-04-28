@@ -171,7 +171,7 @@ namespace SAGroupAlphaSpring26.Services
                 .Include(p => p.PieceType).ToList();
         }
 
-        public void CreateSet(Set set, List<int> pieceIds)
+        public Set CreateSet(Set set, List<int> pieceIds)
         {
             try
             {
@@ -184,6 +184,8 @@ namespace SAGroupAlphaSpring26.Services
                 }
 
                 _dataContext.SaveChanges();
+
+                return set;
             }
             catch (Exception e)
             {
@@ -262,12 +264,13 @@ namespace SAGroupAlphaSpring26.Services
         }
 
         // used to update a piece, specifically it's price and description, as name should stay the same.
-        public void UpdatePiece(Piece piece)
+        public Piece UpdatePiece(Piece piece)
         {
             try
             {
                 this._dataContext.Pieces.Update(piece);
                 this._dataContext.SaveChanges();
+                return piece;
             }
             catch (Exception e)
             {

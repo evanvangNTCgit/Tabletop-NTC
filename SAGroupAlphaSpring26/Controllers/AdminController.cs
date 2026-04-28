@@ -93,7 +93,13 @@ namespace SAGroupAlphaSpring26.Controllers
                     pvm.Piece!.ImagePath = $"/images/{pvm.Piece.ImagePath}";
                 }
 
-                this._dataService.AddPiece(pvm.Piece!);
+                Piece pieceThatWasAdded = this._dataService.AddPiece(pvm.Piece!);
+                int pieceId = pieceThatWasAdded.Id;
+
+
+                // return RedirectToAction($"Piece/{pieceId.ToString()}", "Home");
+                // Use simply redirect since ASP.NET will rewrite / into %2 within the redirecttoaction function,
+                return Redirect($"/Piece/{pieceId}");
             }
             catch
             {
@@ -101,10 +107,6 @@ namespace SAGroupAlphaSpring26.Controllers
                 // Goes to index action in home controller.
                 return RedirectToAction("Index", "Home");
             }
-
-            // And then redirect the user back to the products
-            // However not here currently so just index
-            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet("AddPieceType")]
@@ -127,7 +129,7 @@ namespace SAGroupAlphaSpring26.Controllers
             {
                 this._dataService.AddPieceType(pt);
 
-                return RedirectToAction("Index", "Home");
+                return View(nameof(PieceTypes));
             }
             catch (Exception e)
             {
@@ -256,8 +258,13 @@ namespace SAGroupAlphaSpring26.Controllers
                     pvm.Piece.ImagePath = $"/images/{pvm.Piece.ImagePath}";
                 }
 
-                this._dataService.UpdatePiece(pvm.Piece!);
-                return RedirectToAction("Index", "Home");
+                Piece pieceThatWasUpdated = this._dataService.UpdatePiece(pvm.Piece!);
+
+
+                int pieceId = pieceThatWasUpdated.Id;
+                // return RedirectToAction($"Piece/{pieceId.ToString()}", "Home");
+                // Use simply redirect since ASP.NET will rewrite / into %2 within the redirecttoaction function,
+                return Redirect($"/Piece/{pieceId}");
             }
             catch
             {
@@ -298,7 +305,7 @@ namespace SAGroupAlphaSpring26.Controllers
                 return View(this._dataService.GetPieces());
             }
 
-[HttpGet("Sets")]
+        [HttpGet("Sets")]
         public IActionResult Sets() 
         {
             return View(this._dataService.GetAllSets());
@@ -312,7 +319,7 @@ namespace SAGroupAlphaSpring26.Controllers
         }
 
             // Adding a parameter for ID so we know what piece type to edit.
-[HttpGet("edit-piecetype/{id:int}")]
+            [HttpGet("edit-piecetype/{id:int}")]
             public IActionResult EditPieceType(int id)
             {
                 return View(_dataService.GetPieceType(id));
@@ -359,8 +366,9 @@ namespace SAGroupAlphaSpring26.Controllers
 
                 try
                 {
-                    this._dataService.CreateSet(svm.NewSet!, svm.SelectedPieceIds);
-                    return RedirectToAction("Index", "Home");
+                    Set setAdded = this._dataService.CreateSet(svm.NewSet!, svm.SelectedPieceIds);
+                int SetId = setAdded.Id;
+                    return Redirect($"/Set/{SetId}");
                 }
                 catch (Exception e)
                 {
