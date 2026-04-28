@@ -4,6 +4,10 @@
     font-family: 'Knights Quest';
     src: url('../fonts/Knights_Quest.ttf') format('truetype');
 }
+main {
+    font-variant-numeric: proportional-nums;
+}
+
 
 body {
     background-image: url('../images/Paper-Background.jpg');
@@ -15,6 +19,7 @@ body {
     color: #111827;
     /* dark text for tan paper bg */
     letter-spacing: 2px;
+    font-variant-numeric: proportional-nums;
 }
 
 h1,
