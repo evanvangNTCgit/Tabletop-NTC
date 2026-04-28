@@ -199,9 +199,10 @@ namespace SAGroupAlphaSpring26.Controllers
 
                 SetToEdit.PiecesList = piecesToAdd;
 
-                this._dataService.UpdateSet(SetToEdit);
+                Set setUpdated = this._dataService.UpdateSet(SetToEdit);
 
-                return RedirectToAction("Index", "Home");
+                int SetId = setUpdated.Id;
+                return Redirect($"/Set/{SetId}");
             }
             catch
             {

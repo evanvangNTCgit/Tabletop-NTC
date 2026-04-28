@@ -278,7 +278,7 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
-        public void UpdateSet(Set set)
+        public Set UpdateSet(Set set)
         {
             try
             {
@@ -301,6 +301,8 @@ namespace SAGroupAlphaSpring26.Services
                 this._dataContext.Update(set);
 
                 this._dataContext.SaveChanges();
+
+                return set;
             }
             catch (Exception ex)
             {
