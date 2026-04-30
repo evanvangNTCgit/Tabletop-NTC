@@ -171,7 +171,7 @@ namespace SAGroupAlphaSpring26.Services
                 .Include(p => p.PieceType).ToList();
         }
 
-        public void CreateSet(Set set, List<int> pieceIds)
+        public Set CreateSet(Set set, List<int> pieceIds)
         {
             try
             {
@@ -184,6 +184,8 @@ namespace SAGroupAlphaSpring26.Services
                 }
 
                 _dataContext.SaveChanges();
+
+                return set;
             }
             catch (Exception e)
             {
@@ -291,16 +293,49 @@ public User AddUser(User user)
         }
 
         // used to update a piece, specifically it's price and description, as name should stay the same.
-        public void UpdatePiece(Piece piece)
+        public Piece UpdatePiece(Piece piece)
         {
             try
             {
                 this._dataContext.Pieces.Update(piece);
                 this._dataContext.SaveChanges();
+                return piece;
             }
             catch (Exception e)
             {
                 throw new Exception($"Error updating piece {piece.Id}: {e.Message}");
+            }
+        }
+
+        public Set UpdateSet(Set set)
+        {
+            try
+            {
+                // First get the old piecesets for that set and delete them.
+                List<PieceSets> oldPieceSets = this._dataContext.PieceSets
+                    .Where(ps => ps.SetId == set.Id)
+                    .ToList();
+
+                foreach(PieceSets oldPieceSet in oldPieceSets)
+                {
+                    this._dataContext.Remove(oldPieceSet);
+                }
+
+                // Now we can add the new piecesets.
+                foreach(PieceSets newPieceSets in set.PiecesList)
+                {
+                    this._dataContext.PieceSets.Add(newPieceSets);
+                }
+
+                this._dataContext.Update(set);
+
+                this._dataContext.SaveChanges();
+
+                return set;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to update set\n{ex.Message}");
             }
         }
 
@@ -614,43 +649,69 @@ public User AddUser(User user)
         {
             try
             {
-                // Get pieces from the cart
+                // First get the users cart items and cart item sets.
                 var cartItems = this.GetCartItems(userId);
-                foreach (var item in cartItems)
-                {
-                    // If user doesn't already own it, add it
-                    if (!this._dataContext.UserPieces.Any(up => up.UserId == userId && up.PieceId == item.PieceId))
-                    {
-                        this._dataContext.UserPieces.Add(new UserPieces { UserId = userId, PieceId = item.PieceId });
-                    }
-                    // Archive the cart item
-                    item.IsArchived = true;
-                    this._dataContext.Update(item);
-                }
-
-                // Get sets from the cart
-                // We need to retrieve the sets with the PiecesList included to get the PieceIds
                 var cartSets = this._dataContext.CartItemSets
                     .Where(cis => cis.UserId == userId && cis.IsArchived == false)
                     .Include(cis => cis.Set)
                     .ThenInclude(s => s!.PiecesList)
                     .ToList();
 
-                foreach (var setItem in cartSets)
+                // We can iterate over a list of pieces, then add it to user cart.
+                List<Piece> pieces = new();
+
+                foreach (CartItem p in cartItems)
                 {
-                    // Add all pieces from the set to the user account
-                    if (setItem.Set != null && setItem.Set.PiecesList != null)
+                    if (p.Piece != null)
                     {
-                        foreach (var pieceSet in setItem.Set.PiecesList)
+                        if (pieces.Contains(p.Piece))
+                            continue;
+
+                        pieces.Add(p.Piece);
+                    }
+
+                    // Now archive/remove the cart item.
+                    p.IsArchived = true;
+                }
+                foreach (CartItemSet cis in cartSets)
+                {
+                    // If the set or pieces list is null for some reason just go to next iteration.
+                    if (cis.Set == null || cis.Set.PiecesList == null)
+                        continue;
+
+                    // Now for each set in the cart iterate over the pieces list and add to the pieces list.
+                    foreach (PieceSets p in cis.Set.PiecesList)
+                    {
+                        if (p.Piece != null)
                         {
-                            if (!this._dataContext.UserPieces.Any(up => up.UserId == userId && up.PieceId == pieceSet.PieceId))
-                            {
-                                this._dataContext.UserPieces.Add(new UserPieces { UserId = userId, PieceId = pieceSet.PieceId });
-                            }
+                            // If the pieces already contains the piece, continue.
+                            if (pieces.Contains(p.Piece))
+                                continue;
+
+                            pieces.Add(p.Piece);
                         }
                     }
-                    setItem.IsArchived = true;
-                    this._dataContext.Update(setItem);
+
+                    // Now archive/remove the cart item.
+                    cis.IsArchived = true;
+                }
+
+                // Now get the users current pieces...
+                List<Piece> usersCurrentPieces = this.GetUserPieces(userId);
+
+                // Now check to see what pieces user already owns and remove that off of the piece list made from reading user cart.
+                foreach (Piece p in pieces)
+                {
+                    if (usersCurrentPieces.Contains(p))
+                    {
+                        pieces.Remove(p);
+                    }
+                }
+
+                // NOW we can add to the UserPieces table.
+                foreach (Piece p in pieces)
+                {
+                    this._dataContext.UserPieces.Add(new UserPieces { PieceId = p.Id, UserId = userId });
                 }
 
                 this._dataContext.SaveChanges();
@@ -688,11 +749,13 @@ public User AddUser(User user)
             return _dataContext.SaleLines
                 .Include(sl => sl.Piece)
                 .ThenInclude(p => p.PieceType)
+                .Where(pi => pi.SetID == null) // I would like the ones that are not in a set.
                 .GroupBy(sl => sl.PieceID)
                 .Select(g => new PurchaseStatsViewModel
                 {
                     Piece = g.First().Piece,
-                    TotalPurchased = g.Count()
+                    TotalPurchased = g.Count(),
+                    PurchasedAmountTotal = g.Sum(g => g.Price)
                 })
                 .OrderByDescending(x => x.TotalPurchased)
                 .ToList();
@@ -701,6 +764,7 @@ public User AddUser(User user)
         public List<SetStatsViewModel> GetSetPurchaseStats()
         {
             return _dataContext.SaleLines
+                .Where(sl => sl.SetID != null || sl.SetID > 0)
                 .Include(sl => sl.Set)
                 .ThenInclude(s => s.PiecesList)
                 .ThenInclude(pl => pl.Piece)
@@ -709,7 +773,9 @@ public User AddUser(User user)
                 {
                     Set = g.First().Set,
                     // Count unique SaleIDs associated with this SetID
-                    TotalPurchased = g.Select(sl => sl.SaleID).Distinct().Count()
+                    TotalPurchased = g.Select(sl => sl.SaleID).Distinct().Count(),
+
+                    PurchasedAmountTotal = g.Sum(g => g.Price)
                 })
                 .OrderByDescending(x => x.TotalPurchased)
                 .ToList();

@@ -71,6 +71,23 @@ namespace SAGroupAlphaSpring26.Controllers
             return Ok();
         }
 
+        [HttpPost("Map/SaveSessionNotes")]
+        public IActionResult SaveSessionNotes([FromBody] SAGroupAlphaSpring26.Models.SessionNotesUpdateModel model)
+        {
+            if (model == null || model.SessionId <= 0) return BadRequest("Invalid session notes data.");
+
+            var session = _dataService.GetSession(model.SessionId);
+            if (session != null)
+            {
+                session.Notes = model.Notes ?? "";
+                session.LastUpdated = DateTime.Now;
+                _context.SaveChanges();
+                return Ok();
+            }
+
+            return NotFound("Session not found.");
+        }
+
         //[HttpGet("Map/GetTokens/{sessionId}")]
         //public IActionResult GetTokens(int sessionId)
         //{

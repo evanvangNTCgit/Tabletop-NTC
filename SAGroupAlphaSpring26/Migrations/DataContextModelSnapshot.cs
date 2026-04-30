@@ -349,7 +349,7 @@ namespace SAGroupAlphaSpring26.Migrations
                         {
                             Id = 1,
                             IsArchived = false,
-                            LastUpdated = new DateTime(2026, 4, 14, 11, 48, 5, 721, DateTimeKind.Local).AddTicks(1127),
+                            LastUpdated = new DateTime(2026, 4, 25, 14, 58, 6, 804, DateTimeKind.Local).AddTicks(7719),
                             Name = "Test Session",
                             Notes = "Local Test Session",
                             UserId = 1
@@ -358,7 +358,7 @@ namespace SAGroupAlphaSpring26.Migrations
                         {
                             Id = 2,
                             IsArchived = false,
-                            LastUpdated = new DateTime(2026, 4, 14, 11, 48, 5, 721, DateTimeKind.Local).AddTicks(1131),
+                            LastUpdated = new DateTime(2026, 4, 25, 14, 58, 6, 804, DateTimeKind.Local).AddTicks(7723),
                             Name = "Test Session 2",
                             Notes = "Local Test Session 2",
                             UserId = 1
@@ -372,9 +372,6 @@ namespace SAGroupAlphaSpring26.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Discount")
-                        .HasColumnType("decimal(5,4)");
 
                     b.Property<bool>("IsArchived")
                         .HasColumnType("bit");
@@ -394,7 +391,6 @@ namespace SAGroupAlphaSpring26.Migrations
                         new
                         {
                             Id = 1,
-                            Discount = 0.1m,
                             IsArchived = false,
                             Name = "Evans Beginner Pack",
                             Price = 0.00m
@@ -593,7 +589,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             FirstName = "Local",
                             IsAdmin = true,
                             LastName = "DM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOo4mhuDm2R7rOsGbN9glHmkDUMZIeM+e2OHLgDPzcVBI2x7V3GMOF4uEr2FLLAN1w=="
+                            PasswordHash = "AQAAAAIAAYagAAAAEKlUfZW0M90IVWp+rS8P741RjV0eTwyqv3VMrlUSmWydJ33AVt02GStShKlKhTU1qg=="
                         },
                         new
                         {
@@ -602,7 +598,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             FirstName = "Evan",
                             IsAdmin = false,
                             LastName = "Vang",
-                            PasswordHash = "AQAAAAIAAYagAAAAED/gmvbkG61Zn3N16R4ClGqB85/9PxJ3Db+XsqA+LzgNWyUGiv+Uvf1uvRX65CjTzA=="
+                            PasswordHash = "AQAAAAIAAYagAAAAELQQXzDxRORX+ouA3P+HMhgr6Lih9Mgk7H5AhwM/WH4UOkTHZaxp3rCO4bvsSh8S8g=="
                         });
                 });
 

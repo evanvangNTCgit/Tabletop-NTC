@@ -1,5 +1,7 @@
 ﻿@model List<PurchaseStatsViewModel>
 
+<h1>Most Purchased Pieces</h1>
+<i style="background-color: white; padding: 1px;">This does not include sets, please see most purchased sets for that info</i>
 <div class="row row-cols-1 row-cols-md-3 g-4">
     @foreach (var item in Model)
     {
@@ -10,6 +12,8 @@
                     <img class="card-img-top set-card-img" src="@item.Piece.ImagePath" />
                     <p class="card-text text-muted">
                         Total Purchased: <strong>@item.TotalPurchased</strong>
+                        <br/>
+                        Total Profit: <strong>$@item.PurchasedAmountTotal</strong>
                     </p>
                 </div>
             </div>

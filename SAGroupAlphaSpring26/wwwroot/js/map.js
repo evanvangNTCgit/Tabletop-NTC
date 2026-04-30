@@ -3,7 +3,7 @@
  * Now imports from PlayerMapFunctions.js for player view related logic, and MapAPI.js for tracking token data.
  */
 import { repositionToken, toggleTokenInvisibility, syncBoard, removeToken, updateZIndex, setTokenVisibility } from "./PlayerMapFunctions.js?v=999";
-import { saveTokenPositions } from "./MapApi.js?v=999";
+import { saveTokenPositions, saveSessionNotes } from "./mapAPI.js?v=1001";
 
 // Stores session ID, gets from Razor view.
 const sessionId = window.sessionId;
@@ -53,7 +53,7 @@ if (playerView === 'player') {
             case ("setVisibility"):
                 setTokenVisibility(e.data);
                 break;
-                // Updates the z index of a token for the playerview.
+            // Updates the z index of a token for the playerview.
             case ("updateZIndex"):
                 updateZIndex(e.data);
                 break;
@@ -347,7 +347,7 @@ if (!isPlayerView) {
             const zB = parseInt(b.zIndex) || 1;
 
             // Failsafe for tokens with the same z-index...
-            if (zA === zB) { 
+            if (zA === zB) {
                 // convert to strings.
                 const zAString = String(a.id || "");
                 const zBString = String(b.id || "");
@@ -453,6 +453,75 @@ if (!isPlayerView) {
                     isVisible: isVis,
                     action: 'setVisibility'
                 });
+            }
+        });
+
+        document.getElementById('token-info-delete')?.addEventListener('click', (e) => {
+            if (selectedTokenId && tokenData[selectedTokenId]) {
+                const htmlId = selectedTokenId;
+                const dbId = tokenData[selectedTokenId].id;
+
+                // If it's a real token (not temp), stage it for DB deletion
+                if (dbId && !String(htmlId).startsWith('temp-')) {
+                    tokensToDelete.push(dbId);
+                }
+
+                // Remove from local data
+                delete tokenData[htmlId];
+                const tokenEl = document.getElementById(htmlId);
+                if (tokenEl) tokenEl.remove();
+
+                selectedTokenId = null;
+                const panel = document.getElementById('token-info-panel');
+                if (panel) panel.style.display = 'none';
+
+                // Broadcast deletion to player view.
+                bc.postMessage({
+                    action: 'tokenDelete',
+                    tokenId: htmlId
+                });
+            }
+        });
+
+        // Toggle Session Notes Panel
+        document.getElementById('btn-toggle-notes')?.addEventListener('click', () => {
+            const notesPanel = document.getElementById('session-notes-panel');
+            if (notesPanel) {
+                notesPanel.style.display = (notesPanel.style.display === 'flex') ? 'none' : 'flex';
+            }
+        });
+
+        // Toggle Token Info Panel
+        document.getElementById('btn-toggle-token-info')?.addEventListener('click', () => {
+            const tokenPanel = document.getElementById('token-info-panel');
+            if (tokenPanel) {
+                tokenPanel.style.display = (tokenPanel.style.display === 'block') ? 'none' : 'block';
+            }
+        });
+
+        // Save only session notes
+        document.getElementById('btn-save-notes')?.addEventListener('click', (e) => {
+            const notesTextArea = document.getElementById('session-notes-textarea');
+            if (notesTextArea && sessionId) {
+                const btn = e.target;
+                const originalText = btn.innerText;
+                btn.innerText = "Saving...";
+                btn.disabled = true;
+
+                saveSessionNotes(sessionId, notesTextArea.value)
+                    .done(() => {
+                        btn.innerText = "Saved!";
+                        setTimeout(() => {
+                            btn.innerText = originalText;
+                            btn.disabled = false;
+                        }, 2000);
+                    })
+                    .fail((xhr) => {
+                        console.error("Save session notes error:", xhr.responseText);
+                        alert('Failed to save session notes.');
+                        btn.innerText = originalText;
+                        btn.disabled = false;
+                    });
             }
         });
     });

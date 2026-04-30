@@ -147,6 +147,31 @@ namespace SAGroupAlphaSpring26.Controllers
             // User.FindFirst(ClaimTypes.NameIdentifier)?.Value
         }
 
+        [HttpGet("user-pieces-inventory")]
+        public IActionResult UserPieceInventory()
+        {
+            int userId = 0;
+            try
+            {
+                userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            }
+            catch
+            {
+                // User likely does not have a cookie, account, or is not logged in yet...
+            }
+
+            if (userId > 0)
+            {
+                List<Piece> model = this._dataService.GetUserPieces(userId);
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
+        // User of course must be already authorized to log out...
 // User of course must be already authorized to log out...
         [HttpGet("sign-out")]
         [Route("sign-out"), Authorize]
