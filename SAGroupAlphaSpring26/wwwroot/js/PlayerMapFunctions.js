@@ -15,6 +15,8 @@ export const repositionToken = (broadCastData) => {
         token.id = broadCastData.tokenId;
         token.src = broadCastData.tokenImgSrc;
         token.classList.add('draggable-token');
+        token.classList.add('ui-draggable');
+        token.classList.add('ui-draggable-handle');
         token.style.position = 'absolute';
         token.style.zIndex = 99;
         document.getElementById('map-board').appendChild(token);
@@ -24,8 +26,9 @@ export const repositionToken = (broadCastData) => {
         // % based positioning.
         token.style.left = `${broadCastData.tokenLeftPerc}%`;
         token.style.top = `${broadCastData.tokenTopPerc}%`;
-        token.style.width = '5%';
-        token.style.height = 'auto';
+        token.classList.add('draggable-token');
+        token.classList.add('ui-draggable');
+        token.classList.add('ui-draggable-handle');
     }
 };
 
@@ -83,6 +86,8 @@ export const syncBoard = (allTokens) => {
             tokenImg.id = htmlId;
             tokenImg.src = token.src;
             tokenImg.classList.add('draggable-token');
+            tokenImg.classList.add('ui-draggable');
+            tokenImg.classList.add('ui-draggable-handle');
             tokenImg.style.position = 'absolute';
             tokenImg.style.zIndex = parseInt(token.zIndex) || 99;
             board.appendChild(tokenImg);
@@ -91,8 +96,9 @@ export const syncBoard = (allTokens) => {
         if (tokenImg) {
             tokenImg.style.left = `${token.x}%`;
             tokenImg.style.top = `${token.y}%`;
-            tokenImg.style.width = '5%';
-            tokenImg.style.height = 'auto';
+            tokenImg.classList.add('draggable-token');
+            tokenImg.classList.add('ui-draggable');
+            tokenImg.classList.add('ui-draggable-handle');
             tokenImg.style.zIndex = parseInt(token.zIndex) || 99;
 
             if (!token.isVisible) {

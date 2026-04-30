@@ -218,6 +218,9 @@ if (!isPlayerView) {
         tokenImg.src = data.src;
 
         tokenImg.classList.add('draggable-token');
+        tokenImg.classList.add('ui-draggable');
+        tokenImg.classList.add('ui-draggable-handle');
+        tokenImg.classList.add('map-piece');
         tokenImg.dataset.tokenid = data.id;
         tokenImg.dataset.pieceid = data.pieceId;
         tokenImg.draggable = true;
@@ -225,8 +228,6 @@ if (!isPlayerView) {
         tokenImg.style.position = 'absolute';
         tokenImg.style.left = `${data.x}%`;
         tokenImg.style.top = `${data.y}%`;
-        tokenImg.style.width = `5%`;
-        tokenImg.style.height = `auto`;
         tokenImg.style.zIndex = data.zIndex || 99;
 
         mapBoard.appendChild(tokenImg);
