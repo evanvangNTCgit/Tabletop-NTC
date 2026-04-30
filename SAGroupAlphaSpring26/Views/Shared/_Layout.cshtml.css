@@ -11,7 +11,7 @@ html, body {
 
 main {
     flex: 1; /* push footer down */
-    padding-top: 80px; /* space from sticky navbar */
+    padding-top: 10px; /* space from sticky navbar */
     padding-bottom: 80px; /* space for footer */
 }
 
@@ -51,7 +51,7 @@ main {
 /* Main content */
 .main-content {
     flex: 1;
-    padding: 2rem;
+    padding: 5px;
     background-color: #F5DEB3;
     margin-left: 220px;
 }
