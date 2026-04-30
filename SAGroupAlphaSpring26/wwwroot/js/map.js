@@ -218,6 +218,9 @@ if (!isPlayerView) {
         tokenImg.src = data.src;
 
         tokenImg.classList.add('draggable-token');
+        tokenImg.classList.add('ui-draggable');
+        tokenImg.classList.add('ui-draggable-handle');
+        tokenImg.classList.add('map-piece');
         tokenImg.dataset.tokenid = data.id;
         tokenImg.dataset.pieceid = data.pieceId;
         tokenImg.draggable = true;
