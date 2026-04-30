@@ -240,7 +240,7 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
-        public User AddUser(User user)
+public User AddUser(User user)
         {
             try
             {
@@ -251,6 +251,35 @@ namespace SAGroupAlphaSpring26.Services
             catch (Exception e)
             {
                 throw new Exception($"Failed to add user {user.FirstName}, {e.Message}");
+            }
+        }
+
+// Updates an existing user's information
+        public void UpdateUser(User user)
+        {
+            try
+            {
+                this._dataContext.Users.Update(user);
+                this._dataContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Failed to update user {user.FirstName}, {e.Message}");
+            }
+        }
+
+        // Updates a user's password
+        public void UpdateUserPassword(User user, string newPasswordHash)
+        {
+            try
+            {
+                user.PasswordHash = newPasswordHash;
+                this._dataContext.Users.Update(user);
+                this._dataContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Failed to update user password {user.FirstName}, {e.Message}");
             }
         }
 

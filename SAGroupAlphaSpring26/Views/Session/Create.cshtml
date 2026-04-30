@@ -1,69 +1,70 @@
 ﻿@model SAGroupAlphaSpring26.Models.Session
-
 @{
     ViewData["Title"] = "Session Creation";
 }
 
-<body>
-    <div b-pbe4b1c5lp class="main-content">
-
-        <div class="text-center mb-5">
-            <h1 class="mb-0">Session Creation</h1>
-        </div>
-        <form asp-action="Create" method="post">
-            <div class="card-body">
-
-                <!-- Session Name-->
-                <div class="text-center mb-5">
-                    <p class="lead">Session Name</p>
-                    <div class="p-3 border rounded bg-light">
-                        <textarea asp-for="Name"
-                                  class="form-control"
-                                  placeholder="Enter Name of your session. (Required)"
-                                  style="min-height: 50px; border: none; background: transparent;"></textarea>
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <!-- Card Header - Gold background with dark text to match D&D theme -->
+            <div class="card-header" style="background: linear-gradient(180deg, #d4af37, #b8962e); border-bottom: 2px solid #f5d76e;">
+                <h2 class="mb-0 text-center" style="color: #1a120d;">Session Creation</h2>
+            </div>
+            
+            <!-- Card Body - Contains the form with parchment background -->
+            <div class="card-body" style="background-color: #F5DEB3;">
+                <form asp-action="Create" method="post">
+                    <!-- Session Name -->
+                    <div class="mb-4">
+                        <label asp-for="Name" class="form-label lead fw-bold"></label>
+                        <div class="p-3 border rounded" style="background-color: #fff8dc; border-color: #4a4a4a;">
+                            <textarea asp-for="Name" 
+                                      class="form-control" 
+                                      placeholder="Enter the name of your session (Required)" 
+                                      style="min-height: 50px; border: none; background: transparent; font-family: sans-serif;"></textarea>
+                        </div>
                         <span asp-validation-for="Name" class="text-danger"></span>
                     </div>
                     
-                    <!-- Session Notes-->
-                <div class="text-center mb-5">
-                    <p class="lead">Session Notes</p>
-                    <div class="p-3 border rounded bg-light">
-                        <textarea asp-for="Notes"
-                                  class="form-control"
-                                  placeholder="Enter session notes(optional)"
-                                  style="min-height: 150px; border: none; background: transparent;"></textarea>
-
+                    <!-- Session Notes -->
+                    <div class="mb-4">
+                        <label asp-for="Notes" class="form-label lead fw-bold">Session Notes</label>
+                        <div class="p-3 border rounded" style="background-color: #fff8dc; border-color: #4a4a4a;">
+                            <textarea asp-for="Notes" 
+                                      class="form-control" 
+                                      placeholder="Enter session notes (optional)" 
+                                      style="min-height: 150px; border: none; background: transparent; font-family: sans-serif;"></textarea>
+                        </div>
                     </div>
-                </div>
 
-                <div class="text-center mb-5">
-                    <h5>Map Selection</h5>
-                    <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px; width: 100%;">
-                        <!-- No Select Map Functions Available yet, just showing default dunction until later.-->
-                        <p>Default Dungeon Map will be assigned</p>
+                    <!-- Map Selection -->
+                    <div class="mb-4">
+                        <h5 class="fw-bold">Map Selection</h5>
+                        <div class="d-flex align-items-center justify-content-center" style="height: 200px; width: 100%; background: linear-gradient(180deg, #0a0a0a, #2a2a2a); border: 1px solid #4a4a4a; border-radius: 8px;">
+                            <p style="color: #F4E4BC;">Default Dungeon Map will be assigned</p>
+                        </div>
                     </div>
-                </div>
 
-                <div class="d-grid gap-2 col-6 mx-auto">
-                    <button type="submit" class="btn btn-success btn-lg">
-                        Create Session
-                    </button>
-                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
-                        Cancel
-                    </a>
-                </div>
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg" style="background: linear-gradient(180deg, #d4af37, #b8962e); border: 1px solid #f5d76e; color: #1a120d;">
+                            Create Session
+                        </button>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-dark">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
             </div>
-        </form>
-
-        <div class="card-footer text-muted text-center mt-4">
-            Created on: @DateTime.Now.ToString("f")
+            
+            <!-- Card Footer -->
+            <div class="card-footer text-center" style="background-color: #F5DEB3; border-top: 1px solid #4a4a4a;">
+                <p class="mb-0 text-muted">Created on: @DateTime.Now.ToString("f")</p>
+            </div>
         </div>
     </div>
+</div>
 
-    @section Scripts {
-        @{
-            await Html.RenderPartialAsync("_ValidationScriptsPartial");
-        }
-    }
-
-</body>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

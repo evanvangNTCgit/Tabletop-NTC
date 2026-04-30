@@ -147,7 +147,7 @@ namespace SAGroupAlphaSpring26.Controllers
             // User.FindFirst(ClaimTypes.NameIdentifier)?.Value
         }
 
-        // User of course must be already authorized to log out...
+// User of course must be already authorized to log out...
         [HttpGet("sign-out")]
         [Route("sign-out"), Authorize]
         public async Task<IActionResult> Logout()
@@ -156,6 +156,114 @@ namespace SAGroupAlphaSpring26.Controllers
                 CookieAuthenticationDefaults.AuthenticationScheme);
 
             return RedirectToAction("Index", "Home");
+        }
+
+        // Edit Profile - requires authorization
+        [HttpGet("edit")]
+        [Authorize]
+        public IActionResult Edit()
+        {
+            // Get the current user's information
+            int userId = _dataService.GetUserId(User);
+            var user = _dataService.GetUser(userId);
+
+            var editViewModel = new EditProfileViewModel
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                EmailAddress = user.Email
+            };
+
+            return View(editViewModel);
+        }
+
+        // Edit Profile POST - requires authorization
+        [HttpPost("edit")]
+        [Authorize]
+        public IActionResult Edit(EditProfileViewModel editViewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(editViewModel);
+            }
+
+            // Get the current user
+            int userId = _dataService.GetUserId(User);
+            var user = _dataService.GetUser(userId);
+
+            // Check if email is being changed to an existing email
+            if (user.Email != editViewModel.EmailAddress)
+            {
+                var existingUser = _dataService.GetUser(editViewModel.EmailAddress);
+                if (existingUser != null)
+                {
+                    ModelState.AddModelError("Error", "An account already exists with that email address.");
+                    return View(editViewModel);
+                }
+            }
+
+            // Update user information
+            user.FirstName = editViewModel.FirstName;
+            user.LastName = editViewModel.LastName;
+            user.Email = editViewModel.EmailAddress;
+
+            _dataService.UpdateUser(user);
+
+            // Update the claim for the user's name
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            if (claimsIdentity != null)
+            {
+                var nameClaim = claimsIdentity.FindFirst(ClaimTypes.Name);
+                if (nameClaim != null)
+                {
+                    claimsIdentity.RemoveClaim(nameClaim);
+                    claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, user.FirstName));
+                }
+            }
+
+TempData["SuccessMessage"] = "Your profile has been updated successfully.";
+            return RedirectToAction("Edit");
+        }
+
+        // Change Password - requires authorization
+        [HttpGet("change-password")]
+        [Authorize]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        // Change Password POST - requires authorization
+        [HttpPost("change-password")]
+        [Authorize]
+        public IActionResult ChangePassword(ChangePasswordViewModel viewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+
+            // Get the current user
+            int userId = _dataService.GetUserId(User);
+            var user = _dataService.GetUser(userId);
+
+            // Verify current password
+            PasswordHasher<string> passwordHasher = new PasswordHasher<string>();
+            PasswordVerificationResult passwordVerificationResult =
+                passwordHasher.VerifyHashedPassword(null!, user.PasswordHash, viewModel.CurrentPassword);
+
+            if (passwordVerificationResult == PasswordVerificationResult.Failed)
+            {
+                ModelState.AddModelError("CurrentPassword", "Current password is incorrect.");
+                return View(viewModel);
+            }
+
+            // Hash and update the new password
+            string newPasswordHash = passwordHasher.HashPassword(null!, viewModel.NewPassword);
+            _dataService.UpdateUserPassword(user, newPasswordHash);
+
+            TempData["SuccessMessage"] = "Your password has been changed successfully.";
+            return RedirectToAction("ChangePassword");
         }
 
         [HttpGet("access-denied")]
