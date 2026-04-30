@@ -248,5 +248,5 @@ nav {
     margin-top: auto;
     position: fixed;
     bottom: 0;
-    z-index: 2000;
+    z-index: 900;
 }
