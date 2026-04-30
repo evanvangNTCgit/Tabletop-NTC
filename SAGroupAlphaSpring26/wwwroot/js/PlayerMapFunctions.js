@@ -86,8 +86,8 @@ export const syncBoard = (allTokens) => {
             tokenImg.id = htmlId;
             tokenImg.src = token.src;
             tokenImg.classList.add('draggable-token');
-            token.classList.add('ui-draggable');
-            token.classList.add('ui-draggable-handle');
+            tokenImg.classList.add('ui-draggable');
+            tokenImg.classList.add('ui-draggable-handle');
             tokenImg.style.position = 'absolute';
             tokenImg.style.zIndex = parseInt(token.zIndex) || 99;
             board.appendChild(tokenImg);
@@ -97,8 +97,8 @@ export const syncBoard = (allTokens) => {
             tokenImg.style.left = `${token.x}%`;
             tokenImg.style.top = `${token.y}%`;
             tokenImg.classList.add('draggable-token');
-            token.classList.add('ui-draggable');
-            token.classList.add('ui-draggable-handle');
+            tokenImg.classList.add('ui-draggable');
+            tokenImg.classList.add('ui-draggable-handle');
             tokenImg.style.zIndex = parseInt(token.zIndex) || 99;
 
             if (!token.isVisible) {
