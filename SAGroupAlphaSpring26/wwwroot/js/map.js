@@ -81,6 +81,100 @@ if (playerView === 'player') {
 
 // DM VIEW LOGIC
 if (!isPlayerView) {
+    // Undo / Redo functionality
+    const MAX_HISTORY = 50;
+    let undoStack = [];
+    let redoStack = [];
+
+    // Updates the undo / redo buttons.
+    const updateUndoRedoButtons = () => {
+        const btnUndo = document.getElementById('btn-undo');
+        const btnRedo = document.getElementById('btn-redo');
+        // Disables the buttons if the stack is empty.
+        if (btnUndo) btnUndo.disabled = undoStack.length === 0;
+        if (btnRedo) btnRedo.disabled = redoStack.length === 0;
+    };
+
+    const saveStateToHistory = () => {
+        undoStack.push({
+            tokenData: JSON.parse(JSON.stringify(tokenData)),
+            tokensToDelete: [...tokensToDelete]
+        });
+        if (undoStack.length > MAX_HISTORY) {
+            undoStack.shift();
+        }
+        redoStack = [];
+        updateUndoRedoButtons();
+    };
+
+    const applyState = (state) => {
+        tokenData = JSON.parse(JSON.stringify(state.tokenData));
+        tokensToDelete = [...state.tokensToDelete];
+
+        $('.draggable-token').remove();
+
+        for (const key in tokenData) {
+            const data = tokenData[key];
+            const tokenImg = document.createElement('img');
+            tokenImg.id = key;
+            tokenImg.src = data.src;
+
+            tokenImg.classList.add('draggable-token', 'ui-draggable', 'ui-draggable-handle');
+            tokenImg.dataset.tokenid = data.id;
+            tokenImg.dataset.pieceid = data.pieceId;
+            tokenImg.dataset.name = data.name || "";
+            tokenImg.dataset.notes = data.notes || "";
+            tokenImg.draggable = true;
+
+            tokenImg.style.position = 'absolute';
+            tokenImg.style.left = `${data.x}%`;
+            tokenImg.style.top = `${data.y}%`;
+            tokenImg.style.zIndex = data.zIndex || 99;
+
+            if (!data.isVisible) {
+                tokenImg.classList.add("dmOpacityToggle");
+            }
+
+            mapBoard.appendChild(tokenImg);
+
+            $(`#${tokenImg.id}`).draggable(draggablePieceInfo);
+            attachContextMenu(tokenImg);
+        }
+
+        if (selectedTokenId && !tokenData[selectedTokenId]) {
+            selectedTokenId = null;
+            const panel = document.getElementById('token-info-panel');
+            if (panel) panel.style.display = 'none';
+        } else {
+            updateInfoPanel();
+        }
+
+        bc.postMessage({
+            action: 'syncAll',
+            allTokens: tokenData
+        });
+
+        updateUndoRedoButtons();
+    };
+
+    const undo = () => {
+        if (undoStack.length === 0) return;
+        redoStack.push({
+            tokenData: JSON.parse(JSON.stringify(tokenData)),
+            tokensToDelete: [...tokensToDelete]
+        });
+        applyState(undoStack.pop());
+    };
+
+    const redo = () => {
+        if (redoStack.length === 0) return;
+        undoStack.push({
+            tokenData: JSON.parse(JSON.stringify(tokenData)),
+            tokensToDelete: [...tokensToDelete]
+        });
+        applyState(redoStack.pop());
+    };
+
     // switched to a bc .addEventListener because I think they are being overwritten...
     // DM VIEW BROADCAST LOGIC - Listens for the player view to 'requestSync', then sends the local tokenData to update the player view.
     bc.addEventListener('message', (e) => {
@@ -94,6 +188,7 @@ if (!isPlayerView) {
         }
     });
 
+    // Initializes the map, adds event listeners to the tokens.
     document.addEventListener('DOMContentLoaded', () => {
         console.log('Hello! \nFrom -Mr. Vang');
 
@@ -126,6 +221,7 @@ if (!isPlayerView) {
             zIndex: 999
         });
 
+        // makes the tokens draggable.
         $('.draggable-token').draggable(draggablePieceInfo);
 
         // Sets map-board to a droppable area that accepts .sidebar-piece class.
@@ -142,6 +238,9 @@ if (!isPlayerView) {
                 // Sets percentages for the token positions
                 const leftPerc = (dropX / $board.width()) * 100;
                 const topPerc = (dropY / $board.height()) * 100;
+
+                // Saves the state to history for undo/redo functions.
+                saveStateToHistory();
 
                 // Build token data offline
                 const localTokenData = {
@@ -172,6 +271,9 @@ if (!isPlayerView) {
             over: function () { $(this).addClass('delete-hover'); },
             out: function () { $(this).removeClass('delete-hover'); },
             drop: function (event, ui) {
+
+                // Saves the state to history for undo/redo functions.
+                saveStateToHistory();
 
                 // Gets the onboard token id and then the database id (if it exists, temp tokens wouldn't have one.).
 
@@ -206,6 +308,9 @@ if (!isPlayerView) {
         // Attach event for each .draggable-token.
         document.querySelectorAll('.vangtokendiv, .draggable-token').forEach(attachContextMenu);
 
+        // Handles the undo / redo buttons.
+        document.getElementById('btn-undo')?.addEventListener('click', undo);
+        document.getElementById('btn-redo')?.addEventListener('click', redo);
 
         // Attaching the tokenData and Session ID to the Save button so we can save to our database when it is clicked.
         document.getElementById('btn-save')?.addEventListener('click', () => saveTokenPositions(tokenData, sessionId, tokensToDelete));
@@ -220,7 +325,7 @@ if (!isPlayerView) {
         tokenImg.classList.add('draggable-token');
         tokenImg.classList.add('ui-draggable');
         tokenImg.classList.add('ui-draggable-handle');
-        tokenImg.classList.add('map-piece');
+        // tokenImg.classList.add('map-piece'); // Removed to prevent overriding the 5% width constraint on board tokens
         tokenImg.dataset.tokenid = data.id;
         tokenImg.dataset.pieceid = data.pieceId;
         tokenImg.draggable = true;
@@ -279,6 +384,13 @@ if (!isPlayerView) {
             const topPerc = $(`#${event.target.id}`).position().top / $(`#map-board`).height() * 100;
             const leftPerc = $(`#${event.target.id}`).position().left / $(`#map-board`).width() * 100;
 
+            // Saves the state to history if the token was moved.
+            const oldX = tokenData[event.target.id].x;
+            const oldY = tokenData[event.target.id].y;
+            if (oldX !== leftPerc || oldY !== topPerc) {
+                saveStateToHistory();
+            }
+
             event.target.style.top = `${topPerc}%`;
             event.target.style.left = `${leftPerc}%`;
 
@@ -306,6 +418,9 @@ if (!isPlayerView) {
     const attachContextMenu = (token) => {
         token.addEventListener('contextmenu', (e) => {
             e.preventDefault();
+
+            // Saves the state to history for undo/redo functions.
+            saveStateToHistory();
             token.classList.toggle("dmOpacityToggle");
 
             const tId = token.id;
@@ -337,6 +452,9 @@ if (!isPlayerView) {
     // Function to bring a token to the front of the stack. (ontop of the other tokens)
     const bringToFront = (tokenId) => {
         if (!tokenData[tokenId]) return;
+
+        // Saves the state to history for undo/redo functions.
+        saveStateToHistory();
 
         // Sort all active tokens by their current Z-Indexes
         const tokensArray = Object.entries(tokenData).map(([key, val]) => {
@@ -401,11 +519,26 @@ if (!isPlayerView) {
 
     // Bind panel events
     document.addEventListener('DOMContentLoaded', () => {
+        // Saves the state to history for undo/redo functions. (for input fields)
+        document.getElementById('token-info-name')?.addEventListener('focus', (e) => {
+            if (selectedTokenId && tokenData[selectedTokenId]) {
+                saveStateToHistory();
+            }
+        });
+
+        // Update the token data when the name is changed.
         document.getElementById('token-info-name')?.addEventListener('input', (e) => {
             if (selectedTokenId && tokenData[selectedTokenId]) {
                 tokenData[selectedTokenId].name = e.target.value;
                 const tokenEl = document.getElementById(selectedTokenId);
                 if (tokenEl) tokenEl.dataset.name = e.target.value;
+            }
+        });
+
+        // Saves the state to history for undo/redo functions. (for input fields)
+        document.getElementById('token-info-notes')?.addEventListener('focus', (e) => {
+            if (selectedTokenId && tokenData[selectedTokenId]) {
+                saveStateToHistory();
             }
         });
 
@@ -419,8 +552,12 @@ if (!isPlayerView) {
 
         document.getElementById('token-info-zindex')?.addEventListener('change', (e) => {
             if (selectedTokenId && tokenData[selectedTokenId]) {
+                // Saves the state to history for undo/redo functions.
+                saveStateToHistory();
+
                 let newZ = Math.max(0, parseInt(e.target.value) || 0);
 
+                // Ensures the z-index is at least 1.
                 if (newZ <= 0) {
                     newZ = 1;
                 }
@@ -441,6 +578,8 @@ if (!isPlayerView) {
 
         document.getElementById('token-info-visibility')?.addEventListener('change', (e) => {
             if (selectedTokenId && tokenData[selectedTokenId]) {
+                // Saves the state to history for undo/redo functions.
+                saveStateToHistory();
                 let isVis = e.target.checked;
                 tokenData[selectedTokenId].isVisible = isVis;
                 const tokenEl = document.getElementById(selectedTokenId);
@@ -459,6 +598,9 @@ if (!isPlayerView) {
 
         document.getElementById('token-info-delete')?.addEventListener('click', (e) => {
             if (selectedTokenId && tokenData[selectedTokenId]) {
+
+                // Saves the state to history for undo/redo functions.
+                saveStateToHistory();
                 const htmlId = selectedTokenId;
                 const dbId = tokenData[selectedTokenId].id;
 
@@ -505,22 +647,22 @@ if (!isPlayerView) {
             const notesTextArea = document.getElementById('session-notes-textarea');
             if (notesTextArea && sessionId) {
                 const btn = e.target;
-                const originalText = btn.innerText;
-                btn.innerText = "Saving...";
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-journal-check"></i> Saving...';
                 btn.disabled = true;
 
                 saveSessionNotes(sessionId, notesTextArea.value)
                     .done(() => {
-                        btn.innerText = "Saved!";
+                        btn.innerHTML = '<i class="bi bi-check-circle"></i> Saved!';
                         setTimeout(() => {
-                            btn.innerText = originalText;
+                            btn.innerHTML = originalHTML;
                             btn.disabled = false;
                         }, 2000);
                     })
                     .fail((xhr) => {
                         console.error("Save session notes error:", xhr.responseText);
                         alert('Failed to save session notes.');
-                        btn.innerText = originalText;
+                        btn.innerHTML = originalHTML;
                         btn.disabled = false;
                     });
             }

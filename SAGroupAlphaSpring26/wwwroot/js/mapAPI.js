@@ -13,7 +13,7 @@ export const saveTokenPositions = (tokenData, sessionId, tokensToDelete) => {
     if (saveBtn) {
         if (saveBtn.disabled) return;
         saveBtn.disabled = true;
-        saveBtn.innerText = "Saving...";
+        saveBtn.innerHTML = '<i class="bi bi-save"></i> Saving...';
     }
 
     // create deletePromise, to ensure we delete tokens before the page reloads. 
@@ -71,7 +71,7 @@ export const saveTokenPositions = (tokenData, sessionId, tokensToDelete) => {
         alert('Critical Error during save. Check console.');
         if (saveBtn) {
             saveBtn.disabled = false;
-            saveBtn.innerText = "Save Positions";
+            saveBtn.innerHTML = '<i class="bi bi-save"></i> Save Changes';
         }
     });
 };
