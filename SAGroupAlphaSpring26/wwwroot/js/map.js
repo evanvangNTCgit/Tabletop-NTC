@@ -647,22 +647,22 @@ if (!isPlayerView) {
             const notesTextArea = document.getElementById('session-notes-textarea');
             if (notesTextArea && sessionId) {
                 const btn = e.target;
-                const originalText = btn.innerText;
-                btn.innerText = "Saving...";
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-journal-check"></i> Saving...';
                 btn.disabled = true;
 
                 saveSessionNotes(sessionId, notesTextArea.value)
                     .done(() => {
-                        btn.innerText = "Saved!";
+                        btn.innerHTML = '<i class="bi bi-check-circle"></i> Saved!';
                         setTimeout(() => {
-                            btn.innerText = originalText;
+                            btn.innerHTML = originalHTML;
                             btn.disabled = false;
                         }, 2000);
                     })
                     .fail((xhr) => {
                         console.error("Save session notes error:", xhr.responseText);
                         alert('Failed to save session notes.');
-                        btn.innerText = originalText;
+                        btn.innerHTML = originalHTML;
                         btn.disabled = false;
                     });
             }

@@ -37,9 +37,9 @@
                 <span id="zoom-level" style="font-size: 0.9rem; margin: 0 10px;">1x</span>
                 <button id="zoom-reset" class="zoom-btn button-primary">1 : 1</button>
             </div>
-            <button id="btn-undo" class="button-primary" disabled>Undo</button>
-            <button id="btn-redo" class="button-primary" disabled>Redo</button>
-            <button id="btn-save" class="button-primary">Save Positions</button>
+            <button id="btn-undo" class="button-primary" disabled title="Undo"><i class="bi bi-arrow-counterclockwise"></i></button>
+            <button id="btn-redo" class="button-primary" disabled title="Redo"><i class="bi bi-arrow-clockwise"></i></button>
+            <button id="btn-save" class="button-primary" title="Save Positions"><i class="bi bi-save"></i> Save Positions</button>
             <a asp-controller="Home" asp-action="Index" class="button-primary" target="_blank">Cancel</a>
             <!--added ?? 0 to get rid of the null warning.-->
             <a asp-controller="Map"

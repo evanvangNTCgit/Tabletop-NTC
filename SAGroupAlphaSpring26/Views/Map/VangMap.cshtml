@@ -5,9 +5,9 @@
 
 <div class="map-toolbar">
     <div class="toolbar-group">
-        <button id="btn-undo" class="button-primary" disabled>Undo</button>
-        <button id="btn-redo" class="button-primary" disabled>Redo</button>
-        <button id="btn-save" class="button-primary">Save Changes</button>
+        <button id="btn-undo" class="button-primary" disabled title="Undo"><i class="bi bi-arrow-counterclockwise"></i></button>
+        <button id="btn-redo" class="button-primary" disabled title="Redo"><i class="bi bi-arrow-clockwise"></i></button>
+        <button id="btn-save" class="button-primary" title="Save Positions"><i class="bi bi-save"></i> Save Changes</button>
         <a asp-controller="Home" asp-action="Index" class="button-primary">Cancel</a>
     </div>
 
@@ -126,7 +126,7 @@
             <textarea id="session-notes-textarea" class="session-notes-textarea">@Model.CurrentSession?.Notes</textarea>
             
             <div class="token-info-button-container">
-                <button id="btn-save-notes" class="btn btn-success" style="width: 100%;">Save Notes</button>
+                <button id="btn-save-notes" class="btn btn-success" style="width: 100%;"><i class="bi bi-journal-check"></i> Save Notes</button>
             </div>
         </div>
     </div>
