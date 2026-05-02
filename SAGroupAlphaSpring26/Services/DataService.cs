@@ -775,7 +775,7 @@ public User AddUser(User user)
                     // Count unique SaleIDs associated with this SetID
                     TotalPurchased = g.Select(sl => sl.SaleID).Distinct().Count(),
 
-                    PurchasedAmountTotal = g.Sum(g => g.Price)
+                    PurchasedAmountTotal = g.First().Set.Price * g.Select(sl => sl.SaleID).Distinct().Count()
                 })
                 .OrderByDescending(x => x.TotalPurchased)
                 .ToList();

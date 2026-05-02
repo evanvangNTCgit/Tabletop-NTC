@@ -146,26 +146,24 @@ namespace SAGroupAlphaSpring26.Controllers
                 // So just loop through all pieces in a set and make a saleline.
                 foreach(CartItemSet cartSet in userSets) 
                 {
-                    foreach(var piece in cartSet.Set.PiecesList) 
+                    if (cartSet.Set.PiecesList != null && cartSet.Set.PiecesList.Count > 0)
                     {
-                        // Using steam as a reference whenever you refund a bundle you have to do the whole bundle.
-                        // Thus I think a workaournd for sets is to set piece price to set price divided by set pieces amount
-                        // Ex: A set of 10 skeletons at $20
-                        // One Skeleton in the sale line can then just be $2
+                        foreach (var piece in cartSet.Set.PiecesList)
+                        {
+                            SaleLine saleLine = new();
 
-                        SaleLine saleLine = new();
+                            saleLine.PieceID = piece.PieceId;
+                            Piece piece1 = this._dataService.GetPiece(piece.PieceId);
 
-                        saleLine.PieceID = piece.PieceId;
-                        Piece piece1 = this._dataService.GetPiece(piece.PieceId);
+                            saleLine.Piece = piece1;
+                            // saleLine.Price = piece1.Price;
+                            saleLine.Price = piece.Set.Price / (decimal)piece.Set.PiecesList.Count();
+                            saleLine.Tax = saleLine.Price * 0.05m;
+                            saleLine.TotalCost = saleLine.Price + saleLine.Tax;
+                            saleLine.SetID = cartSet.SetId;
 
-                        saleLine.Piece = piece1;
-                        // saleLine.Price = piece1.Price;
-                        saleLine.Price = piece.Set.Price / (decimal)piece.Set.PiecesList.Count();
-                        saleLine.Tax = saleLine.Price * 0.05m;
-                        saleLine.TotalCost = saleLine.Price + saleLine.Tax;
-                        saleLine.SetID = cartSet.SetId;
-
-                        userSale.SaleLines.Add(saleLine);
+                            userSale.SaleLines.Add(saleLine);
+                        }
                     }
                 }
             }
