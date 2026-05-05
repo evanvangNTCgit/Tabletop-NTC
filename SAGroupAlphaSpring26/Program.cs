@@ -160,8 +160,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-var test = await CurrencyConverter.GetValueFrom("mxn", 99.99m);
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

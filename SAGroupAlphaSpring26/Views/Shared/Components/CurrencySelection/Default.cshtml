@@ -1,0 +1,20 @@
+﻿@model CurrencyViewModel
+
+<select onchange="handleUserCurrencySelection(this.value)">
+    @foreach (var currency in Model.Currencies)
+    {
+        <option value="@currency.Key">@currency.Key | @currency.Value</option>
+    }
+</select>
+
+<script>
+    const handleUserCurrencySelection = (value) => {
+        // alert(`${value}`);
+
+        const userURL = window.location.href;
+        // If user is in the store refresh page so they can see price change to currency.
+        if (userURL.includes('/Store')) {
+            location.reload();
+        }
+    }
+</script>
