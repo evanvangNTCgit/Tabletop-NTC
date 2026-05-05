@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using SAGroupAlphaSpring26.ApiServices;
 using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.Models;
 using SAGroupAlphaSpring26.Services;
@@ -63,7 +64,7 @@ namespace SAGroupAlphaSpring26.Controllers
         }
 
         [Route("Store")]
-        public IActionResult Store(string sortOrder, string filter, string storeitemtype, int pageNumber)
+        public async Task<IActionResult> Store(string sortOrder, string filter, string storeitemtype, int pageNumber)
         {
             ViewData["NameSort"] = (sortOrder == "name_asc") ? "name_desc" : "name_asc";
             ViewData["PriceSort"] = (sortOrder == "price_asc") ? "price_desc" : "price_asc";
@@ -121,6 +122,9 @@ namespace SAGroupAlphaSpring26.Controllers
                 default:
                     break;
             }
+
+            (sets, pieces) = await ConvertPrices(sets, pieces);
+
             if (pageNumber < 1)
             {
                 pageNumber = 1;
@@ -131,6 +135,34 @@ namespace SAGroupAlphaSpring26.Controllers
             return View(PaginatedStoreModel);
         }
 
+        private async Task<(List<Set>, List<Piece>)> ConvertPrices(List<Set> sets, List<Piece> pieces)
+        {
+            try
+            {
+                List<Set> convertedSets = sets;
+                List<Piece> convertedPieces = pieces;
+                string cookieValue = Request.Cookies["UserCurrencyValue"] ?? "usd";
+                if (sets.Count > 0 && sets != null)
+                {
+                    convertedSets = await CurrencyConverter.GetStoreItemsPriceConverted(sets, cookieValue);
+                }
+
+                if (pieces.Count > 0 && pieces != null)
+                {
+                    convertedPieces = await CurrencyConverter.GetStoreItemsPriceConverted(pieces, cookieValue);
+                }
+
+                return (convertedSets, convertedPieces);
+            }
+            catch (CurrencyCallException)
+            {
+                return (sets, pieces); // API not working just return the original list.
+            }
+            catch
+            {
+                throw;
+            }
+        }
         // Gets a specific piece by ID.
         [Route("Piece/{id}")]
         public IActionResult Piece(int id)
