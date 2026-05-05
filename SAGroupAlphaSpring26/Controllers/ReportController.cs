@@ -23,6 +23,7 @@ namespace SAGroupAlphaSpring26.Controllers
         public IActionResult MostPurchasedPieces() 
         {
             List<PurchaseStatsViewModel> saleLines = this._dataService.GetPiecePurchaseStats();
+            saleLines = saleLines.OrderByDescending(sl => sl.PurchasedAmountTotal).ToList();
 
             return View(saleLines);
         }
@@ -31,6 +32,7 @@ namespace SAGroupAlphaSpring26.Controllers
         public IActionResult MostPurchasedSets()
         {
             List<SetStatsViewModel> saleLines = this._dataService.GetSetPurchaseStats();
+            saleLines = saleLines.OrderByDescending(sl => sl.PurchasedAmountTotal).ToList();
 
             return View(saleLines);
         }
