@@ -2,7 +2,7 @@
 
 namespace SAGroupAlphaSpring26.Models
 {
-    public class Set
+    public class Set : IPricedItem
     {
         // ID for the sets. Used to group pieces for the marketplace and collections.
         public int Id { get; set; }

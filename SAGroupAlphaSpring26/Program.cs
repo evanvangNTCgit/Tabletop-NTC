@@ -2,10 +2,12 @@ global using SAGroupAlphaSpring26;
 global using SAGroupAlphaSpring26.Models;
 global using SAGroupAlphaSpring26.ViewModels;
 global using SAGroupAlphaSpring26.DTO;
+global using SAGroupAlphaSpring26.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
+using SAGroupAlphaSpring26.ApiServices;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -157,6 +159,8 @@ using (var scope = app.Services.CreateScope())
         }
     }
 }
+
+var test = await CurrencyConverter.GetValueFrom("mxn", 99.99m);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

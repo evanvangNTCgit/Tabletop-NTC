@@ -3,7 +3,7 @@
 namespace SAGroupAlphaSpring26.Models
 {
     // Represents a piece in the stores and collection. This is a "Template" used to create Tokens for the Map. Stored in Marketplace.
-    public class Piece
+    public class Piece : IPricedItem
     {
         // Piece ID.
         public int Id { get; set; }
