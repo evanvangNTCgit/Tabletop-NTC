@@ -62,18 +62,18 @@
                     </form>
                 </li>
 
-                <li>
+<li>
                     <a class="nav-button signin" asp-area="" asp-controller="Cart" asp-action="salehistory">
                         View Sale History
                     </a>
                 </li>
-                }
 
                 <li>
                     <a class="nav-button" asp-area="" asp-controller="Account" asp-action="Edit">
                         Edit Profile
                     </a>
                 </li>
+            }
 
             <!-- If user is logged in and is an admin... -->
             @if (User.Identity!.IsAuthenticated && User.IsInRole("Admin"))

@@ -1,6 +1,7 @@
 @model CartViewModel
-<h2>Cart</h2>
-
+<div class="saBackground">
+    <h2>Cart</h2>
+</div>
 @if (Model != null && (Model.Pieces.Count > 0 || Model.Sets.Count > 0))
 {
     <table class="table cart-table">
@@ -69,5 +70,5 @@
 }
 else
 {
-    <p>It looks like your cart is empty. You should really add something...</p>
+    <p class="saBackground">It looks like your cart is empty. You should really add something...</p>
 }
