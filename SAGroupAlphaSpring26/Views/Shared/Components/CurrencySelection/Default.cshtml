@@ -3,13 +3,27 @@
 <select onchange="handleUserCurrencySelection(this.value)">
     @foreach (var currency in Model.Currencies)
     {
+        @if(currency.Key != Model.CurrentChoice)
+        {
         <option value="@currency.Key">@currency.Key | @currency.Value</option>
+        }
+        else
+        {
+            <option value="@currency.Key" selected>@currency.Key | @currency.Value</option>
+        }
     }
 </select>
 
 <script>
     const handleUserCurrencySelection = (value) => {
         // alert(`${value}`);
+        fetch('/account/changeusercurrency', {
+            method: "POST",
+            body: JSON.stringify(value),
+            headers: {
+                "Content-type": "application/json"
+            }
+        })
 
         const userURL = window.location.href;
         // If user is in the store refresh page so they can see price change to currency.

@@ -297,5 +297,21 @@ TempData["SuccessMessage"] = "Your profile has been updated successfully.";
         {
             return View();
         }
+
+        [HttpPost("changeusercurrency")]
+        public IActionResult ChangeUserCurrency([FromBody]string currency)
+        {
+            if (string.IsNullOrEmpty(currency))
+            {
+                return StatusCode(400);
+            }
+
+            Response.Cookies.Append("UserCurrencyValue", currency, new CookieOptions
+            {
+                Expires = DateTime.UtcNow.AddDays(2),
+            });
+
+            return StatusCode(200);
+        }
     }
 }
