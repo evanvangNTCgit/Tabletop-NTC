@@ -16,8 +16,9 @@
                 case ("MXN"): // Mexican Pesos
                 case ("USD"): // US Dollars
                 case ("AUD"): // Australian Dollars
-                case ("CAN"): // Canadian Dollars
                     return "$";
+                case ("CAN"): // Canadian Dollars
+                    return "CAD$";
                 default:
                     return "$";
             }
