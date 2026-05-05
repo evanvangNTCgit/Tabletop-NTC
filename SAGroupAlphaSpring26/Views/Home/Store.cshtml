@@ -1,8 +1,10 @@
-﻿@* @model SAGroupAlphaSpring26.ViewModels.StoreViewModel *@
+﻿@using SAGroupAlphaSpring26.Services
 @model PaginatedStoreViewModel
 
 @{
     ViewData["Title"] = "Store Page";
+
+    string dollarsign = DollarSignService.DollarSignCurrency(Model.UserCurrency);
 }
 <div class="text-center justify-content-center" style="margin-bottom: 20px;">
     <h1>Welcome to @ViewBag.ApplicationName!</h1>
@@ -38,7 +40,7 @@
             <div class="store-item store-set-item">
                 <h3>@set.Name</h3>
                 <p>Pieces (@(set.PiecesList?.Count ?? 0)): @string.Join(", ", set.PiecesList?.Select(ps => ps.Piece.Name) ?? Enumerable.Empty<string>())</p>
-                    <p class="numberspacing">Total: $@set.Price.ToString("F2")</p>
+                    <p class="numberspacing">Total: @dollarsign@set.Price.ToString("F2")</p>
                 <div>
                     <a class="button-primary" asp-controller="Home" asp-action="Set" asp-route-id="@set.Id">View</a>
                 </div>
@@ -63,7 +65,7 @@
 
                     <h3>@piece.Name</h3>
                     <p>@piece.Description</p>
-                        <p class="numberspacing">Price: $@piece.Price</p>
+                        <p class="numberspacing">Price: @dollarsign@piece.Price</p>
                     <!-- <button class="button-primary">View</button> -->
                     <div>
                         <a class="button-primary" asp-controller="Home" asp-action="Piece" asp-route-id="@piece.Id">View</a>

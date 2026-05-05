@@ -132,6 +132,7 @@ namespace SAGroupAlphaSpring26.Controllers
 
             int pageSize = 4;
             var PaginatedStoreModel = new PaginatedStoreViewModel(PaginatedSetList.Create(model.Sets, pageNumber, pageSize), PaginatedPieceList.Create(model.Pieces, pageNumber, pageSize));
+            PaginatedStoreModel.UserCurrency = Request.Cookies["UserCurrencyValue"] ?? "usd";
             return View(PaginatedStoreModel);
         }
 

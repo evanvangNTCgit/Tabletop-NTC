@@ -6,6 +6,8 @@
 
         public PaginatedSetList PaginatedSets { get; private set; }
 
+        public string UserCurrency { get; set; } = "usd";
+
         public PaginatedStoreViewModel(PaginatedSetList PaginatedSets, PaginatedPieceList PaginatedPieces)
         {
             this.PaginatedPieces = PaginatedPieces;
