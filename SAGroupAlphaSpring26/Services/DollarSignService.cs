@@ -11,11 +11,12 @@
         {
             switch (currency.ToUpper())
             {
-                case ("EUR"):
+                case ("EUR"): // Euros
                     return "€";
-                case ("MXN"):
-                case ("USD"):
-                case ("AUD"):
+                case ("MXN"): // Mexican Pesos
+                case ("USD"): // US Dollars
+                case ("AUD"): // Australian Dollars
+                case ("CAN"): // Canadian Dollars
                     return "$";
                 default:
                     return "$";

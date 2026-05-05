@@ -36,7 +36,8 @@ namespace SAGroupAlphaSpring26.ApiServices
                     c => c.Key == "usd" || // US dollars
                     c.Key == "aud" || // Australian Dollars
                     c.Key == "mxn" || // Mexican Pesos
-                    c.Key == "eur" // Euros
+                    c.Key == "eur" || // Euros
+                    c.Key == "cad" // Candadian Dollars
                 ).ToDictionary<string, string>();
 
                 return currencies;
