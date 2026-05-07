@@ -107,10 +107,12 @@ if (!isPlayerView) {
         updateUndoRedoButtons();
     };
 
+    // Restores the state of the board.
     const applyState = (state) => {
         tokenData = JSON.parse(JSON.stringify(state.tokenData));
         tokensToDelete = [...state.tokensToDelete];
 
+        // Removes all tokens from the board.
         $('.draggable-token').remove();
 
         for (const key in tokenData) {
@@ -119,6 +121,7 @@ if (!isPlayerView) {
             tokenImg.id = key;
             tokenImg.src = data.src;
 
+            // Re-creates the tokens on the board.
             tokenImg.classList.add('draggable-token', 'ui-draggable', 'ui-draggable-handle');
             tokenImg.dataset.tokenid = data.id;
             tokenImg.dataset.pieceid = data.pieceId;
@@ -131,6 +134,7 @@ if (!isPlayerView) {
             tokenImg.style.top = `${data.y}%`;
             tokenImg.style.zIndex = data.zIndex || 99;
 
+            // Hides tokens for the player view if they are not visible.
             if (!data.isVisible) {
                 tokenImg.classList.add("dmOpacityToggle");
             }
@@ -314,6 +318,76 @@ if (!isPlayerView) {
 
         // Attaching the tokenData and Session ID to the Save button so we can save to our database when it is clicked.
         document.getElementById('btn-save')?.addEventListener('click', () => saveTokenPositions(tokenData, sessionId, tokensToDelete));
+
+        // Clear Board functionality
+        document.getElementById('btn-clear-board')?.addEventListener('click', () => {
+            if (confirm("Are you sure you want to clear all tokens from the board? This will be saved when you click the Save button.")) {
+
+                // Saves the state to history for undo/redo functions.
+                saveStateToHistory();
+
+                // Stage all tokens for deletion
+                for (const htmlId in tokenData) {
+                    const dbId = tokenData[htmlId].id;
+                    if (dbId && !String(htmlId).startsWith('temp-')) {
+                        tokensToDelete.push(dbId);
+                    }
+                }
+
+                // Clear DOM tokens
+                $('.draggable-token').remove();
+
+                // Clear local state
+                tokenData = {};
+                selectedTokenId = null;
+                const panel = document.getElementById('token-info-panel');
+                if (panel) panel.style.display = 'none';
+
+                // Broadcast clear to player view by sending an empty syncAll
+                bc.postMessage({
+                    action: 'syncAll',
+                    allTokens: {}
+                });
+            }
+        });
+
+        // Change Map functionality
+        document.getElementById('map-select')?.addEventListener('change', (e) => {
+            const pieceId = e.target.value;
+            // Checks if the piece ID is valid.
+            if (!pieceId) return;
+
+            // Calls dataservice to update the map background.
+            fetch('/Map/UpdateMapBackground', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ SessionId: sessionId, PieceId: parseInt(pieceId) })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Checks if the response data is valid.
+                    if (data && data.imagePath) {
+                        // Updates the map background in the UI.
+                        const bgImage = document.querySelector('.vang-map-bg-image');
+                        if (bgImage) bgImage.src = data.imagePath;
+
+                        // Tell player view to reload for the new map background.
+                        bc.postMessage({ action: 'reload' });
+                    } else {
+                        alert("Failed to update map background.");
+                    }
+                    // Resets the dropdown.
+                    e.target.value = "";
+                })
+                .catch(error => {
+                    console.error("Error updating map background:", error);
+                    alert("Error updating map background.");
+                    // Resets the dropdown.
+                    e.target.value = "";
+                });
+        });
     });
 
     // Requires us to pass in the tokenData
