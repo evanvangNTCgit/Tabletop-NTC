@@ -16,12 +16,13 @@
                 <option value="@piece.Id">@piece.Name</option>
             }
         </select>
-        <a asp-controller="Home" asp-action="Index" class="button-primary ms-2">Cancel</a>
+        <a id="btn-cancel" asp-controller="Home" asp-action="Index" class="button-primary ms-2">Cancel</a>
     </div>
 
     <div class="toolbar-group">
         <button id="btn-toggle-token-info" class="button-primary">Token Info</button>
         <button id="btn-toggle-notes" class="button-primary">Session Notes</button>
+        <button id="btn-toggle-delete" class="button-primary" title="Toggle Token Delete Area"><i class="bi bi-trash"></i> Token Delete Area</button>
         <a asp-controller="Map"
                asp-action="Playerview"
                target="_blank"
@@ -86,8 +87,8 @@
                          onerror="this.onerror=null; this.src='/images/default.png';" />
             }
 
-        @* Drag tokens into this area to delete them. *@
-        <div id="delete-area" class="delete-drop-zone">
+        @* Drag tokens into this area to delete them. Initially hidden. *@
+        <div id="delete-area" class="delete-drop-zone" style="display: none;">
             <p>Drop to Remove</p>
         </div>
         </div>

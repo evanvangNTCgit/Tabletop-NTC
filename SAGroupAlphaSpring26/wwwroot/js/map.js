@@ -741,5 +741,21 @@ if (!isPlayerView) {
                     });
             }
         });
+
+        // Toggle token delete area.
+        document.getElementById('btn-toggle-delete')?.addEventListener('click', () => {
+            // Shows the token delete area and changes the button text.
+            const deleteArea = document.getElementById('delete-area');
+            if (deleteArea) {
+                deleteArea.style.display = (deleteArea.style.display === 'none') ? 'flex' : 'none';
+            }
+        });
+
+        // Cancel button confirmation message before leaving the page.
+        document.getElementById('btn-cancel')?.addEventListener('click', (e) => {
+            if (!confirm("Are you sure you wish to leave this page? Consider saving before you go!")) {
+                e.preventDefault();
+            }
+        });
     });
 }

@@ -88,6 +88,7 @@ namespace SAGroupAlphaSpring26.Services
                     .Where(s => s.IsArchived == false)
                 .Include(s => s.Tokens)
                     .ThenInclude(t => t.Piece)
+                        .ThenInclude(p => p!.PieceType)
                 .FirstOrDefault(s => s.Id == sessionId);
 
                 if (session == null)
