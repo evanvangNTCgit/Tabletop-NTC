@@ -1,10 +1,9 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SAGroupAlphaSpring26.Data;
+using SAGroupAlphaSpring26.Models;
 using SAGroupAlphaSpring26.Services;
-using System.Security.Claims;
-
+using SAGroupAlphaSpring26.ViewModels;
 
 namespace SAGroupAlphaSpring26.Controllers
 {
@@ -13,12 +12,10 @@ namespace SAGroupAlphaSpring26.Controllers
     public class MapController : Controller
     {
         private readonly DataService _dataService;
-        private readonly DataContext _context;
 
-        public MapController(DataService dataService, DataContext context)
+        public MapController(DataService dataService)
         {
             _dataService = dataService;
-            _context = context;
         }
 
         // Stores positions of Tokens on the map.
@@ -27,52 +24,12 @@ namespace SAGroupAlphaSpring26.Controllers
         {
             if (updates == null || !updates.Any()) return BadRequest("No token updates provided.");
 
-            foreach (var update in updates)
-            {
-                if (int.TryParse(update.Id, out int realTokenId))
-                {
-                    var token = _context.Tokens.Find(realTokenId);
-                    if (token != null)
-                    {
-                        token.X = update.X;
-                        token.Y = update.Y;
-                        token.ZIndex = update.zIndex;
-                        token.Visibility = update.Visibility;
-                        token.Name = update.Name;
-                        token.Notes = update.Notes;
-
-                        var session = _dataService.GetSession(token.SessionId);
-                        if (session != null) session.LastUpdated = DateTime.Now;
-                    }
-                }
-                else if(update.Id != null && update.Id.StartsWith("temp-"))
-                {
-                    var piece = _dataService.GetPiece(update.PieceId);
-                    if (piece != null)
-                    {
-                        _context.Tokens.Add(new Token
-                        {
-                            SessionId = update.SessionID,
-                            PieceID = update.PieceId,
-                            Name = piece.Name,
-                            X = update.X,
-                            Y = update.Y,
-                            ZIndex = update.zIndex,
-                            Visibility = update.Visibility,
-                            Notes = update.Notes
-                        });
-
-                        var session = _dataService.GetSession(update.SessionID);
-                        if (session != null) session.LastUpdated = DateTime.Now;
-                    }
-                }
-            }
-            _context.SaveChanges();
+            _dataService.UpdateTokenPositions(updates);
             return Ok();
         }
 
         [HttpPost("Map/SaveSessionNotes")]
-        public IActionResult SaveSessionNotes([FromBody] SAGroupAlphaSpring26.Models.SessionNotesUpdateModel model)
+        public IActionResult SaveSessionNotes([FromBody] SessionNotesUpdateModel model)
         {
             if (model == null || model.SessionId <= 0) return BadRequest("Invalid session notes data.");
 
@@ -81,30 +38,12 @@ namespace SAGroupAlphaSpring26.Controllers
             {
                 session.Notes = model.Notes ?? "";
                 session.LastUpdated = DateTime.Now;
-                _context.SaveChanges();
+                _dataService.UpdateSession(session);
                 return Ok();
             }
 
             return NotFound("Session not found.");
         }
-
-        //[HttpGet("Map/GetTokens/{sessionId}")]
-        //public IActionResult GetTokens(int sessionId)
-        //{
-        //    var tokens = _context.Tokens
-        //        .Where(t => t.SessionId == sessionId)
-        //        .Select(t => new TokenUpdateModel
-        //        {
-        //            Id = t.Id,
-        //            X = t.X,
-        //            Y = t.Y,
-        //            zIndex = t.ZIndex,
-        //            SessionID = t.SessionId,
-        //            Name = t.Name
-        //        })
-        //        .ToList();
-        //    return Json(tokens);
-        //}
 
         [HttpPost]
         public IActionResult CreateToken([FromBody] TokenCreateModel model)
@@ -112,13 +51,11 @@ namespace SAGroupAlphaSpring26.Controllers
             if (model == null || model.PieceId == 0 || model.SessionId == 0)
                 return BadRequest("Invalid model.");
 
-            var piece = _context.Pieces.Find(model.PieceId);
+            var piece = _dataService.GetPiece(model.PieceId);
             if (piece == null)
                 return NotFound("Piece not found.");
 
-            var maxZ = _context.Tokens
-                .Where(t => t.SessionId == model.SessionId)
-                .Max(t => (int?)t.ZIndex) ?? 0;
+            var maxZ = _dataService.GetMaxZIndexForSession(model.SessionId);
             var token = new Token
             {
                 SessionId = model.SessionId,
@@ -135,7 +72,7 @@ namespace SAGroupAlphaSpring26.Controllers
 
         // Added id to routing.
         [Route("Map/MapTest/{id}")]
-        public IActionResult MapTest(int id) 
+        public IActionResult MapTest(int id)
         {
             // now uses data service to get session data, this should get the tokens/pieces associated.
             var session = _dataService.GetSession(id);
@@ -161,7 +98,7 @@ namespace SAGroupAlphaSpring26.Controllers
             };
 
             var UserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if(!int.TryParse(UserId, out int UserIdParse)) 
+            if (!int.TryParse(UserId, out int UserIdParse))
             {
                 // implement some sort of error handling...
             }
@@ -215,31 +152,31 @@ namespace SAGroupAlphaSpring26.Controllers
 
         // Added id to routing.
         [Route("Map/Map/{id}")]
-        public IActionResult Map(int sessionId)
+        public IActionResult Map(int id)
         {
             // gets the session from the database using the session ID.
-            var session = _context.Sessions.FirstOrDefault(s => s.Id == sessionId);
+            var session = _dataService.GetSession(id);
 
-            // Creates the map token for displaying the map on the screen.
-            // The nullability of this is already handles by just setting it to a test map...
-            var mapToken = _context.Tokens
-                .Include(t => t.Piece)
-                .ThenInclude(p => p!.PieceType)
-                .FirstOrDefault(t => t.SessionId == sessionId && t.Piece!.PieceType!.Name == "Map");
+            if (session == null)
+            {
+                return NotFound();
+            }
+
+            var mapToken = session.Tokens
+                .FirstOrDefault(t => t.Piece?.PieceType?.Name == "Map");
 
             var viewModel = new MapScreenViewModel()
             {
                 CurrentSession = session,
                 MapImagePath = mapToken != null ? mapToken.Piece!.ImagePath : "/images/testMap.png",
 
-                Tokens = _context.Tokens
-                    .Include(t => t.Piece)
-                    .Where(t => t.SessionId == sessionId)
+                Tokens = session.Tokens
+                    .Where(t => t.Piece?.PieceType?.Name != "Map")
                     .ToList()
             };
 
             var UserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if(int.TryParse(UserId, out int UserIdParse)) 
+            if (int.TryParse(UserId, out int UserIdParse))
             {
                 viewModel.PlayablePieces = this._dataService.GetUserPieces(UserIdParse);
             }
@@ -251,9 +188,10 @@ namespace SAGroupAlphaSpring26.Controllers
         [HttpPost("Map/DeleteTokens")]
         public IActionResult DeleteTokens([FromBody] List<int> tokenIds)
         {
-            if (tokenIds == null || !tokenIds.Any()) return Ok(); // if nothing to delete: return ok.
+            // Checks if there are any tokens scheduled to delete.
+            if (tokenIds == null || !tokenIds.Any()) return Ok();
 
-            // deletes the tokens
+            // Deletes the tokens.
             try
             {
                 this._dataService.DeleteTokens(tokenIds);
@@ -262,6 +200,46 @@ namespace SAGroupAlphaSpring26.Controllers
             catch
             {
                 return BadRequest("Failed to delete tokens.");
+            }
+        }
+
+        // Clears all tokens from the board via dataservice, doesn't save the changes made to the board, click save button to save changes.
+        [HttpPost("Map/ClearBoard/{sessionId}")]
+        public IActionResult ClearBoard(int sessionId)
+        {
+            try
+            {
+                _dataService.ClearSessionTokens(sessionId);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        public class UpdateMapModel
+        {
+            public int SessionId { get; set; }
+            public int PieceId { get; set; }
+        }
+
+        // Updates the map background by updating the map token's piece ID to the new piece ID.
+        [HttpPost("Map/UpdateMapBackground")]
+        public IActionResult UpdateMapBackground([FromBody] UpdateMapModel model)
+        {
+            // Checks if the model is valid.
+            if (model == null || model.SessionId <= 0 || model.PieceId <= 0) return BadRequest("Invalid model");
+
+            try
+            {
+                // Calls the dataservice function to update the map background.
+                string newMapImagePath = _dataService.UpdateSessionMap(model.SessionId, model.PieceId);
+                return Json(new { imagePath = newMapImagePath });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

@@ -88,6 +88,7 @@ namespace SAGroupAlphaSpring26.Services
                     .Where(s => s.IsArchived == false)
                 .Include(s => s.Tokens)
                     .ThenInclude(t => t.Piece)
+                        .ThenInclude(p => p!.PieceType)
                 .FirstOrDefault(s => s.Id == sessionId);
 
                 if (session == null)
@@ -148,6 +149,58 @@ namespace SAGroupAlphaSpring26.Services
             {
                 throw new Exception($"Error in adding Tpken: {e.Message}");
             }
+        }
+
+        public void UpdateTokenPositions(List<TokenUpdateModel> updates)
+        {
+            foreach (var update in updates)
+            {
+                if (int.TryParse(update.Id, out int realTokenId))
+                {
+                    var token = this._dataContext.Tokens.Find(realTokenId);
+                    if (token != null)
+                    {
+                        token.X = update.X;
+                        token.Y = update.Y;
+                        token.ZIndex = update.zIndex;
+                        token.Visibility = update.Visibility;
+                        token.Name = update.Name;
+                        token.Notes = update.Notes;
+
+                        var session = this.GetSession(token.SessionId);
+                        if (session != null) session.LastUpdated = DateTime.Now;
+                    }
+                }
+                else if(update.Id != null && update.Id.StartsWith("temp-"))
+                {
+                    var piece = this.GetPiece(update.PieceId);
+                    if (piece != null)
+                    {
+                        this._dataContext.Tokens.Add(new Token
+                        {
+                            SessionId = update.SessionID,
+                            PieceID = update.PieceId,
+                            Name = piece.Name,
+                            X = update.X,
+                            Y = update.Y,
+                            ZIndex = update.zIndex,
+                            Visibility = update.Visibility,
+                            Notes = update.Notes
+                        });
+
+                        var session = this.GetSession(update.SessionID);
+                        if (session != null) session.LastUpdated = DateTime.Now;
+                    }
+                }
+            }
+            this._dataContext.SaveChanges();
+        }
+
+        public int GetMaxZIndexForSession(int sessionId)
+        {
+            return this._dataContext.Tokens
+                .Where(t => t.SessionId == sessionId)
+                .Max(t => (int?)t.ZIndex) ?? 0;
         }
 
         public PieceType AddPieceType(PieceType pt)
@@ -448,6 +501,59 @@ public User AddUser(User user)
             {
                 throw new Exception($"DataService Exception! Error deleting tokens: {e.Message}");
             }
+        }
+
+        public void ClearSessionTokens(int sessionId)
+        {
+            var sessionTokens = this._dataContext.Tokens
+                .Include(t => t.Piece)
+                .ThenInclude(p => p!.PieceType)
+                .Where(t => t.SessionId == sessionId && t.Piece!.PieceType!.Name != "Map")
+                .ToList();
+
+            this._dataContext.Tokens.RemoveRange(sessionTokens);
+
+            var session = this.GetSession(sessionId);
+            if (session != null) session.LastUpdated = DateTime.Now;
+
+            this._dataContext.SaveChanges();
+        }
+
+        public string UpdateSessionMap(int sessionId, int pieceId)
+        {
+            var piece = this._dataContext.Pieces.Include(p => p.PieceType).FirstOrDefault(p => p.Id == pieceId);
+            if (piece == null || piece.PieceType!.Name != "Map") throw new Exception("Invalid piece or piece is not a map");
+
+            var mapToken = this._dataContext.Tokens
+                .Include(t => t.Piece)
+                .ThenInclude(p => p!.PieceType)
+                .FirstOrDefault(t => t.SessionId == sessionId && t.Piece!.PieceType!.Name == "Map");
+
+            if (mapToken != null)
+            {
+                mapToken.PieceID = pieceId;
+                mapToken.Name = piece.Name;
+            }
+            else
+            {
+                this._dataContext.Tokens.Add(new Token
+                {
+                    SessionId = sessionId,
+                    PieceID = pieceId,
+                    Name = piece.Name,
+                    X = 0,
+                    Y = 0,
+                    ZIndex = 0,
+                    Visibility = true
+                });
+            }
+
+            var session = this.GetSession(sessionId);
+            if (session != null) session.LastUpdated = DateTime.Now;
+
+            this._dataContext.SaveChanges();
+
+            return piece.ImagePath;
         }
 
         public void DeletePiece(int id)

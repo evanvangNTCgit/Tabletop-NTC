@@ -7,13 +7,22 @@
     <div class="toolbar-group">
         <button id="btn-undo" class="button-primary" disabled title="Undo"><i class="bi bi-arrow-counterclockwise"></i></button>
         <button id="btn-redo" class="button-primary" disabled title="Redo"><i class="bi bi-arrow-clockwise"></i></button>
-        <button id="btn-save" class="button-primary" title="Save Positions"><i class="bi bi-save"></i> Save Changes</button>
-        <a asp-controller="Home" asp-action="Index" class="button-primary">Cancel</a>
+        <button id="btn-save" class="button-primary" title="Save Positions"><i class="bi bi-save"></i> Save</button>
+        <button id="btn-clear-board" class="button-danger ms-1" title="Clear Board"><i class="bi bi-eraser"></i> Clear</button>
+        <select id="map-select" class="button-primary ms-2">
+            <option value="">-- Change Map --</option>
+            @foreach (var piece in Model.PlayablePieces.Where(p => p.PieceType?.Name == "Map"))
+            {
+                <option value="@piece.Id">@piece.Name</option>
+            }
+        </select>
+        <a id="btn-cancel" asp-controller="Home" asp-action="Index" class="button-primary ms-2">Cancel</a>
     </div>
 
     <div class="toolbar-group">
         <button id="btn-toggle-token-info" class="button-primary">Token Info</button>
         <button id="btn-toggle-notes" class="button-primary">Session Notes</button>
+        <button id="btn-toggle-delete" class="button-primary" title="Toggle Token Delete Area"><i class="bi bi-trash"></i> Token Delete Area</button>
         <a asp-controller="Map"
                asp-action="Playerview"
                target="_blank"
@@ -78,8 +87,8 @@
                          onerror="this.onerror=null; this.src='/images/default.png';" />
             }
 
-        @* Drag tokens into this area to delete them. *@
-        <div id="delete-area" class="delete-drop-zone">
+        @* Drag tokens into this area to delete them. Initially hidden. *@
+        <div id="delete-area" class="delete-drop-zone" style="display: none;">
             <p>Drop to Remove</p>
         </div>
         </div>
@@ -122,11 +131,11 @@
     @* Session Notes Panel *@
     <div class="session-notes-panel" id="session-notes-panel">
         <h4 class="token-info-header">Session Notes</h4>
-        <div class="token-info-content" style="flex-grow: 1; gap: 5px;">
+        <div class="token-info-content session-notes-content">
             <textarea id="session-notes-textarea" class="session-notes-textarea">@Model.CurrentSession?.Notes</textarea>
             
             <div class="token-info-button-container">
-                <button id="btn-save-notes" class="btn btn-success" style="width: 100%;"><i class="bi bi-journal-check"></i> Save Notes</button>
+                <button id="btn-save-notes" class="btn btn-success btn-save-notes"><i class="bi bi-journal-check"></i> Save Notes</button>
             </div>
         </div>
     </div>

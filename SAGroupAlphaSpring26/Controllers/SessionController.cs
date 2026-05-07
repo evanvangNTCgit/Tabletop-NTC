@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SAGroupAlphaSpring26.Models;
 using SAGroupAlphaSpring26.Services;
-using System.Security.Claims;
 
 namespace SAGroupAlphaSpring26.Controllers
 {
@@ -49,13 +49,19 @@ namespace SAGroupAlphaSpring26.Controllers
         [HttpGet("create")]
         public IActionResult Create()
         {
+            // Gets all of the pieces the user owns, where the piece type is "Map"
+            var userId = _dataService.GetUserId(User);
+            ViewBag.AvailableMaps = _dataService.GetUserPieces(userId)
+                .Where(p => p.PieceType?.Name == "Map")
+                .ToList();
+
             return View(new Session());
         }
 
         // Posts the created sessions information.
         [Authorize]
         [HttpPost("create")]
-        public IActionResult Create(Session session)
+        public IActionResult Create(Session session, int? initialMapId)
         {
             // Gets user id using the get user id data service.
             session.UserId = _dataService.GetUserId(User);
@@ -65,6 +71,19 @@ namespace SAGroupAlphaSpring26.Controllers
 
             // adds the session to the database.
             _dataService.AddSession(session);
+
+            // Set the initial map if selected
+            if (initialMapId.HasValue && initialMapId.Value > 0)
+            {
+                try
+                {
+                    _dataService.UpdateSessionMap(session.Id, initialMapId.Value);
+                }
+                catch (Exception)
+                {
+                    // Fallback to default if there is an issue with the selected map
+                }
+            }
 
             return RedirectToAction("Details", new { id = session.Id });
         }
@@ -128,10 +147,10 @@ namespace SAGroupAlphaSpring26.Controllers
         }
 
         [HttpGet("RecoverSession")]
-        public IActionResult RecoverSession() 
+        public IActionResult RecoverSession()
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            if(userId == null)
+            if (userId == null)
             {
                 // Redirect back to sign in
                 // Maybe not signed in?

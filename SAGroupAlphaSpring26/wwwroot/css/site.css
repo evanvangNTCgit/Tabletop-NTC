@@ -995,4 +995,47 @@ input[type="password"] {
     border: 1px solid #4a4a4a;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
+/* =========================================
+   SESSION FORMS
+========================================= */
+.session-card-header {
+    background: linear-gradient(180deg, #d4af37, #b8962e);
+    border-bottom: 2px solid #f5d76e;
 }
+
+.session-card-title {
+    color: #1a120d;
+}
+
+.session-card-body, .session-card-footer {
+    background-color: #F5DEB3;
+}
+
+.session-card-footer {
+    border-top: 1px solid #4a4a4a;
+}
+
+.session-input-wrapper {
+    background-color: #fff8dc;
+    border-color: #4a4a4a;
+}
+
+.session-textarea {
+    border: none;
+    background: transparent;
+    font-family: sans-serif;
+}
+
+.session-textarea-sm {
+    min-height: 50px;
+}
+
+.session-textarea-lg {
+    min-height: 150px;
+}
+
+.session-select {
+    background: transparent;
+    border: 1px solid #4a4a4a;
+    font-family: sans-serif;
+}
