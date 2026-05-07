@@ -315,3 +315,32 @@
     resize: none;
     margin-bottom: 5px;
 }
+
+/* Map Selection Dropdown */
+#map-select {
+    cursor: pointer;
+    appearance: auto;
+    padding-right: 25px;
+}
+
+#map-select option {
+    background-color: #1a120d;
+    color: #f4e4bc;
+    padding: 10px;
+}
+
+#map-select option:hover {
+    background-color: #d4af37;
+    color: #1a120d;
+}
+
+.session-notes-content {
+    flex-grow: 1;
+    gap: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.btn-save-notes {
+    width: 100%;
+}
