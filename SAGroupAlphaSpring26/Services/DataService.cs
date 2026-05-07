@@ -761,6 +761,49 @@ public User AddUser(User user)
                 .ToList();
         }
 
+        // Returns most purchased pieces (not in sets) for the given user, excluding pieces the user already owns.
+        // Important: the returned Piece list is based on the Pieces table (not SaleLines) and uses purchase counts from SaleLines.
+        public List<PurchaseStatsViewModel> GetTopUnownedPiecePurchaseStats(int userId)
+        {
+            var ownedPieceIds = _dataContext.UserPieces
+                .Where(up => up.UserId == userId)
+                .Select(up => up.PieceId)
+                .ToList();
+
+            // Purchase counts come from SaleLines (pieces not in sets).
+            var purchaseStats = _dataContext.SaleLines
+                .Where(sl => sl.SetID == null)
+                .Where(sl => sl.PieceID.HasValue)
+                .GroupBy(sl => sl.PieceID!.Value)
+                .Select(g => new
+                {
+                    PieceId = g.Key,
+                    TotalPurchased = g.Count(),
+                    PurchasedAmountTotal = g.Sum(x => x.Price)
+                });
+
+            // Pieces come from Pieces table; we left-join purchaseStats so unpurchased (0) pieces can still show.
+            var query = _dataContext.Pieces
+                .Where(p => p.IsArchived == false)
+                .Where(p => !ownedPieceIds.Contains(p.Id))
+                .GroupJoin(
+                    purchaseStats,
+                    p => p.Id,
+                    s => s.PieceId,
+                    (p, stats) => new { Piece = p, Stats = stats.FirstOrDefault() })
+                .Select(x => new PurchaseStatsViewModel
+                {
+                    Piece = x.Piece,
+                    TotalPurchased = x.Stats == null ? 0 : x.Stats.TotalPurchased,
+                    PurchasedAmountTotal = x.Stats == null ? 0 : x.Stats.PurchasedAmountTotal
+                })
+                .OrderByDescending(x => x.TotalPurchased);
+
+            return query.ToList();
+        }
+
+
+
         public List<SetStatsViewModel> GetSetPurchaseStats()
         {
             return _dataContext.SaleLines
