@@ -1,4 +1,4 @@
-﻿@* @model SAGroupAlphaSpring26.ViewModels.StoreViewModel *@
+﻿﻿@* @model SAGroupAlphaSpring26.ViewModels.StoreViewModel *@
 @model PaginatedStoreViewModel
 
 @{
@@ -52,7 +52,7 @@
 
      <!-- https://getbootstrap.com/docs/4.4/layout/grid/ --> 
         <div class="row row-cols-2 row-cols-md-4">
-        @foreach (Piece piece in Model.PaginatedPieces.PiecesList)
+@foreach (Piece piece in Model.PaginatedPieces.PiecesList)
         {
             <div class="col">
                 <!-- Updated the img src tag to include the /images folder. Added onerror so that the imagepath defaults to our placeholder image.-->
@@ -63,8 +63,14 @@
 
                     <h3>@piece.Name</h3>
                     <p>@piece.Description</p>
-                        <p class="numberspacing">Price: $@piece.Price</p>
-                    <!-- <button class="button-primary">View</button> -->
+                    <p class="numberspacing">Price: $@piece.Price</p>
+
+                    @* Purchase count is stored temporarily on the view model via ViewData (see controller) *@
+                    @if (ViewData["PiecePurchaseCounts"] is System.Collections.Generic.Dictionary<int, int> purchaseCounts && purchaseCounts.TryGetValue(piece.Id, out var purchaseCount))
+                    {
+                        <p class="numberspacing">Purchased: @purchaseCount</p>
+                    }
+
                     <div>
                         <a class="button-primary" asp-controller="Home" asp-action="Piece" asp-route-id="@piece.Id">View</a>
                     </div>
@@ -96,7 +102,8 @@
                         <input type="hidden" name="pageNumber" value=@(Model.PaginatedPieces.PageIndex + 1) class="w-100" />
                         <input type="hidden" name="sortOrder" value='@Context.Request.Query["sortOrder"]' class="w-100" />
                         <input type="hidden" name="storeitemtype" value='@Context.Request.Query["storeitemtype"]' class="w-100" />
-                <input type="submit" value="Next" class="btn-primary store-next-prev-button" />
+                        <input type="hidden" name="showOwned" value='@Context.Request.Query["showOwned"]' class="w-100" />
+                        <input type="submit" value="Next" class="btn-primary store-next-prev-button" />
                     </form>
             } else if (Model.PaginatedSets.HasNextPage)
             {

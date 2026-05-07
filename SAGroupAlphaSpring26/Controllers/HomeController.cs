@@ -63,8 +63,9 @@ namespace SAGroupAlphaSpring26.Controllers
         }
 
         [Route("Store")]
-        public IActionResult Store(string sortOrder, string filter, string storeitemtype, int pageNumber)
+        public IActionResult Store(string sortOrder, string filter, string storeitemtype, int pageNumber, bool? showOwned)
         {
+
             ViewData["NameSort"] = (sortOrder == "name_asc") ? "name_desc" : "name_asc";
             ViewData["PriceSort"] = (sortOrder == "price_asc") ? "price_desc" : "price_asc";
 
@@ -72,16 +73,66 @@ namespace SAGroupAlphaSpring26.Controllers
 
             StoreViewModel model = new StoreViewModel();
 
-            // Get the sets and pieces once...
-            var pieces = _dataService.GetPieces();
+            // Base lists
             var sets = _dataService.GetAllSets();
+            var pieces = new List<Piece>();
 
+            int currentUserId = _dataService.GetUserId(User);
+            bool includeOwned = showOwned.HasValue && showOwned.Value;
+
+            // Build pieces list (purchase-ranked, then owned/unowned based on inventory).
+            // Do this independently of which store toggle is currently selected.
+            if (currentUserId > 0)
+            {
+                var topUnownedPiecesStats = _dataService.GetTopUnownedPiecePurchaseStats(currentUserId);
+
+                if (includeOwned)
+                {
+                    var ownedPieces = _dataService.GetUserPieces(currentUserId);
+
+                    // Purchase counts for owned pieces
+                    var allPurchaseStats = _dataService.GetPiecePurchaseStats();
+                    var purchaseDict = allPurchaseStats.ToDictionary(x => x.Piece.Id, x => x.TotalPurchased);
+
+                    var ownedStats = ownedPieces
+                        .Select(p => new PurchaseStatsViewModel
+                        {
+                            Piece = p,
+                            TotalPurchased = purchaseDict.ContainsKey(p.Id) ? purchaseDict[p.Id] : 0,
+                            PurchasedAmountTotal = 0m
+                        })
+                        .OrderByDescending(x => x.TotalPurchased)
+                        .ToList();
+
+                    var combined = ownedStats.Concat(topUnownedPiecesStats)
+                        .GroupBy(x => x.Piece.Id)
+                        .Select(g => g.First())
+                        .OrderByDescending(x => x.TotalPurchased)
+                        .ToList();
+
+                    pieces = combined.Select(x => x.Piece).ToList();
+                    ViewData["PiecePurchaseCounts"] = combined.ToDictionary(x => x.Piece.Id, x => x.TotalPurchased);
+                }
+                else
+                {
+                    pieces = topUnownedPiecesStats.Select(x => x.Piece).ToList();
+                    ViewData["PiecePurchaseCounts"] = topUnownedPiecesStats.ToDictionary(x => x.Piece.Id, x => x.TotalPurchased);
+                }
+            }
+            else
+            {
+                // Not logged in or cannot determine user: fallback to all pieces.
+                pieces = _dataService.GetPieces();
+            }
+
+            // Apply text filter to both lists all the time.
             if (!string.IsNullOrEmpty(filter))
             {
                 pieces = pieces.Where(p => p.Name.ToUpper().Contains(filter.ToUpper())).ToList();
-                sets = sets.Where(p => p.Name.ToUpper().Contains(filter.ToUpper())).ToList();
+                sets = sets.Where(s => s.Name.ToUpper().Contains(filter.ToUpper())).ToList();
             }
 
+            // Apply sorting independently to both lists.
             switch (sortOrder)
             {
                 case "name_asc":
@@ -105,6 +156,7 @@ namespace SAGroupAlphaSpring26.Controllers
                     model.Sets = sets;
                     break;
             }
+
 
             switch (storeitemtype)
             {
