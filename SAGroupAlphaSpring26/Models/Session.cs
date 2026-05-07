@@ -1,4 +1,4 @@
-﻿namespace SAGroupAlphaSpring26.Models
+namespace SAGroupAlphaSpring26.Models
 {
     // used to store session info.
     public class Session
@@ -10,7 +10,7 @@
         public string Name { get; set; } = string.Empty;
 
         // session notes, for user to store their own notes.
-        public string Notes { get; set; } = string.Empty;
+        public string? Notes { get; set; }
 
         // stores the last time the session was updated. Allows users to sort by most recent.
         public DateTime LastUpdated { get; set; } = DateTime.Now;
