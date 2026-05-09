@@ -1,6 +1,6 @@
+using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
-using System.Security.Claims;
 
 namespace SAGroupAlphaSpring26.Services
 {
@@ -86,6 +86,7 @@ namespace SAGroupAlphaSpring26.Services
             {
                 var session = _dataContext.Sessions
                     .Where(s => s.IsArchived == false)
+                .Include(s => s.Scenes)
                 .Include(s => s.Tokens)
                     .ThenInclude(t => t.Piece)
                         .ThenInclude(p => p!.PieceType)
@@ -112,6 +113,63 @@ namespace SAGroupAlphaSpring26.Services
                 .Where(s => s.IsArchived == false)
                 .OrderByDescending(s => s.LastUpdated)
                 .ToList();
+        }
+
+        // Gets scenes by session id.
+        public List<Scene> GetScenes(int sessionId)
+        {
+            return _dataContext.Scenes
+                .Where(s => s.SessionId == sessionId)
+                .ToList();
+        }
+
+        // Adds a scene to the session.
+        public Scene AddScene(Scene scene)
+        {
+            _dataContext.Scenes.Add(scene);
+            _dataContext.SaveChanges();
+            return scene;
+        }
+
+        // Clones a list of tokens to the new scene.
+        public void CloneTokensToScene(List<int> tokenIds, int targetSceneId)
+        {
+            var tokens = _dataContext.Tokens
+                .AsNoTracking()
+                .Where(t => tokenIds.Contains(t.Id))
+                .ToList();
+
+            foreach (var t in tokens)
+            {
+                var newToken = new Token
+                {
+                    Name = t.Name,
+                    PieceID = t.PieceID,
+                    SessionId = t.SessionId,
+                    SceneId = targetSceneId,
+                    X = t.X,
+                    Y = t.Y,
+                    ZIndex = t.ZIndex,
+                    Visibility = t.Visibility,
+                    Notes = t.Notes
+                };
+                _dataContext.Tokens.Add(newToken);
+            }
+            _dataContext.SaveChanges();
+        }
+
+        // Deletes a scene from the session, including all of its tokens.
+        public void DeleteScene(int sceneId)
+        {
+            var scene = _dataContext.Scenes
+                .Include(s => s.Tokens)
+                .FirstOrDefault(s => s.Id == sceneId);
+            if (scene != null)
+            {
+                _dataContext.Tokens.RemoveRange(scene.Tokens);
+                _dataContext.Scenes.Remove(scene);
+                _dataContext.SaveChanges();
+            }
         }
 
         // Update sessions.
@@ -167,18 +225,30 @@ namespace SAGroupAlphaSpring26.Services
                         token.Name = update.Name;
                         token.Notes = update.Notes;
 
+                        // Only update SceneId if a valid id is provided.
+                        if (update.SceneId.HasValue && update.SceneId.Value > 0)
+                        {
+                            token.SceneId = update.SceneId.Value;
+                        }
+
                         var session = this.GetSession(token.SessionId);
                         if (session != null) session.LastUpdated = DateTime.Now;
                     }
                 }
-                else if(update.Id != null && update.Id.StartsWith("temp-"))
+                else if (update.Id != null && update.Id.StartsWith("temp-"))
                 {
                     var piece = this.GetPiece(update.PieceId);
                     if (piece != null)
                     {
+                        // Ensure we have a valid SceneId. Fallback sends us to first scene.
+                        int? targetSceneId = (update.SceneId.HasValue && update.SceneId.Value > 0)
+                                            ? update.SceneId.Value
+                                            : this.GetScenes(update.SessionID).FirstOrDefault()?.Id;
+
                         this._dataContext.Tokens.Add(new Token
                         {
                             SessionId = update.SessionID,
+                            SceneId = targetSceneId,
                             PieceID = update.PieceId,
                             Name = piece.Name,
                             X = update.X,
@@ -295,7 +365,7 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
-public User AddUser(User user)
+        public User AddUser(User user)
         {
             try
             {
@@ -309,7 +379,7 @@ public User AddUser(User user)
             }
         }
 
-// Updates an existing user's information
+        // Updates an existing user's information
         public void UpdateUser(User user)
         {
             try
@@ -369,13 +439,13 @@ public User AddUser(User user)
                     .Where(ps => ps.SetId == set.Id)
                     .ToList();
 
-                foreach(PieceSets oldPieceSet in oldPieceSets)
+                foreach (PieceSets oldPieceSet in oldPieceSets)
                 {
                     this._dataContext.Remove(oldPieceSet);
                 }
 
                 // Now we can add the new piecesets.
-                foreach(PieceSets newPieceSets in set.PiecesList)
+                foreach (PieceSets newPieceSets in set.PiecesList)
                 {
                     this._dataContext.PieceSets.Add(newPieceSets);
                 }
@@ -503,12 +573,12 @@ public User AddUser(User user)
             }
         }
 
-        public void ClearSessionTokens(int sessionId)
+        public void ClearSessionTokens(int sessionId, int sceneId)
         {
             var sessionTokens = this._dataContext.Tokens
                 .Include(t => t.Piece)
                 .ThenInclude(p => p!.PieceType)
-                .Where(t => t.SessionId == sessionId && t.Piece!.PieceType!.Name != "Map")
+                .Where(t => t.SessionId == sessionId && t.SceneId == sceneId && t.Piece!.PieceType!.Name != "Map")
                 .ToList();
 
             this._dataContext.Tokens.RemoveRange(sessionTokens);
@@ -519,15 +589,28 @@ public User AddUser(User user)
             this._dataContext.SaveChanges();
         }
 
-        public string UpdateSessionMap(int sessionId, int pieceId)
+        // Updates the session's map. (adding a map piece to the session or updating the session's current scene.)
+        public string UpdateSessionMap(int sessionId, int pieceId, int? sceneId = null)
         {
             var piece = this._dataContext.Pieces.Include(p => p.PieceType).FirstOrDefault(p => p.Id == pieceId);
             if (piece == null || piece.PieceType!.Name != "Map") throw new Exception("Invalid piece or piece is not a map");
 
+            if (!sceneId.HasValue)
+            {
+                var firstScene = this._dataContext.Scenes.FirstOrDefault(s => s.SessionId == sessionId);
+                if (firstScene == null)
+                {
+                    firstScene = new Scene { SessionId = sessionId, Name = "Default Scene" };
+                    this._dataContext.Scenes.Add(firstScene);
+                    this._dataContext.SaveChanges();
+                }
+                sceneId = firstScene.Id;
+            }
+
             var mapToken = this._dataContext.Tokens
                 .Include(t => t.Piece)
                 .ThenInclude(p => p!.PieceType)
-                .FirstOrDefault(t => t.SessionId == sessionId && t.Piece!.PieceType!.Name == "Map");
+                .FirstOrDefault(t => t.SessionId == sessionId && t.SceneId == sceneId && t.Piece!.PieceType!.Name == "Map");
 
             if (mapToken != null)
             {
@@ -539,6 +622,7 @@ public User AddUser(User user)
                 this._dataContext.Tokens.Add(new Token
                 {
                     SessionId = sessionId,
+                    SceneId = sceneId,
                     PieceID = pieceId,
                     Name = piece.Name,
                     X = 0,
@@ -556,6 +640,7 @@ public User AddUser(User user)
             return piece.ImagePath;
         }
 
+        // Deletes a piece by Id.
         public void DeletePiece(int id)
         {
             try
@@ -572,6 +657,7 @@ public User AddUser(User user)
             }
         }
 
+        // Restores a piece by Id.
         public void RestorePiece(int id)
         {
             try
@@ -938,7 +1024,7 @@ public User AddUser(User user)
                 .ToList();
         }
 
-        public bool UserOwnsPiece(int userId, int PieceId) 
+        public bool UserOwnsPiece(int userId, int PieceId)
         {
             var piece = this._dataContext.UserPieces
                 .Where(up => up.PieceId == PieceId)

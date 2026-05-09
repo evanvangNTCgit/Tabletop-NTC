@@ -27,6 +27,11 @@ namespace SAGroupAlphaSpring26.Models
         // The navigation property to the session this token is in.
         public Session? Session { get; set; }
 
+        // The scene this token belongs to, previously tokens only belonged to sessions.
+        public int? SceneId { get; set; }
+
+        public Scene? Scene { get; set; }
+
         // Current X coordinate of the token on the map, defaults to 0.00.
         [Column(TypeName = "decimal(18,2)")]
         public double X { get; set; } = 0.00;

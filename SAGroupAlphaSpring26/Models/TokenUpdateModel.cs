@@ -8,6 +8,7 @@ namespace SAGroupAlphaSpring26.Models
         public double Y { get; set; }
         public int zIndex { get; set; }
         public int SessionID { get; set; }
+        public int? SceneId { get; set; }
         public string Name { get; set; } = string.Empty;
         public int PieceId { get; set; }
         public bool Visibility { get; set; }
