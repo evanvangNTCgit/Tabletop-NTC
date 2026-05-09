@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.ApiServices;
 
+// Hello from Evan Vang.
 
 var builder = WebApplication.CreateBuilder(args);
 
