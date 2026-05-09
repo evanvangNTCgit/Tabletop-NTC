@@ -1,6 +1,42 @@
 /* Map and pieces from site.css */
 
 /* MAP */
+/* Global Responsive Variables */
+:root {
+    --panel-width: 250px;
+    --sidebar-width: 90px;
+    --toolbar-font: 0.9rem;
+    --toolbar-padding: 10px;
+    --piece-size: 52px;
+}
+
+@media (max-width: 1600px) {
+    :root {
+        --panel-width: 220px;
+        --sidebar-width: 80px;
+        --piece-size: 48px;
+    }
+}
+
+@media (max-width: 1300px) {
+    :root {
+        --panel-width: 200px;
+        --sidebar-width: 70px;
+        --toolbar-font: 0.8rem;
+        --toolbar-padding: 8px;
+        --piece-size: 42px;
+    }
+}
+
+@media (max-width: 1000px) {
+    :root {
+        --panel-width: 170px;
+        --sidebar-width: 60px;
+        --toolbar-font: 0.75rem;
+        --piece-size: 36px;
+    }
+}
+
 .map-container {
     display: flex;
     flex-direction: row;
@@ -26,7 +62,7 @@
 
 /* Piece Bar */
 .piece-bar {
-    flex: 0 0 calc(var(--zoom, 1) * 90px);
+    flex: 0 0 var(--sidebar-width);
     background-color: #0a0a0a;
     display: flex;
     flex-direction: column;
@@ -83,8 +119,8 @@
 }
 
 .map-piece {
-    width: 52px;
-    height: 52px;
+    width: var(--piece-size);
+    height: var(--piece-size);
     border-radius: 8px;
     margin-bottom: 0.75rem;
     cursor: grab;
@@ -97,7 +133,8 @@
 }
 
 .map-toolbar {
-    padding: 10px;
+    padding: var(--toolbar-padding);
+    font-size: var(--toolbar-font);
     background: #F5DEB3;
     border-bottom: 1px solid #4a4a4a;
     display: flex;
@@ -111,8 +148,19 @@
 
 .toolbar-group {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
+}
+
+.map-toolbar button, .map-toolbar .button-primary, .map-toolbar .button-success {
+    padding: 0.4rem 0.8rem;
+    font-size: inherit;
+}
+
+@media (max-width: 1300px) {
+    .map-toolbar button, .map-toolbar .button-primary, .map-toolbar .button-success {
+        padding: 0.3rem 0.6rem;
+    }
 }
 
 
@@ -147,8 +195,8 @@
 
 /* Token Info Panel */
 .token-info-panel {
-    width: 250px;
-    min-width: 200px;
+    width: var(--panel-width);
+    min-width: 150px;
     background-color: #0a0a0a;
     border-left: 2px solid #4a4a4a;
     display: flex;
@@ -174,8 +222,8 @@
     position: relative;
     height: auto;
     width: 100%;
-    align-self: center;
-    justify-self: center;
+    align-self: flex-start; /* Anchor to top */
+    justify-self: flex-start; /* Anchor to left */
     max-height: 90vh;
     max-width: 90vh;
     aspect-ratio: 1 / 1;
@@ -269,8 +317,8 @@
 }
 
 .session-notes-panel {
-    width: 250px;
-    min-width: 200px;
+    width: var(--panel-width);
+    min-width: 150px;
     background-color: #0a0a0a;
     border-left: 2px solid #4a4a4a;
     display: none;
