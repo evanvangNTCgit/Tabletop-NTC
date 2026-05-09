@@ -231,6 +231,7 @@ if (!isPlayerView) {
             sceneMenu.style.display = isOpen ? 'none' : 'flex';
         });
 
+
         // Toggle map dropdown
         mapTrigger?.addEventListener('click', (e) => {
             e.stopPropagation();
