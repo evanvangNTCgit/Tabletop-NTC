@@ -115,36 +115,7 @@
     align-items: center;
 }
 
-.zoom-controls {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-}
 
-.zoom-controls span {
-    display: flex;
-    align-items: center;
-}
-
-.zoom-btn {
-    padding: 0.4rem 0.8rem;
-    font-size: 1rem;
-    border: 1px solid #4a4a4a;
-    background: #F5DEB3;
-    color: #111827 !important;
-    cursor: pointer;
-    border-radius: 4px;
-    font-weight: 500;
-}
-
-.zoom-btn:hover {
-    background: #D2B48C;
-}
-
-#zoom-level {
-    color: #111827 !important;
-    font-weight: 500;
-}
 
 .token-list {
     display: flex;
@@ -425,8 +396,10 @@
 .modal-input:-webkit-autofill,
 .modal-input:-webkit-autofill:hover,
 .modal-input:-webkit-autofill:focus {
-    -webkit-text-fill-color: #D4AF37 !important; /* Keep text Gold */
-    -webkit-box-shadow: 0 0 0px 1000px #0a0a0a inset !important; /* Keep background Black */
+    -webkit-text-fill-color: #D4AF37 !important;
+    /* Keep text Gold */
+    -webkit-box-shadow: 0 0 0px 1000px #0a0a0a inset !important;
+    /* Keep background Black */
     transition: background-color 5000s ease-in-out 0s;
 }
 
@@ -503,9 +476,11 @@
 }
 
 .dropdown-trigger {
-    background: #D4AF37; /* Signature Gold */
+    background: #D4AF37;
+    /* Signature Gold */
     border: 1px solid #000;
-    color: #000; /* Black text for high contrast */
+    color: #000;
+    /* Black text for high contrast */
     padding: 0.4rem 0.8rem;
     border-radius: 4px;
     cursor: pointer;
@@ -518,7 +493,8 @@
 }
 
 .dropdown-trigger:hover {
-    background: #FFD700; /* Brighter gold on hover */
+    background: #FFD700;
+    /* Brighter gold on hover */
     box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
 }
 
@@ -530,7 +506,7 @@
     background: rgba(15, 15, 15, 0.98);
     border: 1px solid #D4AF37;
     border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     display: none;
     flex-direction: column;
     overflow: hidden;
@@ -543,7 +519,7 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     color: #888;
-    background: rgba(0,0,0,0.3);
+    background: rgba(0, 0, 0, 0.3);
     border-bottom: 1px solid #333;
 }
 
@@ -572,7 +548,8 @@
 
 .scene-item {
     padding: 0.75rem 1rem;
-    color: #f4e4bc; /* Restored visibility */
+    color: #f4e4bc;
+    /* Restored visibility */
     cursor: pointer;
     flex-grow: 1;
     transition: all 0.2s ease;
@@ -613,7 +590,7 @@
 
 .dropdown-actions {
     padding: 0.5rem;
-    background: rgba(0,0,0,0.2);
+    background: rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
     gap: 0.25rem;

@@ -24,7 +24,12 @@ const bc = new BroadcastChannel('map_channel');
 // The Local State Dictionary - The "Source of Truth" for offline changes
 let tokenData = {};
 let selectedTokenId = null;
+
+// Tracks if any changes have been made so we can ask the user if he wants to save before switching scenes.
 let hasUnsavedChanges = false;
+
+// Tracks the scene ID that the user wants to switch to, used to confirm the switch.
+let pendingSceneId = null;
 
 if (mapBoard) {
     mapBoard.addEventListener('contextmenu', (e) => {
@@ -201,7 +206,7 @@ if (!isPlayerView) {
     // Initializes the map, adds event listeners to the tokens.
     document.addEventListener('DOMContentLoaded', () => {
 
-        // --- Custom Dropdown Logic ---
+        // --- Dropdown Menu Logic ---
         const sceneTrigger = document.getElementById('scene-trigger');
         const sceneMenu = document.getElementById('scene-menu');
         const sceneItems = document.querySelectorAll('.scene-item:not(.map-selection-item)');
@@ -209,6 +214,8 @@ if (!isPlayerView) {
         const mapTrigger = document.getElementById('map-trigger');
         const mapMenu = document.getElementById('map-menu');
         const mapItems = document.querySelectorAll('.map-selection-item');
+
+        const switchOverlay = document.getElementById('switch-confirm-overlay');
 
         // Toggle scene dropdown
         sceneTrigger?.addEventListener('click', (e) => {
@@ -252,17 +259,17 @@ if (!isPlayerView) {
                         SceneId: window.currentSceneId
                     })
                 })
-                .then(response => response.json())
-                .then(data => {
-                    const mapImg = document.getElementById('map-bg-image');
-                    if (mapImg && data.imagePath) {
-                        mapImg.src = data.imagePath;
-                        // Broadcast the change to other players
-                        const bc = new BroadcastChannel('map_channel');
-                        bc.postMessage({ action: 'reload', sceneId: window.currentSceneId });
-                    }
-                })
-                .catch(error => console.error('Error updating map background:', error));
+                    .then(response => response.json())
+                    .then(data => {
+                        const mapImg = document.getElementById('map-bg-image');
+                        if (mapImg && data.imagePath) {
+                            mapImg.src = data.imagePath;
+                            // Broadcast the change to other players
+                            const bc = new BroadcastChannel('map_channel');
+                            bc.postMessage({ action: 'reload', sceneId: window.currentSceneId });
+                        }
+                    })
+                    .catch(error => console.error('Error updating map background:', error));
 
                 mapMenu.style.display = 'none';
             });
@@ -283,11 +290,13 @@ if (!isPlayerView) {
                 
                 if (hasUnsavedChanges) {
                     pendingSceneId = targetSceneId;
-                    switchConfirmOverlay.style.display = 'flex';
+                    if (switchOverlay) switchOverlay.style.display = 'flex';
                 } else {
+                    // Tell players to move to the new scene
+                    bc.postMessage({ action: 'reload', sceneId: targetSceneId });
                     window.location.href = newUrl;
                 }
-                
+
                 sceneMenu.style.display = 'none';
             });
         });
@@ -296,7 +305,7 @@ if (!isPlayerView) {
         document.querySelectorAll('.btn-scene-delete').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation(); // Don't trigger the scene switch!
-                
+
                 const targetId = btn.getAttribute('data-id');
                 const sceneName = btn.getAttribute('title').replace('Delete ', '');
                 const isActive = targetId == window.currentSceneId;
@@ -306,10 +315,10 @@ if (!isPlayerView) {
                         .then(res => {
                             if (res.ok) {
                                 if (isActive) {
-                                    // If we deleted the scene we are on, go back to the session root (which loads the first available scene)
+                                    // If we deleted the scene we are on, go back to the first session.
                                     window.location.href = `/Map/MapTest/${sessionId}`;
                                 } else {
-                                    // Otherwise just reload to update the dropdown list
+                                    // Otherwise just reload the window/page.
                                     window.location.reload();
                                 }
                             } else {
@@ -318,11 +327,11 @@ if (!isPlayerView) {
                         })
                         .catch(err => console.error("Error deleting scene:", err));
                 }
-                
+
                 sceneMenu.style.display = 'none';
             });
         });
-        // --- End Custom Dropdown Logic ---
+
         console.log('Hello! \nFrom -Mr. Vang');
 
         if (!mapBoard) return console.error('Map board not found!');
@@ -900,13 +909,10 @@ if (!isPlayerView) {
         });
 
         // Dropdown used to change and manage scenes.
-        const switchOverlay = document.getElementById('switch-confirm-overlay');
         const btnSwitchSave = document.getElementById('btn-switch-save');
         const btnSwitchNoSave = document.getElementById('btn-switch-nosave');
         const btnSwitchCancel = document.getElementById('btn-switch-cancel');
         const sceneSelect = document.getElementById('scene-select');
-
-        let pendingSceneId = null;
 
         sceneSelect?.addEventListener('change', (e) => {
             pendingSceneId = e.target.value;
@@ -930,6 +936,8 @@ if (!isPlayerView) {
         btnSwitchNoSave?.addEventListener('click', () => {
             if (pendingSceneId) {
                 const newUrl = window.location.origin + `/Map/MapTest/${sessionId}/${pendingSceneId}`;
+                // Tell players to move even though we aren't saving
+                bc.postMessage({ action: 'reload', sceneId: pendingSceneId });
                 window.location.href = newUrl;
             }
         });
