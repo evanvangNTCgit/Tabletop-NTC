@@ -12,7 +12,7 @@
     <table class="saBackground" style="">
         <tr>
             <th>
-                <!--                                                                  Setting the sort route (gets passed from controller)     Also keepin the filter route so user can do both. -->
+                <!-- Setting the sort route (gets passed from controller)     Also keepin the filter route so user can do both. -->
                 <p>Sort by: <a asp-controller="Home" asp-action="Store" asp-route-sortOrder='@ViewData["PriceSort"]' asp-route-pageNumber="@Context.Request.Query["pageNumber"]" asp-route-filter='@Context.Request.Query["filter"]' asp-route-storeitemtype='@Context.Request.Query["storeitemtype"]'>Price</a></p>
             </th>
             <th>
@@ -66,9 +66,8 @@
 
                     <h3>@piece.Name</h3>
                     <p>@piece.Description</p>
-                    <p class="numberspacing">Price: $@piece.Price</p>
-
-                    @* Purchase count is stored temporarily on the view model via ViewData (see controller) *@
+                        @* Purchase count is stored temporarily on the view model via ViewData (see controller) *@
+                    
                     @if (ViewData["PiecePurchaseCounts"] is System.Collections.Generic.Dictionary<int, int> purchaseCounts && purchaseCounts.TryGetValue(piece.Id, out var purchaseCount))
                     {
                         <p class="numberspacing">Purchased: @purchaseCount</p>
@@ -91,6 +90,8 @@
                         <input type="hidden" name="pageNumber" value=@(Model.PaginatedPieces.PageIndex - 1) class="w-100" />
                         <input type="hidden" name="sortOrder" value='@Context.Request.Query["sortOrder"]' class="w-100" />
                         <input type="hidden" name="storeitemtype" value='@Context.Request.Query["storeitemtype"]' class="w-100" />
+                        <input type="hidden" name="filter" value='@Context.Request.Query["filter"]' class="w-100" />
+                        <input type="hidden" name="showOwned" value='@Context.Request.Query["showOwned"]' class="w-100" />
                         <input type="submit" value="Previous" class="btn-primary store-next-prev-button" />
                     </form>
             } else if (Model.PaginatedSets.HasPreviousPage) {
@@ -98,6 +99,8 @@
                         <input type="hidden" name="pageNumber" value=@(Model.PaginatedSets.PageIndex - 1) class="w-100" />
                         <input type="hidden" name="sortOrder" value='@Context.Request.Query["sortOrder"]' class="w-100" />
                         <input type="hidden" name="storeitemtype" value='@Context.Request.Query["storeitemtype"]' class="w-100" />
+                        <input type="hidden" name="filter" value='@Context.Request.Query["filter"]' class="w-100" />
+                        <input type="hidden" name="showOwned" value='@Context.Request.Query["showOwned"]' class="w-100" />
                 <input type="submit" value="Previous" class="btn-primary store-next-prev-button" />
                     </form>
             }
@@ -116,6 +119,8 @@
                         <input type="hidden" name="pageNumber" value=@(Model.PaginatedSets.PageIndex + 1) class="w-100" />
                         <input type="hidden" name="sortOrder" value='@Context.Request.Query["sortOrder"]' class="w-100" />
                         <input type="hidden" name="storeitemtype" value='@Context.Request.Query["storeitemtype"]' class="w-100" />
+                        <input type="hidden" name="filter" value='@Context.Request.Query["filter"]' class="w-100" />
+                        <input type="hidden" name="showOwned" value='@Context.Request.Query["showOwned"]' class="w-100" />
                 <input type="submit" value="Next" class="btn-primary store-next-prev-button" />
                     </form>
             }

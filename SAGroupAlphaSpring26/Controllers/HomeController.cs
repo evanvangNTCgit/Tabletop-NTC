@@ -66,7 +66,8 @@ namespace SAGroupAlphaSpring26.Controllers
         [Route("Store")]
         public IActionResult Store(string sortOrder, string filter, string storeitemtype, int pageNumber, bool? showOwned)
         {
-
+            // Prevent stacking like: showOwned=false,false,true,... by normalizing to a single value.
+            // Query binding to bool? will still take the last value; this is just a guard.
             ViewData["NameSort"] = (sortOrder == "name_asc") ? "name_desc" : "name_asc";
             ViewData["PriceSort"] = (sortOrder == "price_asc") ? "price_desc" : "price_asc";
 
