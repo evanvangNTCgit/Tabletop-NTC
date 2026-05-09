@@ -200,6 +200,129 @@ if (!isPlayerView) {
 
     // Initializes the map, adds event listeners to the tokens.
     document.addEventListener('DOMContentLoaded', () => {
+
+        // --- Custom Dropdown Logic ---
+        const sceneTrigger = document.getElementById('scene-trigger');
+        const sceneMenu = document.getElementById('scene-menu');
+        const sceneItems = document.querySelectorAll('.scene-item:not(.map-selection-item)');
+
+        const mapTrigger = document.getElementById('map-trigger');
+        const mapMenu = document.getElementById('map-menu');
+        const mapItems = document.querySelectorAll('.map-selection-item');
+
+        // Toggle scene dropdown
+        sceneTrigger?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (mapMenu) mapMenu.style.display = 'none'; // Close other menu
+            const isOpen = sceneMenu.style.display === 'flex';
+            sceneMenu.style.display = isOpen ? 'none' : 'flex';
+        });
+
+        // Toggle map dropdown
+        mapTrigger?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (sceneMenu) sceneMenu.style.display = 'none'; // Close other menu
+            const isOpen = mapMenu.style.display === 'flex';
+            mapMenu.style.display = isOpen ? 'none' : 'flex';
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', () => {
+            if (sceneMenu) sceneMenu.style.display = 'none';
+            if (mapMenu) mapMenu.style.display = 'none';
+        });
+
+        // Prevent menu from closing when clicking inside
+        sceneMenu?.addEventListener('click', (e) => e.stopPropagation());
+        mapMenu?.addEventListener('click', (e) => e.stopPropagation());
+
+        // Handle map selection
+        mapItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const pieceId = item.getAttribute('data-id');
+                if (!pieceId) return;
+
+                // Call the map background update logic
+                fetch('/Map/UpdateMapBackground', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        SessionId: sessionId,
+                        PieceId: pieceId,
+                        SceneId: window.currentSceneId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const mapImg = document.getElementById('map-bg-image');
+                    if (mapImg && data.imagePath) {
+                        mapImg.src = data.imagePath;
+                        // Broadcast the change to other players
+                        const bc = new BroadcastChannel('map_channel');
+                        bc.postMessage({ action: 'reload', sceneId: window.currentSceneId });
+                    }
+                })
+                .catch(error => console.error('Error updating map background:', error));
+
+                mapMenu.style.display = 'none';
+            });
+        });
+
+        // Handle scene item selection
+        sceneItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const targetSceneId = item.getAttribute('data-id');
+                const currentSceneId = window.currentSceneId;
+
+                if (targetSceneId == currentSceneId) {
+                    sceneMenu.style.display = 'none';
+                    return;
+                }
+
+                const newUrl = window.location.origin + `/Map/MapTest/${sessionId}/${targetSceneId}`;
+                
+                if (hasUnsavedChanges) {
+                    pendingSceneId = targetSceneId;
+                    switchConfirmOverlay.style.display = 'flex';
+                } else {
+                    window.location.href = newUrl;
+                }
+                
+                sceneMenu.style.display = 'none';
+            });
+        });
+
+        // Handle per-scene deletion
+        document.querySelectorAll('.btn-scene-delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Don't trigger the scene switch!
+                
+                const targetId = btn.getAttribute('data-id');
+                const sceneName = btn.getAttribute('title').replace('Delete ', '');
+                const isActive = targetId == window.currentSceneId;
+
+                if (confirm(`Are you sure you want to delete "${sceneName}"? This will permanently remove all tokens in this scene.`)) {
+                    fetch(`/Map/DeleteScene/${targetId}`, { method: 'POST' })
+                        .then(res => {
+                            if (res.ok) {
+                                if (isActive) {
+                                    // If we deleted the scene we are on, go back to the session root (which loads the first available scene)
+                                    window.location.href = `/Map/MapTest/${sessionId}`;
+                                } else {
+                                    // Otherwise just reload to update the dropdown list
+                                    window.location.reload();
+                                }
+                            } else {
+                                alert("Failed to delete scene.");
+                            }
+                        })
+                        .catch(err => console.error("Error deleting scene:", err));
+                }
+                
+                sceneMenu.style.display = 'none';
+            });
+        });
+        // --- End Custom Dropdown Logic ---
         console.log('Hello! \nFrom -Mr. Vang');
 
         if (!mapBoard) return console.error('Map board not found!');

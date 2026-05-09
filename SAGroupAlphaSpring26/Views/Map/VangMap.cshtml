@@ -9,13 +9,23 @@
         <button id="btn-redo" class="button-primary" disabled title="Redo"><i class="bi bi-arrow-clockwise"></i></button>
         <button id="btn-save" class="button-primary" title="Save Positions"><i class="bi bi-save"></i> Save</button>
         <button id="btn-clear-board" class="button-danger ms-1" title="Clear Board"><i class="bi bi-eraser"></i> Clear</button>
-        <select id="map-select" class="button-primary ms-2">
-            <option value="">-- Change Map --</option>
-            @foreach (var piece in Model.PlayablePieces.Where(p => p.PieceType?.Name == "Map"))
-            {
-                <option value="@piece.Id">@piece.Name</option>
-            }
-        </select>
+        <div class="custom-dropdown ms-2" id="map-manager-dropdown">
+            <div class="dropdown-trigger" id="map-trigger">
+                <span><i class="bi bi-image me-2"></i> Change Map</span>
+                <i class="bi bi-chevron-down ms-2"></i>
+            </div>
+            <div class="dropdown-menu-custom" id="map-menu">
+                <div class="scene-list-header">Available Maps</div>
+                <div class="scene-items-container">
+                    @foreach (var piece in Model.PlayablePieces.Where(p => p.PieceType?.Name == "Map"))
+                    {
+                        <div class="scene-item map-selection-item" data-id="@piece.Id">
+                            @piece.Name
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
         <a id="btn-cancel" asp-controller="Home" asp-action="Index" class="button-primary ms-2">Cancel</a>
     </div>
 
@@ -23,14 +33,33 @@
     Contains the buttons and dropdown for changing the scene.
 -->
     <div class="toolbar-group">
-        <select id="scene-select" class="button-primary">
-            @foreach (var scene in Model.Scenes)
-            {
-                <option value="@scene.Id" selected="@(Model.CurrentScene?.Id == scene.Id ? "selected" : null)">@scene.Name</option>
-            }
-        </select>
-        <button id="btn-add-scene" class="button-primary ms-1" title="New Scene"><i class="bi bi-plus-circle"></i></button>
-        <button id="btn-delete-scene" class="button-danger ms-1" title="Delete Current Scene"><i class="bi bi-trash"></i></button>
+        <div class="custom-dropdown" id="scene-manager-dropdown">
+            <div class="dropdown-trigger" id="scene-trigger">
+                <span><i class="bi bi-map me-2"></i> @(Model.CurrentScene?.Name ?? "Select Scene")</span>
+                <i class="bi bi-chevron-down ms-2"></i>
+            </div>
+            <div class="dropdown-menu-custom" id="scene-menu">
+                <div class="scene-items-container">
+                    @foreach (var scene in Model.Scenes)
+                    {
+                        <div class="scene-item-wrapper @(Model.CurrentScene?.Id == scene.Id ? "active" : "")">
+                            <div class="scene-item" data-id="@scene.Id">
+                                <i class="bi bi-layers me-2"></i> @scene.Name
+                            </div>
+                            <button class="btn-scene-delete" data-id="@scene.Id" title="Delete @scene.Name">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    }
+                </div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-actions">
+                    <button id="btn-add-scene" class="dropdown-action-btn" title="Create New Scene">
+                        <i class="bi bi-plus-circle me-2"></i> New Scene
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="toolbar-group">
@@ -84,7 +113,7 @@
              id="map-board"
              data-role="dm">
 
-             <img src="@Model.MapImagePath" class="vang-map-bg-image"/>
+             <img src="@Model.MapImagePath" class="vang-map-bg-image" id="map-bg-image"/>
 
             @foreach (var token in Model.Tokens.Where(t => t.Piece?.PieceType?.Name != "Map"))
             {
