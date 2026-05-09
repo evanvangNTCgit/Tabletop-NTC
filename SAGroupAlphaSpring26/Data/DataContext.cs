@@ -13,11 +13,11 @@ namespace SAGroupAlphaSpring26.Data
 
 
         /*
-        * property in your DbContext class generally corresponds to a table in the database, where TEntity is the C# class (model) that maps to the table's structure.
-        */
+        * property in your DbContext class generally corresponds to a table in the database, where TEntity is the C# class (model) that maps to the table's structure.*/
         public DbSet<User> Users { get; set; }
 
         public DbSet<Session> Sessions { get; set; }
+        public DbSet<Scene> Scenes { get; set; }
         public DbSet<Token> Tokens { get; set; }
 
         // So this is a reference to a PieceTypes table.
@@ -75,6 +75,18 @@ namespace SAGroupAlphaSpring26.Data
                 .WithOne(s => s.User)
                 .HasForeignKey(s => s.UserId);
 
+            // one session can have many scenes. 1:M
+            modelBuilder.Entity<Session>()
+                .HasMany(s => s.Scenes)
+                .WithOne(sc => sc.Session)
+                .HasForeignKey(sc => sc.SessionId);
+
+            // one scene can have many tokens. 1:M
+            modelBuilder.Entity<Scene>()
+                .HasMany(sc => sc.Tokens)
+                .WithOne(t => t.Scene)
+                .HasForeignKey(t => t.SceneId);
+
             modelBuilder.Entity<Sale>() // A sale can have many saleliens
                 .HasMany(sa => sa.SaleLines)
                 .WithOne(s => s.Sale)
@@ -129,6 +141,12 @@ namespace SAGroupAlphaSpring26.Data
                 new Session { Id = 1, UserId = 1, Name = "Test Session", Notes = "Local Test Session", LastUpdated = DateTime.Now, },
                 new Session { Id = 2, UserId = 1, Name = "Test Session 2", Notes = "Local Test Session 2", LastUpdated = DateTime.Now, });
 
+            // Seed Scenes
+            modelBuilder.Entity<Scene>().HasData(
+                new Scene { Id = 1, SessionId = 1, Name = "Default Scene" },
+                new Scene { Id = 2, SessionId = 2, Name = "Default Scene" }
+            );
+
             // Just makesure all session have the default value of false.
             modelBuilder.Entity<Session>()
                 .Property(s => s.IsArchived)
@@ -136,17 +154,17 @@ namespace SAGroupAlphaSpring26.Data
 
             modelBuilder.Entity<Token>().HasData(
                 // Session 1 Token Seed Data.
-                new Token { Id = 1, SessionId = 1, PieceID = 1, Name = "Default Dungeon", X = 0, Y = 0, ZIndex = 0, Visibility = true },
-                new Token { Id = 2, SessionId = 1, PieceID = 2, Name = "Cleric", X = 50, Y = 15, ZIndex = 3, Visibility = true },
-                new Token { Id = 3, SessionId = 1, PieceID = 3, Name = "Goblin Chief", X = 50, Y = 5, ZIndex = 1, Visibility = true },
-                new Token { Id = 4, SessionId = 1, PieceID = 4, Name = "Basic Chest", X = 50, Y = 10, ZIndex = 2, Visibility = false },
+                new Token { Id = 1, SessionId = 1, SceneId = 1, PieceID = 1, Name = "Default Dungeon", X = 0, Y = 0, ZIndex = 0, Visibility = true },
+                new Token { Id = 2, SessionId = 1, SceneId = 1, PieceID = 2, Name = "Cleric", X = 50, Y = 15, ZIndex = 3, Visibility = true },
+                new Token { Id = 3, SessionId = 1, SceneId = 1, PieceID = 3, Name = "Goblin Chief", X = 50, Y = 5, ZIndex = 1, Visibility = true },
+                new Token { Id = 4, SessionId = 1, SceneId = 1, PieceID = 4, Name = "Basic Chest", X = 50, Y = 10, ZIndex = 2, Visibility = false },
 
                 // Token Seed Data for 2nd Session testing.
-                new Token { Id = 5, SessionId = 2, PieceID = 6, Name = "Beta Dungeon", X = 0, Y = 0, ZIndex = 0, Visibility = true },
-                new Token { Id = 6, SessionId = 2, PieceID = 2, Name = "Cleric", X = 50, Y = 15, ZIndex = 3, Visibility = true },
-                new Token { Id = 7, SessionId = 2, PieceID = 2, Name = "Cleric", X = 50, Y = 5, ZIndex = 1, Visibility = true },
-                new Token { Id = 8, SessionId = 2, PieceID = 2, Name = "Cleric", X = 50, Y = 10, ZIndex = 2, Visibility = true },
-                new Token { Id = 9, SessionId = 2, PieceID = 3, Name = "Goblin Chief", X = 50, Y = 5, ZIndex = 1, Visibility = true });
+                new Token { Id = 5, SessionId = 2, SceneId = 2, PieceID = 6, Name = "Beta Dungeon", X = 0, Y = 0, ZIndex = 0, Visibility = true },
+                new Token { Id = 6, SessionId = 2, SceneId = 2, PieceID = 2, Name = "Cleric", X = 50, Y = 15, ZIndex = 3, Visibility = true },
+                new Token { Id = 7, SessionId = 2, SceneId = 2, PieceID = 2, Name = "Cleric", X = 50, Y = 5, ZIndex = 1, Visibility = true },
+                new Token { Id = 8, SessionId = 2, SceneId = 2, PieceID = 2, Name = "Cleric", X = 50, Y = 10, ZIndex = 2, Visibility = true },
+                new Token { Id = 9, SessionId = 2, SceneId = 2, PieceID = 3, Name = "Goblin Chief", X = 50, Y = 5, ZIndex = 1, Visibility = true });
 
             // Making a composite key for the UserPieces.
             modelBuilder.Entity<UserPieces>()

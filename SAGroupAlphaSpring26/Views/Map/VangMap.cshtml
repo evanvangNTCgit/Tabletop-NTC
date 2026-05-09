@@ -19,6 +19,20 @@
         <a id="btn-cancel" asp-controller="Home" asp-action="Index" class="button-primary ms-2">Cancel</a>
     </div>
 
+<!-- 
+    Contains the buttons and dropdown for changing the scene.
+-->
+    <div class="toolbar-group">
+        <select id="scene-select" class="button-primary">
+            @foreach (var scene in Model.Scenes)
+            {
+                <option value="@scene.Id" selected="@(Model.CurrentScene?.Id == scene.Id ? "selected" : null)">@scene.Name</option>
+            }
+        </select>
+        <button id="btn-add-scene" class="button-primary ms-1" title="New Scene"><i class="bi bi-plus-circle"></i></button>
+        <button id="btn-delete-scene" class="button-danger ms-1" title="Delete Current Scene"><i class="bi bi-trash"></i></button>
+    </div>
+
     <div class="toolbar-group">
         <button id="btn-toggle-token-info" class="button-primary">Token Info</button>
         <button id="btn-toggle-notes" class="button-primary">Session Notes</button>
@@ -139,12 +153,82 @@
             </div>
         </div>
     </div>
+
+    @* Scene Wizard Modal, used for Managing/Creating Scenes *@
+    <div class="modal-overlay" id="scene-wizard-overlay">
+        <div class="scene-wizard-modal">
+            <h2 class="modal-title">Create New Scene</h2>
+            
+            <div class="modal-section">
+                <label for="wizard-scene-name">Scene Name</label>
+                <input type="text" id="wizard-scene-name" class="modal-input" placeholder="e.g. Boss Room, Forest Clearing..." />
+            </div>
+
+            <div class="modal-section">
+                <label for="wizard-map-select">Background Map</label>
+                <select id="wizard-map-select" class="modal-input">
+                    <option value="">Select a map...</option>
+                    @foreach (var piece in Model.PlayablePieces.Where(p => string.Equals(p.PieceType?.Name, "Map", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        <option value="@piece.Id">@piece.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="modal-section">
+                <label>Copy Tokens To New Scene?</label>
+                <div class="token-clone-list">
+                    <div class="token-clone-item" style="border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 10; background: rgba(20, 20, 20, 0.95);">
+                        <input type="checkbox" id="wizard-select-all" />
+                        <label for="wizard-select-all" style="font-weight: bold; cursor: pointer;">Select All Tokens</label>
+                    </div>
+                    @foreach (var token in Model.Tokens.Where(t => !string.Equals(t.Piece?.PieceType?.Name, "Map", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        <div class="token-clone-item">
+                            <input type="checkbox" class="token-clone-checkbox" value="@token.Id" id="clone-@token.Id" />
+                            <label for="clone-@token.Id">
+                                @if (!string.IsNullOrEmpty(token.Piece?.ImagePath))
+                                {
+                                    <img src="@token.Piece.ImagePath" style="width: 24px; height: 24px; border-radius: 4px; margin-right: 5px;" />
+                                }
+                                @token.Name
+                            </label>
+                        </div>
+                    }
+                    @if (!Model.Tokens.Any(t => !string.Equals(t.Piece?.PieceType?.Name, "Map", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        <div style="color: #666; font-style: italic; padding: 10px; text-align: center;">No tokens available to copy.</div>
+                    }
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button id="btn-wizard-cancel" class="btn-wizard-cancel">Cancel</button>
+                <button id="btn-wizard-create" class="btn-wizard-create">Create Scene</button>
+            </div>
+        </div>
+    </div>
+
+    @* Switch Confirmation Modal *@
+    <div class="modal-overlay" id="switch-confirm-overlay">
+        <div class="scene-wizard-modal" style="width: 400px;">
+            <h2 class="modal-title">Unsaved Changes</h2>
+            <p style="text-align: center; color: #f4e4bc; margin-bottom: 1.5rem;">You have unsaved changes on this board. What would you like to do before switching scenes?</p>
+            
+            <div class="modal-section" style="gap: 1rem;">
+                <button id="btn-switch-save" class="btn-wizard-create" style="width: 100%;">Save and Switch</button>
+                <button id="btn-switch-nosave" class="btn-wizard-cancel" style="width: 100%; border-color: #D4AF37; color: #D4AF37;">Switch Without Saving</button>
+                <button id="btn-switch-cancel" class="btn-wizard-cancel" style="width: 100%;">Cancel (Stay Here)</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Scripts start here -->
 @section Scripts {
     <script>
         window.sessionId = @Json.Serialize(Model.CurrentSession.Id);
+        window.currentSceneId = @Json.Serialize(Model.CurrentScene?.Id);
     </script>
     <!--Replaced with map.js module-->
     <script type="module" src="~/js/map.js" asp-append-version="true"></script>

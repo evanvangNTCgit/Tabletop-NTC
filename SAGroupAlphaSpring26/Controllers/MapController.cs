@@ -18,11 +18,11 @@ namespace SAGroupAlphaSpring26.Controllers
             _dataService = dataService;
         }
 
-        // Stores positions of Tokens on the map.
         [HttpPost]
         public IActionResult SavePositions([FromBody] List<TokenUpdateModel> updates)
         {
-            if (updates == null || !updates.Any()) return BadRequest("No token updates provided.");
+            if (updates == null) return BadRequest("No token updates provided.");
+            if (!updates.Any()) return Ok();
 
             _dataService.UpdateTokenPositions(updates);
             return Ok();
@@ -71,8 +71,8 @@ namespace SAGroupAlphaSpring26.Controllers
         }
 
         // Added id to routing.
-        [Route("Map/MapTest/{id}")]
-        public IActionResult MapTest(int id)
+        [Route("Map/MapTest/{id}/{sceneId?}")]
+        public IActionResult MapTest(int id, int? sceneId)
         {
             // now uses data service to get session data, this should get the tokens/pieces associated.
             var session = _dataService.GetSession(id);
@@ -82,18 +82,33 @@ namespace SAGroupAlphaSpring26.Controllers
                 return NotFound();
             }
 
+            // Ensure at least one scene exists
+            if (!session.Scenes.Any())
+            {
+                _dataService.AddScene(new Scene { SessionId = id, Name = "Default Scene" });
+                session = _dataService.GetSession(id);
+            }
+
+            var currentScene = sceneId.HasValue
+                ? session.Scenes.FirstOrDefault(s => s.Id == sceneId.Value)
+                : session.Scenes.FirstOrDefault();
+
+            if (currentScene == null) currentScene = session.Scenes.First();
+
             // Creates the map token for displaying the map on the screen.
-            // The nullability of this is already handles by just setting it to a test map...
+            // The map token should always be at ZIndex 0, and only one token should be the map per scene.
             var mapToken = session.Tokens
-                .FirstOrDefault(t => t.Piece?.PieceType?.Name == "Map");
+                .FirstOrDefault(t => string.Equals(t.Piece?.PieceType?.Name, "Map", StringComparison.OrdinalIgnoreCase) && t.SceneId == currentScene.Id);
 
             var viewModel = new MapScreenViewModel()
             {
                 CurrentSession = session,
+                CurrentScene = currentScene,
+                Scenes = session.Scenes,
                 MapImagePath = mapToken != null ? mapToken.Piece!.ImagePath : "/images/BetaMap1.png",
 
                 Tokens = session.Tokens
-                .Where(t => t.Piece?.PieceType?.Name != "Map")
+                .Where(t => t.Piece?.PieceType?.Name != "Map" && t.SceneId == currentScene.Id)
                 .ToList()
             };
 
@@ -108,8 +123,9 @@ namespace SAGroupAlphaSpring26.Controllers
             return View("~/Views/Map/VangMap.cshtml", viewModel);
         }
 
-        [Route("Map/PlayerView/{sessionID}")]
-        public IActionResult PlayerView(int sessionID)
+        // Displays the map for the players, uses session ID and Scene ID to display the correct map.
+        [Route("Map/PlayerView/{sessionID}/{sceneId?}")]
+        public IActionResult PlayerView(int sessionID, int? sceneId)
         {
             var session = _dataService.GetSession(sessionID);
 
@@ -118,19 +134,31 @@ namespace SAGroupAlphaSpring26.Controllers
                 return NotFound("Session not found.");
             }
 
-            // Use string comparison with OrdinalIgnoreCase to avoid casing bugs (e.g., "map" vs "Map")
+            var currentScene = sceneId.HasValue
+                ? session.Scenes.FirstOrDefault(s => s.Id == sceneId.Value)
+                : session.Scenes.FirstOrDefault();
+
+            if (currentScene == null)
+            {
+                if (!session.Scenes.Any()) return NotFound("No scenes found for this session.");
+                currentScene = session.Scenes.First();
+            }
+
+            // Compares strings and uses StringComparison.OrdinalIgnoreCase to ensure correct casing.
             var mapToken = session.Tokens
-                .FirstOrDefault(t => string.Equals(t.Piece?.PieceType?.Name, "Map", StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefault(t => string.Equals(t.Piece?.PieceType?.Name, "Map", StringComparison.OrdinalIgnoreCase) && t.SceneId == currentScene.Id);
 
             var viewModel = new MapScreenViewModel()
             {
                 CurrentSession = session,
+                CurrentScene = currentScene,
+                Scenes = session.Scenes,
                 // Fallback to test map if no map token is found
                 MapImagePath = mapToken?.Piece?.ImagePath ?? "/images/BetaMap1.png",
 
                 // Filter out the map itself from the interactive tokens list
                 Tokens = session.Tokens
-                    .Where(t => !string.Equals(t.Piece?.PieceType?.Name, "Map", StringComparison.OrdinalIgnoreCase))
+                    .Where(t => !string.Equals(t.Piece?.PieceType?.Name, "Map", StringComparison.OrdinalIgnoreCase) && t.SceneId == currentScene.Id)
                     .ToList()
             };
 
@@ -162,8 +190,9 @@ namespace SAGroupAlphaSpring26.Controllers
                 return NotFound();
             }
 
+            // StringComparison.OrdinalIgnoreCase used to ensure correct casing.
             var mapToken = session.Tokens
-                .FirstOrDefault(t => t.Piece?.PieceType?.Name == "Map");
+                .FirstOrDefault(t => string.Equals(t.Piece?.PieceType?.Name, "Map", StringComparison.OrdinalIgnoreCase));
 
             var viewModel = new MapScreenViewModel()
             {
@@ -203,13 +232,13 @@ namespace SAGroupAlphaSpring26.Controllers
             }
         }
 
-        // Clears all tokens from the board via dataservice, doesn't save the changes made to the board, click save button to save changes.
-        [HttpPost("Map/ClearBoard/{sessionId}")]
-        public IActionResult ClearBoard(int sessionId)
+        // Clears all tokens from the board via dataservice, doesn't save the changes made to the board, click save button to save changes. Uses SessionId and SceneId to delete only the tokens in that scene.
+        [HttpPost("Map/ClearBoard/{sessionId}/{sceneId}")]
+        public IActionResult ClearBoard(int sessionId, int sceneId)
         {
             try
             {
-                _dataService.ClearSessionTokens(sessionId);
+                _dataService.ClearSessionTokens(sessionId, sceneId);
                 return Ok();
             }
             catch (Exception ex)
@@ -222,6 +251,7 @@ namespace SAGroupAlphaSpring26.Controllers
         {
             public int SessionId { get; set; }
             public int PieceId { get; set; }
+            public int SceneId { get; set; }
         }
 
         // Updates the map background by updating the map token's piece ID to the new piece ID.
@@ -234,7 +264,7 @@ namespace SAGroupAlphaSpring26.Controllers
             try
             {
                 // Calls the dataservice function to update the map background.
-                string newMapImagePath = _dataService.UpdateSessionMap(model.SessionId, model.PieceId);
+                string newMapImagePath = _dataService.UpdateSessionMap(model.SessionId, model.PieceId, model.SceneId);
                 return Json(new { imagePath = newMapImagePath });
             }
             catch (Exception ex)
@@ -242,5 +272,50 @@ namespace SAGroupAlphaSpring26.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        // Creates a new scene for the session.
+        [HttpPost("Map/CreateScene")]
+        public IActionResult CreateScene([FromBody] SceneModel model)
+        {
+            if (model == null || model.SessionId <= 0 || string.IsNullOrEmpty(model.Name))
+                return BadRequest("Invalid scene data.");
+
+            var scene = new Scene
+            {
+                SessionId = model.SessionId,
+                Name = model.Name
+            };
+            _dataService.AddScene(scene);
+
+            // If a map was selected, set the selected map.
+            if (model.MapPieceId.HasValue && model.MapPieceId.Value > 0)
+            {
+                _dataService.UpdateSessionMap(model.SessionId, model.MapPieceId.Value, scene.Id);
+            }
+
+            // If tokens were selected to be carried over, clone them to the new scene.
+            if (model.TokenIdsToClone != null && model.TokenIdsToClone.Any())
+            {
+                _dataService.CloneTokensToScene(model.TokenIdsToClone, scene.Id);
+            }
+
+            return Json(new { id = scene.Id, name = scene.Name });
+        }
+
+        // Deletes a scene from the session by ID. Automatically deletes all tokens associated with that scene.
+        [HttpPost("Map/DeleteScene/{id}")]
+        public IActionResult DeleteScene(int id)
+        {
+            try
+            {
+                _dataService.DeleteScene(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }

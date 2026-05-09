@@ -25,6 +25,9 @@ namespace SAGroupAlphaSpring26.Models
         // Stores tokens for the session.
         public List<Token> Tokens { get; set; } = new List<Token>();
 
+        // Stores scenes for the session.
+        public List<Scene> Scenes { get; set; } = new List<Scene>();
+
         // Instead of the user deleting a session entirely.
         // We can just archive it and have the user restore it, if desired
         [Required]

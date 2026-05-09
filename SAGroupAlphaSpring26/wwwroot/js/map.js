@@ -24,6 +24,7 @@ const bc = new BroadcastChannel('map_channel');
 // The Local State Dictionary - The "Source of Truth" for offline changes
 let tokenData = {};
 let selectedTokenId = null;
+let hasUnsavedChanges = false;
 
 if (mapBoard) {
     mapBoard.addEventListener('contextmenu', (e) => {
@@ -64,7 +65,12 @@ if (playerView === 'player') {
             case ("reload"):
                 // Reloads the player view, used after saving to prevent token duplication.
                 console.log("DM Saved, reloading player view page...");
-                window.location.reload();
+                // Use the explicitly provided sceneId (from the DM) or fallback to the current one. This allows for creating new scenes.
+                if (e.data.sceneId) {
+                    window.location.href = `/Map/PlayerView/${sessionId}/${e.data.sceneId}`;
+                } else {
+                    window.location.reload();
+                }
                 break;
             case ("tokenDelete"):
                 // deletes token from the player view.
@@ -266,6 +272,7 @@ if (!isPlayerView) {
                 selectedTokenId = localTokenData.id;
                 bringToFront(localTokenData.id);
                 updateInfoPanel();
+                hasUnsavedChanges = true;
             }
         });
 
@@ -306,6 +313,7 @@ if (!isPlayerView) {
                     tokenId: htmlId
                 });
                 $(this).removeClass('delete-hover');
+                hasUnsavedChanges = true;
             }
         });
 
@@ -317,7 +325,11 @@ if (!isPlayerView) {
         document.getElementById('btn-redo')?.addEventListener('click', redo);
 
         // Attaching the tokenData and Session ID to the Save button so we can save to our database when it is clicked.
-        document.getElementById('btn-save')?.addEventListener('click', () => saveTokenPositions(tokenData, sessionId, tokensToDelete));
+        document.getElementById('btn-save')?.addEventListener('click', () => {
+            saveTokenPositions(tokenData, sessionId, tokensToDelete).then(() => {
+                hasUnsavedChanges = false;
+            });
+        });
 
         // Clear Board functionality
         document.getElementById('btn-clear-board')?.addEventListener('click', () => {
@@ -348,6 +360,7 @@ if (!isPlayerView) {
                     action: 'syncAll',
                     allTokens: {}
                 });
+                hasUnsavedChanges = true;
             }
         });
 
@@ -363,7 +376,7 @@ if (!isPlayerView) {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ SessionId: sessionId, PieceId: parseInt(pieceId) })
+                body: JSON.stringify({ SessionId: sessionId, PieceId: parseInt(pieceId), SceneId: window.currentSceneId })
             })
                 .then(response => response.json())
                 .then(data => {
@@ -471,6 +484,7 @@ if (!isPlayerView) {
             // When drag stops, update the local tokenData.
             tokenData[event.target.id].y = topPerc;
             tokenData[event.target.id].x = leftPerc;
+            hasUnsavedChanges = true;
         },
         drag: (event, ui) => {
             const $board = $('#map-board');
@@ -514,6 +528,7 @@ if (!isPlayerView) {
             if (selectedTokenId === tId) {
                 updateInfoPanel();
             }
+            hasUnsavedChanges = true;
         });
 
         // Left click selects the token and updates the info panel.
@@ -606,6 +621,7 @@ if (!isPlayerView) {
                 tokenData[selectedTokenId].name = e.target.value;
                 const tokenEl = document.getElementById(selectedTokenId);
                 if (tokenEl) tokenEl.dataset.name = e.target.value;
+                hasUnsavedChanges = true;
             }
         });
 
@@ -621,6 +637,7 @@ if (!isPlayerView) {
                 tokenData[selectedTokenId].notes = e.target.value;
                 const tokenEl = document.getElementById(selectedTokenId);
                 if (tokenEl) tokenEl.dataset.notes = e.target.value;
+                hasUnsavedChanges = true;
             }
         });
 
@@ -728,6 +745,7 @@ if (!isPlayerView) {
                 saveSessionNotes(sessionId, notesTextArea.value)
                     .done(() => {
                         btn.innerHTML = '<i class="bi bi-check-circle"></i> Saved!';
+                        hasUnsavedChanges = false;
                         setTimeout(() => {
                             btn.innerHTML = originalHTML;
                             btn.disabled = false;
@@ -755,6 +773,126 @@ if (!isPlayerView) {
         document.getElementById('btn-cancel')?.addEventListener('click', (e) => {
             if (!confirm("Are you sure you wish to leave this page? Consider saving before you go!")) {
                 e.preventDefault();
+            }
+        });
+
+        // Dropdown used to change and manage scenes.
+        const switchOverlay = document.getElementById('switch-confirm-overlay');
+        const btnSwitchSave = document.getElementById('btn-switch-save');
+        const btnSwitchNoSave = document.getElementById('btn-switch-nosave');
+        const btnSwitchCancel = document.getElementById('btn-switch-cancel');
+        const sceneSelect = document.getElementById('scene-select');
+
+        let pendingSceneId = null;
+
+        sceneSelect?.addEventListener('change', (e) => {
+            pendingSceneId = e.target.value;
+            const newUrl = window.location.origin + `/Map/MapTest/${sessionId}/${pendingSceneId}`;
+
+            if (hasUnsavedChanges) {
+                // Show custom modal instead of confirm
+                if (switchOverlay) switchOverlay.style.display = 'flex';
+                // Reset select visually so it doesn't look changed yet
+                sceneSelect.value = window.currentSceneId;
+            } else {
+                window.location.href = newUrl;
+            }
+        });
+
+        btnSwitchCancel?.addEventListener('click', () => {
+            if (switchOverlay) switchOverlay.style.display = 'none';
+            pendingSceneId = null;
+        });
+
+        btnSwitchNoSave?.addEventListener('click', () => {
+            if (pendingSceneId) {
+                const newUrl = window.location.origin + `/Map/MapTest/${sessionId}/${pendingSceneId}`;
+                window.location.href = newUrl;
+            }
+        });
+
+        btnSwitchSave?.addEventListener('click', () => {
+            if (pendingSceneId) {
+                const newUrl = window.location.origin + `/Map/MapTest/${sessionId}/${pendingSceneId}`;
+                btnSwitchSave.disabled = true;
+                btnSwitchSave.innerText = "Saving & Switching...";
+
+                // Silent Save followed by manual navigation because auto-navigation was causing problems with switching scenes.
+                saveTokenPositions(tokenData, sessionId, tokensToDelete, null, null, true).then(() => {
+                    hasUnsavedChanges = false;
+                    window.location.href = newUrl;
+                });
+            }
+        });
+
+        // Button used to create a new scene (Wizard Modal).
+        const wizardOverlay = document.getElementById('scene-wizard-overlay');
+        const wizardCancel = document.getElementById('btn-wizard-cancel');
+        const wizardCreate = document.getElementById('btn-wizard-create');
+
+        document.getElementById('btn-add-scene')?.addEventListener('click', () => {
+            if (wizardOverlay) wizardOverlay.style.display = 'flex';
+        });
+
+        // Select All Logic for Wizard
+        document.getElementById('wizard-select-all')?.addEventListener('change', (e) => {
+            const isChecked = e.target.checked;
+            document.querySelectorAll('.token-clone-checkbox').forEach(cb => {
+                cb.checked = isChecked;
+            });
+        });
+
+        wizardCancel?.addEventListener('click', () => {
+            if (wizardOverlay) wizardOverlay.style.display = 'none';
+        });
+
+        wizardCreate?.addEventListener('click', () => {
+            const sceneName = document.getElementById('wizard-scene-name')?.value;
+            const mapPieceId = document.getElementById('wizard-map-select')?.value;
+            const selectedTokens = Array.from(document.querySelectorAll('.token-clone-checkbox:checked'))
+                .map(cb => parseInt(cb.value));
+
+            if (!sceneName) {
+                alert("Please enter a scene name.");
+                return;
+            }
+
+            wizardCreate.disabled = true;
+            wizardCreate.innerText = "Saving & Creating...";
+
+            // First, save the current state so the cloning has the latest data, because we are cloning from the Database.
+            saveTokenPositions(tokenData, sessionId, tokensToDelete, null, null, true)
+                .then(() => {
+                    return fetch('/Map/CreateScene', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            SessionId: sessionId,
+                            Name: sceneName,
+                            MapPieceId: mapPieceId ? parseInt(mapPieceId) : null,
+                            TokenIdsToClone: selectedTokens
+                        })
+                    });
+                })
+                .then(res => res.json())
+                .then(data => {
+                    window.location.href = window.location.origin + `/Map/MapTest/${sessionId}/${data.id}`;
+                })
+                .catch(err => {
+                    console.error("Wizard error:", err);
+                    alert("Error creating scene.");
+                    wizardCreate.disabled = false;
+                    wizardCreate.innerText = "Create Scene";
+                });
+        });
+
+        // Button used to delete the current scene.
+        document.getElementById('btn-delete-scene')?.addEventListener('click', () => {
+            if (confirm("Are you sure you want to delete the current scene and all its tokens?")) {
+                fetch(`/Map/DeleteScene/${window.currentSceneId}`, { method: 'POST' })
+                    .then(() => {
+                        window.location.href = window.location.origin + `/Map/MapTest/${sessionId}`;
+                    });
             }
         });
     });

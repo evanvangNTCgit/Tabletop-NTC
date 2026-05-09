@@ -13,5 +13,11 @@
 
         // List of Pieces for the collection menu.
         public List<Piece> PlayablePieces { get; set; } = new List<Piece>();
+
+        // Current scene being displayed.
+        public Scene? CurrentScene { get; set; }
+
+        // All scenes in the current session.
+        public List<Scene> Scenes { get; set; } = new List<Scene>();
     }
 }
