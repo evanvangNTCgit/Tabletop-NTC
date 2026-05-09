@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using Azure;
+using System.Text.Json;
 
 namespace SAGroupAlphaSpring26.ApiServices
 {
@@ -11,6 +12,8 @@ namespace SAGroupAlphaSpring26.ApiServices
 
         // Fallback URL provided by API.
         private const string UsdValueURLFallback = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json";
+
+        private static UsdCurrencyValueDTO UsdValues = null;
 
         /// <summary>
         /// Gets currencies that can be converted from USD.
@@ -54,22 +57,14 @@ namespace SAGroupAlphaSpring26.ApiServices
         /// <param name="currency">ABBREVIATED CURRENCY (aud for example).</param>
         /// <param name="UsdPrice">Price in USD.</param>
         /// <returns>Price converted from Usd to currency.</returns>
-        public async static Task<decimal> GetValueFrom(string currency, decimal UsdPrice)
+        public  static decimal GetValueFrom(string currency, decimal UsdPrice)
         {
-            currency = currency.ToLower(); // Incase someoen capitalizes it.
-            HttpResponseMessage response = await _client.GetAsync(UsdValueUrl);
-            if (!response.IsSuccessStatusCode)
-            {
-                response = await _client.GetAsync(UsdValueURLFallback);
-            }
-            var jsonReponse = await response.Content.ReadAsStringAsync();
-            var currencies = JsonSerializer.Deserialize<UsdCurrencyValueDTO>(jsonReponse);
-
-            if (currencies != null)
+            currency = currency.ToLower(); // Incase someone capitalizes it.
+            if (UsdValues != null)
             {
                 // Check each currency conversion and see if it can find the currency passed in by the paramter.
                 // If it cannot be found throw an exception.
-                foreach (var curr in currencies.Values)
+                foreach (var curr in UsdValues.Values)
                 {
                     if (curr.Key == currency)
                     {
@@ -87,6 +82,25 @@ namespace SAGroupAlphaSpring26.ApiServices
             }
         }
 
+        public async static void GetUsdValues()
+        {
+            try
+            {
+                HttpResponseMessage response = await _client.GetAsync(UsdValueUrl);
+                if (!response.IsSuccessStatusCode)
+                {
+                    response = await _client.GetAsync(UsdValueURLFallback);
+                }
+                var jsonReponse = await response.Content.ReadAsStringAsync();
+                var currencies = JsonSerializer.Deserialize<UsdCurrencyValueDTO>(jsonReponse);
+                UsdValues = currencies;
+            }
+            catch
+            {
+                // Cant make fetch must. make sure to do null checks in other methods.
+            }
+        }
+
         /// <summary>
         /// Takes a list of store items that implemented the interface, IPricedItem.
         /// </summary>
@@ -94,11 +108,11 @@ namespace SAGroupAlphaSpring26.ApiServices
         /// <param name="list">List of items implementing IPricedItem</param>
         /// <param name="currency">The currency of user 'aud' for example (australian dollars)</param>
         /// <returns>List of the store items converted to user price.</returns>
-        public async static Task<List<T>> GetStoreItemsPriceConverted<T>(List<T> list, string currency) where T : IPricedItem
+        public static List<T> GetStoreItemsPriceConverted<T>(List<T> list, string currency) where T : IPricedItem
         {
             foreach (T pricedItem in list)
             {
-                pricedItem.Price = await GetValueFrom(currency, pricedItem.Price);
+                pricedItem.Price = GetValueFrom(currency, pricedItem.Price);
             }
 
             return list;
