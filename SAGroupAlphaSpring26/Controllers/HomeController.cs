@@ -64,11 +64,9 @@ namespace SAGroupAlphaSpring26.Controllers
         }
 
         [Route("Store")]
-        public async Task<IActionResult> Store(string sortOrder, string filter, string storeitemtype, int pageNumber)
         public IActionResult Store(string sortOrder, string filter, string storeitemtype, int pageNumber, bool? showOwned)
         {
-            // Prevent stacking like: showOwned=false,false,true,... by normalizing to a single value.
-            // Query binding to bool? will still take the last value; this is just a guard.
+
             ViewData["NameSort"] = (sortOrder == "name_asc") ? "name_desc" : "name_asc";
             ViewData["PriceSort"] = (sortOrder == "price_asc") ? "price_desc" : "price_asc";
 
@@ -177,7 +175,7 @@ namespace SAGroupAlphaSpring26.Controllers
                     break;
             }
 
-            (sets, pieces) = await ConvertPrices(sets, pieces);
+            (sets, pieces) = ConvertPrices(sets, pieces);
 
             if (pageNumber < 1)
             {
@@ -190,7 +188,7 @@ namespace SAGroupAlphaSpring26.Controllers
             return View(PaginatedStoreModel);
         }
 
-        private async Task<(List<Set>, List<Piece>)> ConvertPrices(List<Set> sets, List<Piece> pieces)
+        private (List<Set>, List<Piece>) ConvertPrices(List<Set> sets, List<Piece> pieces)
         {
             try
             {
@@ -199,12 +197,12 @@ namespace SAGroupAlphaSpring26.Controllers
                 string cookieValue = Request.Cookies["UserCurrencyValue"] ?? "usd";
                 if (sets.Count > 0 && sets != null)
                 {
-                    convertedSets = await CurrencyConverter.GetStoreItemsPriceConverted(sets, cookieValue);
+                    convertedSets = CurrencyConverter.GetStoreItemsPriceConverted(sets, cookieValue);
                 }
 
                 if (pieces.Count > 0 && pieces != null)
                 {
-                    convertedPieces = await CurrencyConverter.GetStoreItemsPriceConverted(pieces, cookieValue);
+                    convertedPieces = CurrencyConverter.GetStoreItemsPriceConverted(pieces, cookieValue);
                 }
 
                 return (convertedSets, convertedPieces);
