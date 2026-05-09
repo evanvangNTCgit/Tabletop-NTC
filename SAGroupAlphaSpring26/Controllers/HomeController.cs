@@ -64,6 +64,7 @@ namespace SAGroupAlphaSpring26.Controllers
         }
 
         [Route("Store")]
+        public async Task<IActionResult> Store(string sortOrder, string filter, string storeitemtype, int pageNumber)
         public IActionResult Store(string sortOrder, string filter, string storeitemtype, int pageNumber, bool? showOwned)
         {
             // Prevent stacking like: showOwned=false,false,true,... by normalizing to a single value.
@@ -176,7 +177,7 @@ namespace SAGroupAlphaSpring26.Controllers
                     break;
             }
 
-            (sets, pieces) = ConvertPrices(sets, pieces);
+            (sets, pieces) = await ConvertPrices(sets, pieces);
 
             if (pageNumber < 1)
             {
@@ -189,7 +190,7 @@ namespace SAGroupAlphaSpring26.Controllers
             return View(PaginatedStoreModel);
         }
 
-        private (List<Set>, List<Piece>) ConvertPrices(List<Set> sets, List<Piece> pieces)
+        private async Task<(List<Set>, List<Piece>)> ConvertPrices(List<Set> sets, List<Piece> pieces)
         {
             try
             {
@@ -198,12 +199,12 @@ namespace SAGroupAlphaSpring26.Controllers
                 string cookieValue = Request.Cookies["UserCurrencyValue"] ?? "usd";
                 if (sets.Count > 0 && sets != null)
                 {
-                    convertedSets = CurrencyConverter.GetStoreItemsPriceConverted(sets, cookieValue);
+                    convertedSets = await CurrencyConverter.GetStoreItemsPriceConverted(sets, cookieValue);
                 }
 
                 if (pieces.Count > 0 && pieces != null)
                 {
-                    convertedPieces = CurrencyConverter.GetStoreItemsPriceConverted(pieces, cookieValue);
+                    convertedPieces = await CurrencyConverter.GetStoreItemsPriceConverted(pieces, cookieValue);
                 }
 
                 return (convertedSets, convertedPieces);
