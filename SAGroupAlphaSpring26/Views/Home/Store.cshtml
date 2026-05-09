@@ -66,7 +66,6 @@
 
                     <h3>@piece.Name</h3>
                     <p>@piece.Description</p>
-                    <p class="numberspacing">Price: $@piece.Price</p>
 
                     @* Purchase count is stored temporarily on the view model via ViewData (see controller) *@
                     @if (ViewData["PiecePurchaseCounts"] is System.Collections.Generic.Dictionary<int, int> purchaseCounts && purchaseCounts.TryGetValue(piece.Id, out var purchaseCount))
@@ -91,6 +90,8 @@
                         <input type="hidden" name="pageNumber" value=@(Model.PaginatedPieces.PageIndex - 1) class="w-100" />
                         <input type="hidden" name="sortOrder" value='@Context.Request.Query["sortOrder"]' class="w-100" />
                         <input type="hidden" name="storeitemtype" value='@Context.Request.Query["storeitemtype"]' class="w-100" />
+                        <input type="hidden" name="filter" value='@Context.Request.Query["filter"]' class="w-100" />
+                        <input type="hidden" name="showOwned" value='@Context.Request.Query["showOwned"]' class="w-100" />
                         <input type="submit" value="Previous" class="btn-primary store-next-prev-button" />
                     </form>
             } else if (Model.PaginatedSets.HasPreviousPage) {

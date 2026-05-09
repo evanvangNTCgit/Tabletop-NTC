@@ -1,18 +1,9 @@
 ﻿<form method="GET" asp-controller="Home" asp-action="Store" class="form-inline my-2 my-lg-0">
     <div class="input-group">
-        <!--
-                // 4/28/26:
-                // If the user chooses to sort by piece or set.
-                // Set them back to page one.
-                // This is because Pieces will very likely outnumber sets.
-                // So if they click sets filter when deep in the piece paginations.
-                // It will send a message saying nothing fit their query, but can likely be wrong.
-                // For consistency just set every 'storepiecetype' filter to page 1.
-        -->
+
         <input type="hidden" name="sortOrder" value='@Context.Request.Query["sortOrder"]' class="w-100" />
         <input type="hidden" name="filter" value='@Context.Request.Query["filter"]' class="w-100" />
         <input type="hidden" name="pageNumber" value='1' class="w-100" />
-        <input type="hidden" name="showOwned" value='@Context.Request.Query["showOwned"]' class="w-100" />
         <div class="input-group-append">
             <button type="submit" name="storeitemtype" value="sets" class="btn btn-primary">Sets</button>
             <button type="submit" name="storeitemtype" value="pieces" class="btn btn-primary">Pieces</button>
