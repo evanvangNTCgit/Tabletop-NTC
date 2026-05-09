@@ -209,18 +209,24 @@ if (!isPlayerView) {
         // --- Dropdown Menu Logic ---
         const sceneTrigger = document.getElementById('scene-trigger');
         const sceneMenu = document.getElementById('scene-menu');
-        const sceneItems = document.querySelectorAll('.scene-item:not(.map-selection-item)');
+
+        const sceneItems = document.querySelector('#scene-menu')?.querySelectorAll('.scene-item');
 
         const mapTrigger = document.getElementById('map-trigger');
         const mapMenu = document.getElementById('map-menu');
         const mapItems = document.querySelectorAll('.map-selection-item');
+
+        const toolsTrigger = document.getElementById('tools-trigger');
+        const toolsMenu = document.getElementById('tools-menu');
+        const toolItems = document.querySelectorAll('.tool-item');
 
         const switchOverlay = document.getElementById('switch-confirm-overlay');
 
         // Toggle scene dropdown
         sceneTrigger?.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (mapMenu) mapMenu.style.display = 'none'; // Close other menu
+            if (mapMenu) mapMenu.style.display = 'none';
+            if (toolsMenu) toolsMenu.style.display = 'none';
             const isOpen = sceneMenu.style.display === 'flex';
             sceneMenu.style.display = isOpen ? 'none' : 'flex';
         });
@@ -228,20 +234,54 @@ if (!isPlayerView) {
         // Toggle map dropdown
         mapTrigger?.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (sceneMenu) sceneMenu.style.display = 'none'; // Close other menu
+            if (sceneMenu) sceneMenu.style.display = 'none';
+            if (toolsMenu) toolsMenu.style.display = 'none';
             const isOpen = mapMenu.style.display === 'flex';
             mapMenu.style.display = isOpen ? 'none' : 'flex';
+        });
+
+        // Toggle tools dropdown
+        toolsTrigger?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (sceneMenu) sceneMenu.style.display = 'none';
+            if (mapMenu) mapMenu.style.display = 'none';
+            const isOpen = toolsMenu.style.display === 'flex';
+            toolsMenu.style.display = isOpen ? 'none' : 'flex';
         });
 
         // Close dropdowns when clicking outside
         document.addEventListener('click', () => {
             if (sceneMenu) sceneMenu.style.display = 'none';
             if (mapMenu) mapMenu.style.display = 'none';
+            if (toolsMenu) toolsMenu.style.display = 'none';
         });
 
         // Prevent menu from closing when clicking inside
         sceneMenu?.addEventListener('click', (e) => e.stopPropagation());
         mapMenu?.addEventListener('click', (e) => e.stopPropagation());
+        toolsMenu?.addEventListener('click', (e) => e.stopPropagation());
+
+        // Handle Tool selection - Consolidated and bulletproofed
+        toolItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const id = item.id;
+                if (id === 'tool-token-info') {
+                    const tokenPanel = document.getElementById('token-info-panel');
+                    if (tokenPanel) tokenPanel.style.display = (tokenPanel.style.display === 'block') ? 'none' : 'block';
+                } else if (id === 'tool-session-notes') {
+                    const notesPanel = document.getElementById('session-notes-panel');
+                    if (notesPanel) notesPanel.style.display = (notesPanel.style.display === 'flex') ? 'none' : 'flex';
+                } else if (id === 'tool-delete-area') {
+                    const deleteArea = document.getElementById('delete-area');
+                    if (deleteArea) deleteArea.style.display = (deleteArea.style.display === 'none') ? 'flex' : 'none';
+                }
+
+                if (toolsMenu) toolsMenu.style.display = 'none';
+            });
+        });
 
         // Handle map selection
         mapItems.forEach(item => {
@@ -287,7 +327,7 @@ if (!isPlayerView) {
                 }
 
                 const newUrl = window.location.origin + `/Map/MapTest/${sessionId}/${targetSceneId}`;
-                
+
                 if (hasUnsavedChanges) {
                     pendingSceneId = targetSceneId;
                     if (switchOverlay) switchOverlay.style.display = 'flex';
@@ -849,21 +889,7 @@ if (!isPlayerView) {
             }
         });
 
-        // Toggle Session Notes Panel
-        document.getElementById('btn-toggle-notes')?.addEventListener('click', () => {
-            const notesPanel = document.getElementById('session-notes-panel');
-            if (notesPanel) {
-                notesPanel.style.display = (notesPanel.style.display === 'flex') ? 'none' : 'flex';
-            }
-        });
-
-        // Toggle Token Info Panel
-        document.getElementById('btn-toggle-token-info')?.addEventListener('click', () => {
-            const tokenPanel = document.getElementById('token-info-panel');
-            if (tokenPanel) {
-                tokenPanel.style.display = (tokenPanel.style.display === 'block') ? 'none' : 'block';
-            }
-        });
+        // Toggles for panels are now handled in the main dropdown logic at the top of DOMContentLoaded
 
         // Save only session notes
         document.getElementById('btn-save-notes')?.addEventListener('click', (e) => {
@@ -892,14 +918,7 @@ if (!isPlayerView) {
             }
         });
 
-        // Toggle token delete area.
-        document.getElementById('btn-toggle-delete')?.addEventListener('click', () => {
-            // Shows the token delete area and changes the button text.
-            const deleteArea = document.getElementById('delete-area');
-            if (deleteArea) {
-                deleteArea.style.display = (deleteArea.style.display === 'none') ? 'flex' : 'none';
-            }
-        });
+        // Delete area toggle is now handled in the main dropdown logic
 
         // Cancel button confirmation message before leaving the page.
         document.getElementById('btn-cancel')?.addEventListener('click', (e) => {

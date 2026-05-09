@@ -8,7 +8,6 @@
         <button id="btn-undo" class="button-primary" disabled title="Undo"><i class="bi bi-arrow-counterclockwise"></i></button>
         <button id="btn-redo" class="button-primary" disabled title="Redo"><i class="bi bi-arrow-clockwise"></i></button>
         <button id="btn-save" class="button-primary" title="Save Positions"><i class="bi bi-save"></i> Save</button>
-        <button id="btn-clear-board" class="button-danger ms-1" title="Clear Board"><i class="bi bi-eraser"></i> Clear</button>
         <div class="custom-dropdown ms-2" id="map-manager-dropdown">
             <div class="dropdown-trigger" id="map-trigger">
                 <span><i class="bi bi-image me-2"></i> Change Map</span>
@@ -63,15 +62,37 @@
     </div>
 
     <div class="toolbar-group">
-        <button id="btn-toggle-token-info" class="button-primary">Token Info</button>
-        <button id="btn-toggle-notes" class="button-primary">Session Notes</button>
-        <button id="btn-toggle-delete" class="button-primary" title="Toggle Token Delete Area"><i class="bi bi-trash"></i> Token Delete Area</button>
+        <div class="custom-dropdown" id="tools-manager-dropdown">
+            <div class="dropdown-trigger" id="tools-trigger">
+                <span><i class="bi bi-tools me-2"></i> Tools</span>
+                <i class="bi bi-chevron-down ms-2"></i>
+            </div>
+            <div class="dropdown-menu-custom" id="tools-menu">
+                <div class="scene-items-container">
+                    <div class="scene-item tool-item" id="tool-token-info">
+                        <i class="bi bi-info-circle me-2"></i> Token Info
+                    </div>
+                    <div class="scene-item tool-item" id="tool-session-notes">
+                        <i class="bi bi-journal-text me-2"></i> Session Notes
+                    </div>
+                    <div class="scene-item tool-item" id="tool-delete-area">
+                        <i class="bi bi-trash-fill me-2"></i> Token Delete Area
+                    </div>
+                </div>
+                <div class="dropdown-separator"></div>
+                <div class="dropdown-actions">
+                    <button id="btn-clear-board" class="dropdown-action-btn delete" title="Clear All Tokens">
+                        <i class="bi bi-eraser me-2"></i> Clear Board
+                    </button>
+                </div>
+            </div>
+        </div>
         <a asp-controller="Map"
                asp-action="Playerview"
                target="_blank"
                asp-route-id="@Model.CurrentSession.Id"
-               class="button-success player-view-btn">
-            Player View
+               class="button-success player-view-btn ms-2">
+            <i class="bi bi-eye me-1"></i> Player View
         </a>
     </div>
 </div>
