@@ -920,13 +920,7 @@ namespace SAGroupAlphaSpring26.Services
                 List<Piece> usersCurrentPieces = this.GetUserPieces(userId);
 
                 // Now check to see what pieces user already owns and remove that off of the piece list made from reading user cart.
-                foreach (Piece p in pieces)
-                {
-                    if (usersCurrentPieces.Contains(p))
-                    {
-                        pieces.Remove(p);
-                    }
-                }
+                pieces = pieces.Where(p => !usersCurrentPieces.Any(ucp => ucp.Id == p.Id)).ToList();
 
                 // NOW we can add to the UserPieces table.
                 foreach (Piece p in pieces)

@@ -126,11 +126,15 @@ namespace SAGroupAlphaSpring26.Controllers
                         .ToList();
 
                     pieces = combined.Select(x => x.Piece).ToList();
+
+                    pieces.ForEach(p => p.Price = CurrencyConverter.ConvertPriceToCurrency(user.Currency, p.Price));
+
                     ViewData["PiecePurchaseCounts"] = combined.ToDictionary(x => x.Piece.Id, x => x.TotalPurchased);
                 }
                 else
                 {
                     pieces = topUnownedPiecesStats.Select(x => x.Piece).ToList();
+                    pieces.ForEach(p => p.Price = CurrencyConverter.ConvertPriceToCurrency(user.Currency, p.Price));
                     ViewData["PiecePurchaseCounts"] = topUnownedPiecesStats.ToDictionary(x => x.Piece.Id, x => x.TotalPurchased);
                 }
             }
@@ -138,6 +142,7 @@ namespace SAGroupAlphaSpring26.Controllers
             {
                 // Not logged in or cannot determine user: fallback to all pieces.
                 pieces = _dataService.GetPieces();
+                pieces.ForEach(p => p.Price = CurrencyConverter.ConvertPriceToCurrency(user.Currency, p.Price));
             }
 
             // Apply text filter to both lists all the time.
