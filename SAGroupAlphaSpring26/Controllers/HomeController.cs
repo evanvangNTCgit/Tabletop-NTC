@@ -190,8 +190,6 @@ namespace SAGroupAlphaSpring26.Controllers
                     break;
             }
 
-            (sets, pieces) = ConvertPrices(sets, pieces);
-
             if (pageNumber < 1)
             {
                 pageNumber = 1;
@@ -201,35 +199,6 @@ namespace SAGroupAlphaSpring26.Controllers
             var PaginatedStoreModel = new PaginatedStoreViewModel(PaginatedSetList.Create(model.Sets, pageNumber, pageSize), PaginatedPieceList.Create(model.Pieces, pageNumber, pageSize));
             PaginatedStoreModel.UserCurrency = Request.Cookies["UserCurrencyValue"] ?? "usd";
             return View(PaginatedStoreModel);
-        }
-
-        private (List<Set>, List<Piece>) ConvertPrices(List<Set> sets, List<Piece> pieces)
-        {
-            try
-            {
-                List<Set> convertedSets = sets;
-                List<Piece> convertedPieces = pieces;
-                string cookieValue = Request.Cookies["UserCurrencyValue"] ?? "usd";
-                if (sets.Count > 0 && sets != null)
-                {
-                    convertedSets = CurrencyConverter.GetStoreItemsPriceConverted(sets, cookieValue);
-                }
-
-                if (pieces.Count > 0 && pieces != null)
-                {
-                    convertedPieces = CurrencyConverter.GetStoreItemsPriceConverted(pieces, cookieValue);
-                }
-
-                return (convertedSets, convertedPieces);
-            }
-            catch (CurrencyCallException)
-            {
-                return (sets, pieces); // API not working just return the original list.
-            }
-            catch
-            {
-                throw;
-            }
         }
         // Gets a specific piece by ID.
         [Route("Piece/{id}")]

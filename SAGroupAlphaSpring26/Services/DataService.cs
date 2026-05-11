@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.ApiServices;
 using SAGroupAlphaSpring26.Data;
 using System.Security.Claims;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace SAGroupAlphaSpring26.Services
 {
@@ -349,8 +351,12 @@ namespace SAGroupAlphaSpring26.Services
     .ThenInclude(ps => ps.Piece)
     .AsNoTracking()
     .ToList();
-            sets = CurrencyConverter.GetStoreItemsPriceConverted(sets, currency);
-            return sets;
+            // Clone so that it does not affect the original sets.
+            var json = JsonSerializer.Serialize(sets, new JsonSerializerOptions() { ReferenceHandler = ReferenceHandler.Preserve});
+            var clonedSets = JsonSerializer.Deserialize<List<Set>>(json, new JsonSerializerOptions() { ReferenceHandler = ReferenceHandler.Preserve });
+            clonedSets = CurrencyConverter.GetStoreItemsPriceConverted(clonedSets, currency);
+
+            return clonedSets;
         }
 
         // Get a user by their email address.
