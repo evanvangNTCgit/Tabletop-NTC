@@ -333,6 +333,7 @@ namespace SAGroupAlphaSpring26.Services
             return this._dataContext.Sets
                 .Include(s => s.PiecesList!.Where(ps => ps.Piece.IsArchived == false))
                 .ThenInclude(ps => ps.Piece)
+                .Where(s => s.IsArchived == false)
                 .ToList();
         }
 
@@ -579,6 +580,13 @@ namespace SAGroupAlphaSpring26.Services
                 .ToList();
         }
 
+        public List<Set> GetDeletedSets()
+        {
+            return this._dataContext.Sets
+                .Where(s => s.IsArchived == true)
+                .ToList();
+        }
+
         // Deletes a list of tokens by ID. The Javascript saves each deleted token's ID, then sends it to the mapcontroller, then calls this function to delete them from the database.
         public void DeleteTokens(List<int> tokenIds)
         {
@@ -681,6 +689,24 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
+        // Deletes set
+        public void DeleteSet(int id)
+        {
+            try
+            {
+                var set = this._dataContext.Sets.FirstOrDefault(p => p.Id == id);
+
+                set!.IsArchived = true;
+
+                this._dataContext.Update(set);
+                this._dataContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to archive piece\n${ex.Message}");
+            }
+        }
+
         // Restores a piece by Id.
         public void RestorePiece(int id)
         {
@@ -696,7 +722,24 @@ namespace SAGroupAlphaSpring26.Services
             {
                 throw new Exception($"Failed to restore piece {id} Likely does not exist\n{ex.Message}");
             }
+        }
 
+        // Restores Set by Id
+        public void RestoreSet(int id)
+        {
+            try
+            {
+                var set = this._dataContext.Sets.FirstOrDefault(p => p.Id == id);
+
+                set!.IsArchived = false;
+
+                this._dataContext.Update(set);
+                this._dataContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to restore piece {id} Likely does not exist\n{ex.Message}");
+            }
         }
 
         public CartItem GetCartItem(int userId, int pieceId)

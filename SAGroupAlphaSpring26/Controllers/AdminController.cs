@@ -392,6 +392,19 @@ namespace SAGroupAlphaSpring26.Controllers
             return RedirectToAction(nameof(Pieces));
         }
 
+        [HttpGet("deletesetconfirmation/{id:int}")]
+        public IActionResult DeleteSetConfirmation(int id)
+        {
+            return View(this._dataService.GetSet(id));
+        }
+
+        [HttpPost("deletesetconfirmation/{id:int}")]
+        public IActionResult DeleteSet(int id)
+        {
+            this._dataService.DeleteSet(id);
+            return RedirectToAction(nameof(Sets));
+        }
+
         [HttpGet("RecoverPiece")]
         public IActionResult RecoverPiece()
         {
@@ -404,6 +417,19 @@ namespace SAGroupAlphaSpring26.Controllers
             this._dataService.RestorePiece(id);
 
             return RedirectToAction(nameof(Pieces));
+        }
+
+        [HttpGet("RecoverSet")]
+        public IActionResult RecoverSet()
+        {
+            return View(this._dataService.GetDeletedSets());
+        }
+
+        [HttpGet("RecoverSet/{id:int}")]
+        public IActionResult RecoverSet(int id)
+        {
+            this._dataService.RestoreSet(id);
+            return RedirectToAction(nameof(Sets));
         }
 
         /// <summary>

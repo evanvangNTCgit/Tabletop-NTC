@@ -10,7 +10,8 @@
 <br />
 <div>
     <p>
-        <a asp-controller="Admin" asp-action="AddSet" class="btn-lg btn btn-outline-dark" style="background-color: mediumpurple" role="button">Add a set</a>
+        <a asp-controller="Admin" asp-action="AddSet" class="btn-lg btn btn-outline-dark" style="background-color: mediumpurple" role="button">Add a set</a> |
+        <a asp-controller="Admin" asp-action="RecoverSet" class="btn-lg btn btn-outline-dark" style="background-color: grey" role="button">Recover a set</a>
     </p>
     <table class="table saBackground">
         <tr>
@@ -23,7 +24,8 @@
             <tr class="saBackground">
                 <td>@item.Name</td>
                 <td>
-                    <a asp-controller="admin" asp-action="editset" asp-route-id="@item.Id" class="admin-edit-btn">Edit</a>
+                    <a asp-controller="admin" asp-action="editset" asp-route-id="@item.Id" class="admin-edit-btn">Edit</a> |
+                    <a asp-controller="admin" asp-action="deletesetconfirmation" asp-route-id="@item.Id" class="admin-delete-btn">Delete</a>
                 </td>
                 <td>
                     @if (item.PiecesList != null && item.PiecesList.Any())

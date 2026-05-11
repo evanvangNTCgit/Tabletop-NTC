@@ -123,6 +123,7 @@ namespace SAGroupAlphaSpring26.Controllers
             int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
             Sale userSale = this.BuildSale();
+            userSale.Date = DateTime.Now;
             _dataService.AddSale(userSale);
             _dataService.CheckoutCart(userId);
 
