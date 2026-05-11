@@ -20,14 +20,12 @@
         </div> *@
         <tr>
             <td>@sale.Date</td>
+            <td>
                 @{
-                    StringBuilder stringBuilder = new();
+                    List<string> names = sale.SaleLines.Select(sl => sl.Piece.Name).ToList();
                 }
-                @foreach(SaleLine saleLine in sale.SaleLines)
-                {
-                    stringBuilder.AppendLine(saleLine.Piece.Name);
-                }
-                <td>@stringBuilder.ToString()</td>
+                @string.Join(", ", names)
+            </td>
                 <td>@sale.UnTaxedPrice</td>
                 <td>@sale.Tax</td>
                 <td>@sale.Price</td>
