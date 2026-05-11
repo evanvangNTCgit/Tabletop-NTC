@@ -19,7 +19,7 @@
         pieceInCart = true;
     }
 
-    var usersSetsInCart = dataService.GetCartItemSet(userId);
+    var usersSetsInCart = dataService.GetCartItemsSetNoTracking(userId);
     // Okay so loop and see if the current piece is already in a set that they have in cart currently.
     foreach(CartItemSet set in usersSetsInCart)
     {

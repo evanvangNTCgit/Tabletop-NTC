@@ -25,8 +25,8 @@ namespace SAGroupAlphaSpring26.Controllers
             // Then get the cart items based on user ID.
             int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             User user = this._dataService.GetUser(userId);
-            List<CartItem> userCartItems = _dataService.GetCartItems(userId);
-            List<CartItemSet> userSets = _dataService.GetCartItemSet(userId);
+            List<CartItem> userCartItems = _dataService.GetCartItemsNoTracking(userId);
+            List<CartItemSet> userSets = _dataService.GetCartItemsSetNoTracking(userId);
             userCartItems.ForEach(ci =>
             {
                 if (ci.Piece != null)
@@ -97,7 +97,7 @@ namespace SAGroupAlphaSpring26.Controllers
             int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             User user = _dataService.GetUser(userId);
             Sale userSale = this.BuildSale();
-            List<CartItemSet> userSets = _dataService.GetCartItemSet(userId);
+            List<CartItemSet> userSets = _dataService.GetCartItemsSetNoTracking(userId);
             userSale.SaleLines.ForEach(sl => sl.Price = CurrencyConverter.ConvertPriceToCurrency(user.Currency, sl.Price));
             userSets.ForEach(s =>
             {
@@ -145,8 +145,8 @@ namespace SAGroupAlphaSpring26.Controllers
         private Sale BuildSale()
         {
             int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            List<CartItem> userCartItems = _dataService.GetCartItems(userId);
-            List<CartItemSet> userSets = _dataService.GetCartItemSet(userId);
+            List<CartItem> userCartItems = _dataService.GetCartItemsNoTracking(userId);
+            List<CartItemSet> userSets = _dataService.GetCartItemsSetNoTracking(userId);
 
             Sale userSale = new();
             userSale.UserID = userId;

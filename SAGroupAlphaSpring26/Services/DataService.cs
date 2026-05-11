@@ -2,8 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.ApiServices;
 using SAGroupAlphaSpring26.Data;
 using System.Security.Claims;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace SAGroupAlphaSpring26.Services
 {
@@ -737,7 +735,7 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
-        public List<CartItem> GetCartItems(int userId)
+        public List<CartItem> GetCartItemsNoTracking(int userId)
         {
             return this._dataContext.CartItems
                 .AsNoTracking()
@@ -747,10 +745,30 @@ namespace SAGroupAlphaSpring26.Services
                 .ToList();
         }
 
-        public List<CartItemSet> GetCartItemSet(int userId)
+        public List<CartItem> GetCartItems(int userId)
+        {
+            return this._dataContext.CartItems
+                .Where(ci => ci.UserId == userId)
+                .Where(ci => ci.IsArchived == false)
+                .Include(ci => ci.Piece)
+                .ToList();
+        }
+
+        public List<CartItemSet> GetCartItemsSetNoTracking(int userId)
         {
             return this._dataContext.CartItemSets
                 .AsNoTracking()
+                .Where(cis => cis.UserId == userId)
+                .Where(cis => cis.IsArchived == false)
+                .Include(cis => cis.Set)
+                .ThenInclude(s => s.PiecesList)
+                .ThenInclude(pl => pl.Piece)
+                .ToList();
+        }
+
+        public List<CartItemSet> GetCartItemSets(int userId)
+        {
+            return this._dataContext.CartItemSets
                 .Where(cis => cis.UserId == userId)
                 .Where(cis => cis.IsArchived == false)
                 .Include(cis => cis.Set)
@@ -871,11 +889,7 @@ namespace SAGroupAlphaSpring26.Services
             {
                 // First get the users cart items and cart item sets.
                 var cartItems = this.GetCartItems(userId);
-                var cartSets = this._dataContext.CartItemSets
-                    .Where(cis => cis.UserId == userId && cis.IsArchived == false)
-                    .Include(cis => cis.Set)
-                    .ThenInclude(s => s!.PiecesList)
-                    .ToList();
+                var cartSets = this.GetCartItemSets(userId);
 
                 // We can iterate over a list of pieces, then add it to user cart.
                 List<Piece> pieces = new();

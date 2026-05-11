@@ -30,13 +30,13 @@ namespace SAGroupAlphaSpring26.ViewComponents
                 if (int.TryParse(userIdClaim, out int userId))
                 {
                     user = _dataService.GetUser(userId);
-                    cartItems = _dataService.GetCartItems(userId);
+                    cartItems = _dataService.GetCartItemsNoTracking(userId);
                     if (cartItems != null && cartItems.Count > 0)
                     {
                         model.Pieces.AddRange(cartItems);
                     }
 
-                    setItems = _dataService.GetCartItemSet(userId);
+                    setItems = _dataService.GetCartItemsSetNoTracking(userId);
                     if (setItems != null && setItems.Count > 0)
                     {
                         model.Sets.AddRange(setItems);
