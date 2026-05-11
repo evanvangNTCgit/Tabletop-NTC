@@ -46,14 +46,14 @@ namespace SAGroupAlphaSpring26.ViewComponents
                     {
                         if (p.Piece != null)
                         {
-                            p.Piece.Price = CurrencyConverter.GetValueFrom(user.Currency, p.Piece.Price);
+                            p.Piece.Price = CurrencyConverter.ConvertPriceToCurrency(user.Currency, p.Piece.Price);
                         }
                     });
                     model.Sets.ForEach(s =>
                     {
                         if (s.Set != null)
                         {
-                            s.Set.Price = CurrencyConverter.GetValueFrom(user.Currency, s.Set.Price);
+                            s.Set.Price = CurrencyConverter.ConvertPriceToCurrency(user.Currency, s.Set.Price);
                         }
                     });
                 }

@@ -20,7 +20,7 @@ namespace SAGroupAlphaSpring26.ApiServices
         /// <param name="price">Price of the item purchased in other currency.</param>
         /// <param name="date">Date of purchase.</param>
         /// <returns>Old currency purchase in USD value.</returns>
-        public async static Task<decimal> HistoricalValue(string currency, decimal price, DateTime date)
+        public async static Task<decimal> GetHistoricalValue(string currency, decimal price, DateTime date)
         {
             currency = currency.ToLower();
             if (currency == "usd")
@@ -55,7 +55,7 @@ namespace SAGroupAlphaSpring26.ApiServices
         /// <param name="currency">ABBREVIATED CURRENCY (aud for example).</param>
         /// <param name="UsdPrice">Price in USD.</param>
         /// <returns>Price converted from Usd to currency.</returns>
-        public  static decimal GetValueFrom(string currency, decimal UsdPrice)
+        public  static decimal ConvertPriceToCurrency(string currency, decimal UsdPrice)
         {
             currency = currency.ToLower(); // Incase someone capitalizes it.
             if (UsdValues != null)
@@ -110,7 +110,7 @@ namespace SAGroupAlphaSpring26.ApiServices
         {
             foreach (T pricedItem in list)
             {
-                pricedItem.Price = GetValueFrom(currency, pricedItem.Price);
+                pricedItem.Price = ConvertPriceToCurrency(currency, pricedItem.Price);
             }
 
             return list;

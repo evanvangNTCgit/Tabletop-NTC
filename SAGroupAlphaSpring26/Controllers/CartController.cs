@@ -31,14 +31,14 @@ namespace SAGroupAlphaSpring26.Controllers
             {
                 if (ci.Piece != null)
                 {
-                    ci.Piece.Price = CurrencyConverter.GetValueFrom(user.Currency, ci.Piece.Price);
+                    ci.Piece.Price = CurrencyConverter.ConvertPriceToCurrency(user.Currency, ci.Piece.Price);
                 }
             });
             userSets.ForEach(cis =>
             {
                 if (cis.Set != null)
                 {
-                    cis.Set.Price = CurrencyConverter.GetValueFrom(user.Currency, cis.Set.Price);
+                    cis.Set.Price = CurrencyConverter.ConvertPriceToCurrency(user.Currency, cis.Set.Price);
                 }
             });
 
@@ -95,8 +95,17 @@ namespace SAGroupAlphaSpring26.Controllers
         public IActionResult ViewSale()
         {
             int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            User user = _dataService.GetUser(userId);
             Sale userSale = this.BuildSale();
             List<CartItemSet> userSets = _dataService.GetCartItemSet(userId);
+            userSale.SaleLines.ForEach(sl => sl.Price = CurrencyConverter.ConvertPriceToCurrency(user.Currency, sl.Price));
+            userSets.ForEach(s =>
+            {
+                if (s.Set != null)
+                {
+                    s.Set.Price = CurrencyConverter.ConvertPriceToCurrency(user.Currency, s.Set.Price);
+                }
+            });
 
             // Dont want to keep making DB reads, I will pass in the list of sets right in the model.
             SaleViewModel model = new()
@@ -128,7 +137,7 @@ namespace SAGroupAlphaSpring26.Controllers
             User user = this._dataService.GetUser(userId);
 
             List<Sale> UsersSales = this._dataService.GetUserSales(userId);
-            UsersSales.ForEach(s => s.SaleLines.ForEach(async sl => sl.Price = await CurrencyConverter.HistoricalValue(user.Currency, sl.Price, s.Date)));
+            UsersSales.ForEach(s => s.SaleLines.ForEach(async sl => sl.Price = await CurrencyConverter.GetHistoricalValue(user.Currency, sl.Price, s.Date)));
 
             return View(UsersSales);
         }
