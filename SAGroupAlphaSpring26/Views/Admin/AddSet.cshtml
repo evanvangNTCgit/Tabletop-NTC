@@ -49,6 +49,12 @@
     </form>
 </div>
     <div style="padding-bottom: 100px;"></div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const footer = document.getElementById('Footer');
+        if (footer) footer.style.display = 'none';
+    });
+</script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
