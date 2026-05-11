@@ -65,8 +65,14 @@
                          onerror="this.onerror=null; this.src='/images/default.png';" />
 
                     <h3>@piece.Name</h3>
-                    <p>@piece.Description</p>
 
+                        @if(!string.IsNullOrEmpty(piece.Description) && piece.Description.Count() >= 25)
+                        {
+                            <p>@piece.Description.Substring(0, 25)...</p>
+                        } else
+                        {
+                            <p>@piece.Description</p>
+                        }
                     @* Purchase count is stored temporarily on the view model via ViewData (see controller) *@
                     @if (ViewData["PiecePurchaseCounts"] is System.Collections.Generic.Dictionary<int, int> purchaseCounts && purchaseCounts.TryGetValue(piece.Id, out var purchaseCount))
                     {
@@ -74,7 +80,6 @@
                     }
 
                         <p class="numberspacing">Price: @dollarsign@piece.Price</p>
-                    <!-- <button class="button-primary">View</button> -->
                     <div>
                         <a class="button-primary" asp-controller="Home" asp-action="Piece" asp-route-id="@piece.Id">View</a>
                     </div>
