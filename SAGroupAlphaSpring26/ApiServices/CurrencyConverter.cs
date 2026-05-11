@@ -14,6 +14,42 @@ namespace SAGroupAlphaSpring26.ApiServices
         private static UsdCurrencyValueDTO UsdValues = null!;
 
         /// <summary>
+        /// Gets historical value of item purchase at price back to usd.
+        /// </summary>
+        /// <param name="currency">Currency of purchase.</param>
+        /// <param name="price">Price of the item purchased in other currency.</param>
+        /// <param name="date">Date of purchase.</param>
+        /// <returns>Old currency purchase in USD value.</returns>
+        public async static Task<decimal> HistoricalValue(string currency, decimal price, DateTime date)
+        {
+            currency = currency.ToLower();
+            if (currency == "usd")
+                return price;
+            string formattedDate = date.ToString("yyyy-MM-dd"); // This is how the API likes the date.
+            string MainURL = $"https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@{formattedDate}/v1/currencies/usd.json";
+            string fallbackURL = $"https://{formattedDate}.currency-api.pages.dev/v1/currencies/usd.json";
+            HttpResponseMessage response = await _client.GetAsync(MainURL);
+            if (response == null)
+            {
+                response = await _client.GetAsync(fallbackURL);
+                response.EnsureSuccessStatusCode();
+            }
+            var jsonReponse = await response.Content.ReadAsStringAsync();
+            var currencies = JsonSerializer.Deserialize<UsdCurrencyValueDTO>(jsonReponse);
+            foreach (var curr in currencies.Values)
+            {
+                if (curr.Key == currency)
+                {
+                    // When rounding currency its not always up, its standard .5 and above is rounded up. So like normal math.
+                    var convertedValue = Math.Round((price * curr.Value), 2);
+                    return convertedValue;
+                }
+            }
+            // Still nothing? Currency likely not supported...
+            throw new Exception($"{currency} is not supported");
+        }
+
+        /// <summary>
         /// Turns the value from USD currency to user currency.
         /// </summary>
         /// <param name="currency">ABBREVIATED CURRENCY (aud for example).</param>
