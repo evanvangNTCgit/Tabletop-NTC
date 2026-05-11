@@ -9,6 +9,10 @@
         /// <returns>Dollar sign for user currency.</returns>
         public static string DollarSignCurrency(string currency)
         {
+            if (currency == null)
+            {
+                return "$";
+            }
             switch (currency.ToUpper())
             {
                 case ("EUR"): // Euros

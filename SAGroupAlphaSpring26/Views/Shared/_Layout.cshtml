@@ -38,11 +38,6 @@
             <li>
                 <a class="nav-button" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
             </li>
-            <li>
-                <a class="nav-button" asp-area="" asp-route-pageNumber="1" asp-controller="Home" asp-action="Store">Store</a>
-            </li>
-
-            <vc:cart></vc:cart>
             @* removed for the above view component ^
             <li>
                 <a class="nav-button" asp-area="" asp-controller="Cart" asp-action="view">Cart</a>
@@ -50,6 +45,12 @@
 
             @if (User.Identity?.IsAuthenticated ?? false)
             {
+                <li>
+                    <a class="nav-button" asp-area="" asp-route-pageNumber="1" asp-controller="Home" asp-action="Store">Store</a>
+                </li>
+
+                <vc:cart></vc:cart>
+
                 <li>
                     <form asp-controller="Account" asp-action="user-pieces-inventory" method="get">
                         <button type="submit" class="nav-button">Inventory</button>
