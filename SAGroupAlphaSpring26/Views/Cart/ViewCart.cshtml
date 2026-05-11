@@ -1,4 +1,10 @@
+@using SAGroupAlphaSpring26.Services
 @model CartViewModel
+
+@{
+    string dollarSign = DollarSignService.DollarSignCurrency(Model.UserCurrency);
+}
+
 <div class="saBackground">
     <h2>Cart</h2>
 </div>
@@ -50,20 +56,13 @@
 
             <tr>
                 <td></td>
-                <td>                    <strong>Total: $@Html.Raw(totalPrice)</strong></td>
+                <td>                    <strong>Total: @dollarSign@Html.Raw(totalPrice)</strong></td>
                 <td>
                 </td>
                 <td></td>
             </tr>
         }
     </table>
-
-    @* <div class="mt-4">
-        <form asp-controller="Cart" asp-action="Checkout" method="post">
-            <button type="submit" class="button-primary">Purchase Items</button>
-        </form>
-    </div> *@
-
     <div>
         <a asp-controller="Cart" asp-action="ViewSale" class="btn btn-primary" role="button">Review Sale</a>
     </div>

@@ -30,6 +30,7 @@ namespace SAGroupAlphaSpring26.ViewComponents
                 if (int.TryParse(userIdClaim, out int userId))
                 {
                     user = _dataService.GetUser(userId);
+                    model.UserCurrency = user.Currency;
                     cartItems = _dataService.GetCartItemsNoTracking(userId);
                     if (cartItems != null && cartItems.Count > 0)
                     {

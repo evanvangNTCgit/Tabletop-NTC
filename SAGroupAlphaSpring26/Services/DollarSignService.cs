@@ -14,10 +14,12 @@
                 case ("EUR"): // Euros
                     return "€";
                 case ("MXN"): // Mexican Pesos
+                    return "MEX$";
                 case ("USD"): // US Dollars
-                case ("AUD"): // Australian Dollars
                     return "$";
-                case ("CAN"): // Canadian Dollars
+                case ("AUD"): // Australian Dollars
+                    return "AU$";
+                case ("CAD"): // Canadian Dollars
                     return "CAD$";
                 default:
                     return "$";

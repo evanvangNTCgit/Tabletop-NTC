@@ -6,7 +6,7 @@
 
         public PaginatedSetList PaginatedSets { get; private set; }
 
-        public string UserCurrency { get; set; } = "usd";
+        public string UserCurrency { get; set; }
 
         public PaginatedStoreViewModel(PaginatedSetList PaginatedSets, PaginatedPieceList PaginatedPieces)
         {

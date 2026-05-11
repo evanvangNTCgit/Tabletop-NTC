@@ -43,7 +43,7 @@ namespace SAGroupAlphaSpring26.Controllers
             });
 
             var model = new CartViewModel();
-
+            model.UserCurrency = user.Currency;
             model.Pieces.AddRange(userCartItems);
             model.Sets.AddRange(userSets);
 
