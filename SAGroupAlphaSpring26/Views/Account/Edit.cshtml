@@ -48,6 +48,11 @@
                         <span asp-validation-for="EmailAddress" class="text-danger"></span>
                     </div>
 
+                    <div class="mb-3">
+                    <label>Edit Currency:</label>
+                    <vc:currency-selection></vc:currency-selection>
+                    </div>
+
                     <!-- Submit button - full width via d-grid gap-2 -->
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
@@ -62,8 +67,6 @@
                     <a asp-controller="Home" asp-action="Index" class="btn btn-outline-dark">Return to Home</a>
                 </div>
             </div>
-            <label>Edit Currency:</label>
-            <vc:currency-selection></vc:currency-selection>
         </div>
     </div>
 </div>

@@ -116,7 +116,7 @@ using (var scope = app.Services.CreateScope())
         // Seed local user if not exists
         if (!context.Users.Any(u => u.FirstName == "Local"))
         {
-            var localUser = new User { Id = 1, FirstName = "Local", LastName = "DM", PasswordHash = passwordHasher.HashPassword(null!, "Password123"), Email = "local@demo.com", IsAdmin = true };
+            var localUser = new User { Id = 1, FirstName = "Local", LastName = "DM", PasswordHash = passwordHasher.HashPassword(null!, "Password123"), Email = "local@demo.com", IsAdmin = true, Currency = "usd" };
             context.Users.Add(localUser);
             context.SaveChanges();
 
@@ -147,7 +147,7 @@ using (var scope = app.Services.CreateScope())
     {
         if (!context.Users.Any(u => u.FirstName == "Evan"))
         {
-            var azureUser = new User { Id = 2, FirstName = "Evan", LastName = "Vang", PasswordHash = passwordHasher.HashPassword(null!, "EvanPassword123"), Email = "evankvang@gmail.com", IsAdmin = false };
+            var azureUser = new User { Id = 2, FirstName = "Evan", LastName = "Vang", PasswordHash = passwordHasher.HashPassword(null!, "EvanPassword123"), Email = "evankvang@gmail.com", IsAdmin = false, Currency = "usd" };
             context.Users.Add(azureUser);
             context.SaveChanges();
 

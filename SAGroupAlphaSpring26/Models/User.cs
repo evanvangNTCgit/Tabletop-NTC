@@ -14,6 +14,9 @@
         [Required]
         public required string LastName { get; set; }
 
+        [Required]
+        public required string Currency { get; set; } = "usd";
+
         // Email address of the user.
         [Required]
         [DataType(DataType.EmailAddress)]

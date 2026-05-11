@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.Services;
 using System.Security.Claims;
@@ -55,6 +56,7 @@ namespace SAGroupAlphaSpring26.Controllers
                 FirstName = rvm.FirstName,
                 LastName = rvm.LastName,
                 Email = rvm.EmailAddress,
+                Currency = "usd", // By default a user is usd currency but can edit it in edit profile. 
 
                 // This stores the password as a hash 
                 // Hash being one-way encryption so it cannot be decrypted to original password. (Unless they really really try)
@@ -299,17 +301,21 @@ TempData["SuccessMessage"] = "Your profile has been updated successfully.";
         }
 
         [HttpPost("changeusercurrency")]
-        public IActionResult ChangeUserCurrency([FromBody]string currency)
+        public IActionResult ChangeUserCurrency([FromBody]UserCurrencyDTO userCurrencyChange)
         {
-            if (string.IsNullOrEmpty(currency))
+            if (string.IsNullOrEmpty(userCurrencyChange.Currency) || string.IsNullOrEmpty(userCurrencyChange.UserEmail))
             {
                 return StatusCode(400);
             }
 
-            Response.Cookies.Append("UserCurrencyValue", currency, new CookieOptions
+            User user = this._dataService.GetUser(userCurrencyChange.UserEmail);
+            if(user == null)
             {
-                Expires = DateTime.UtcNow.AddDays(2),
-            });
+                return StatusCode(404);
+            }
+
+            user.Currency = userCurrencyChange.Currency;
+            this._dataService.UpdateUser(user);
 
             return StatusCode(200);
         }

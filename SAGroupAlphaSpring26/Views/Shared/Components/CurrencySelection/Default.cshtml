@@ -1,5 +1,6 @@
 ﻿@model CurrencyViewModel
 
+@if(Model != null){
 <select onchange="handleUserCurrencySelection(this.value)">
     @foreach (var currency in Model.Currencies)
     {
@@ -15,20 +16,21 @@
 </select>
 
 <script>
-    const handleUserCurrencySelection = (value) => {
-        // alert(`${value}`);
-        fetch('/account/changeusercurrency', {
-            method: "POST",
-            body: JSON.stringify(value),
-            headers: {
-                "Content-type": "application/json"
-            }
-        })
-
-        const userURL = window.location.href;
-        // If user is in the store refresh page so they can see price change to currency.
-        if (userURL.includes('/Store')) {
-            location.reload();
-        }
+    const handleUserCurrencySelection = (curr) => {
+            const userEmail = '@Model.UserEmail';
+        const submission = {
+            Currency: curr,
+                UserEmail: userEmail
+        };
+        console.log(userEmail);
+        console.table(submission);
+            fetch('/account/changeusercurrency', {
+                method: "POST",
+                body: JSON.stringify(submission),
+                headers: {
+                    "Content-type": "application/json"
+                }
+            })
     }
 </script>
+}

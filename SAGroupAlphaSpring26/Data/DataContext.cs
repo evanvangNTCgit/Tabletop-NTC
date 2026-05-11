@@ -118,6 +118,11 @@ namespace SAGroupAlphaSpring26.Data
             //    .Property(p => p.IsArchived)
             //    .HasDefaultValue(false);
 
+            // Make sure all users have the default value of USD for currency
+            modelBuilder.Entity<User>()
+                .Property(u => u.Currency)
+                .HasDefaultValue("usd");
+
             // Initial Piece
             modelBuilder.Entity<Piece>().HasData(
                 new Piece { Id = 1, PieceTypeID = 2, Name = "Default Dungeon", ImagePath = "/images/testMap.png", Price = 0.00m },
@@ -132,8 +137,8 @@ namespace SAGroupAlphaSpring26.Data
             PasswordHasher<string> passwordHasher = new();
             // Seed User
             modelBuilder.Entity<User>().HasData(
-                new User { Id = 1, FirstName = "Local", LastName = "DM", PasswordHash = passwordHasher.HashPassword(null!, "Password123"), Email = "local@demo.com", IsAdmin = true },
-                new User { Id = 2, FirstName = "Evan", LastName = "Vang", PasswordHash = passwordHasher.HashPassword(null!, "EvanPassword123"), Email = "evankvang@gmail.com", IsAdmin = false }
+                new User { Id = 1, FirstName = "Local", LastName = "DM", PasswordHash = passwordHasher.HashPassword(null!, "Password123"), Email = "local@demo.com", IsAdmin = true, Currency = "usd" },
+                new User { Id = 2, FirstName = "Evan", LastName = "Vang", PasswordHash = passwordHasher.HashPassword(null!, "EvanPassword123"), Email = "evankvang@gmail.com", IsAdmin = false, Currency = "usd" }
                 );
 
             // A seed session
