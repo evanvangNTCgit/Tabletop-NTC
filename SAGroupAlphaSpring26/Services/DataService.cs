@@ -347,16 +347,18 @@ namespace SAGroupAlphaSpring26.Services
         public List<Set> GetAllSetsWithConvertedCurrency(string currency)
         {
             var sets = this._dataContext.Sets
-    .Include(s => s.PiecesList!.Where(ps => ps.Piece.IsArchived == false))
-    .ThenInclude(ps => ps.Piece)
-    .AsNoTracking()
-    .ToList();
-            // Clone so that it does not affect the original sets.
-            var json = JsonSerializer.Serialize(sets, new JsonSerializerOptions() { ReferenceHandler = ReferenceHandler.Preserve});
-            var clonedSets = JsonSerializer.Deserialize<List<Set>>(json, new JsonSerializerOptions() { ReferenceHandler = ReferenceHandler.Preserve });
-            clonedSets = CurrencyConverter.GetStoreItemsPriceConverted(clonedSets, currency);
+                    .AsNoTracking()
+                    .Include(s => s.PiecesList!.Where(ps => ps.Piece.IsArchived == false))
+                    .ThenInclude(ps => ps.Piece)
+                    .ToList();
 
-            return clonedSets;
+            // Clone so that it does not affect the original sets.
+            //var json = JsonSerializer.Serialize(sets, new JsonSerializerOptions() { ReferenceHandler = ReferenceHandler.Preserve });
+            //var clonedSets = JsonSerializer.Deserialize<List<Set>>(json, new JsonSerializerOptions() { ReferenceHandler = ReferenceHandler.Preserve });
+            //clonedSets = CurrencyConverter.GetStoreItemsPriceConverted(clonedSets, currency);
+            sets = CurrencyConverter.GetStoreItemsPriceConverted(sets, currency);
+
+            return sets;
         }
 
         // Get a user by their email address.
@@ -738,6 +740,7 @@ namespace SAGroupAlphaSpring26.Services
         public List<CartItem> GetCartItems(int userId)
         {
             return this._dataContext.CartItems
+                .AsNoTracking()
                 .Where(ci => ci.UserId == userId)
                 .Where(ci => ci.IsArchived == false)
                 .Include(ci => ci.Piece)
@@ -747,6 +750,7 @@ namespace SAGroupAlphaSpring26.Services
         public List<CartItemSet> GetCartItemSet(int userId)
         {
             return this._dataContext.CartItemSets
+                .AsNoTracking()
                 .Where(cis => cis.UserId == userId)
                 .Where(cis => cis.IsArchived == false)
                 .Include(cis => cis.Set)

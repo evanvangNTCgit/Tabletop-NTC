@@ -80,6 +80,7 @@ namespace SAGroupAlphaSpring26.Controllers
 
             // Base lists
             var sets = new List<Set>();
+            var pieces = new List<Piece>();
 
             try
             {
@@ -90,8 +91,6 @@ namespace SAGroupAlphaSpring26.Controllers
             {
                 sets = _dataService.GetAllSets();
             }
-
-            var pieces = new List<Piece>();
 
             int currentUserId = _dataService.GetUserId(User);
             bool includeOwned = showOwned.HasValue && showOwned.Value;

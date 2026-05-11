@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using SAGroupAlphaSpring26.ApiServices;
 using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.Services;
 using System.Security.Claims;
@@ -19,13 +19,28 @@ namespace SAGroupAlphaSpring26.Controllers
         }
 
         [HttpGet("view")]
-        public IActionResult ViewCart() 
+        public IActionResult ViewCart()
         {
             // Get the user ID (currently a string), parse it. 
             // Then get the cart items based on user ID.
             int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            User user = this._dataService.GetUser(userId);
             List<CartItem> userCartItems = _dataService.GetCartItems(userId);
             List<CartItemSet> userSets = _dataService.GetCartItemSet(userId);
+            userCartItems.ForEach(ci =>
+            {
+                if (ci.Piece != null)
+                {
+                    ci.Piece.Price = CurrencyConverter.GetValueFrom(user.Currency, ci.Piece.Price);
+                }
+            });
+            userSets.ForEach(cis =>
+            {
+                if (cis.Set != null)
+                {
+                    cis.Set.Price = CurrencyConverter.GetValueFrom(user.Currency, cis.Set.Price);
+                }
+            });
 
             var model = new CartViewModel();
 
@@ -116,7 +131,7 @@ namespace SAGroupAlphaSpring26.Controllers
             return View(UsersSales);
         }
 
-        private Sale BuildSale() 
+        private Sale BuildSale()
         {
             int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             List<CartItem> userCartItems = _dataService.GetCartItems(userId);
@@ -140,11 +155,11 @@ namespace SAGroupAlphaSpring26.Controllers
                 }
             }
 
-            if (userSets != null && userSets.Count > 0) 
+            if (userSets != null && userSets.Count > 0)
             {
                 // We agreed on making a set just a normal salline.
                 // So just loop through all pieces in a set and make a saleline.
-                foreach(CartItemSet cartSet in userSets) 
+                foreach (CartItemSet cartSet in userSets)
                 {
                     if (cartSet.Set.PiecesList != null && cartSet.Set.PiecesList.Count > 0)
                     {
