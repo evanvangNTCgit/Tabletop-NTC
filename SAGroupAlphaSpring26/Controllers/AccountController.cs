@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using SAGroupAlphaSpring26.ApiServices;
 using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.Services;
 using System.Security.Claims;
@@ -188,7 +189,7 @@ namespace SAGroupAlphaSpring26.Controllers
         // Edit Profile - requires authorization
         [HttpGet("edit")]
         [Authorize]
-        public IActionResult Edit()
+        public async Task<IActionResult> Edit()
         {
             // Get the current user's information
             int userId = _dataService.GetUserId(User);
@@ -198,7 +199,9 @@ namespace SAGroupAlphaSpring26.Controllers
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                EmailAddress = user.Email
+                EmailAddress = user.Email,
+                Currencies = await GetCurrencies.GetCurrenciesSupported(),
+                UserCurrentCurrency = user.Currency,
             };
 
             return View(editViewModel);
@@ -207,8 +210,10 @@ namespace SAGroupAlphaSpring26.Controllers
         // Edit Profile POST - requires authorization
         [HttpPost("edit")]
         [Authorize]
-        public IActionResult Edit(EditProfileViewModel editViewModel)
+        public async Task<IActionResult> Edit(EditProfileViewModel editViewModel)
         {
+            editViewModel.Currencies = await GetCurrencies.GetCurrenciesSupported();
+
             if (!ModelState.IsValid)
             {
                 return View(editViewModel);
@@ -233,6 +238,7 @@ namespace SAGroupAlphaSpring26.Controllers
             user.FirstName = editViewModel.FirstName;
             user.LastName = editViewModel.LastName;
             user.Email = editViewModel.EmailAddress;
+            user.Currency = editViewModel.UserCurrentCurrency;
 
             _dataService.UpdateUser(user);
 

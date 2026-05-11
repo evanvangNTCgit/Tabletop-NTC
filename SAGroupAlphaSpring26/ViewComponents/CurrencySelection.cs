@@ -12,7 +12,7 @@ namespace SAGroupAlphaSpring26.ViewComponents
             try
             {
                 var model = new CurrencyViewModel();
-                model.Currencies = await CurrencyConverter.GetCurrenciesSupported();
+                model.Currencies = await GetCurrencies.GetCurrenciesSupported();
                 var userEmail = UserClaimsPrincipal.FindFirst(ClaimTypes.Email)?.Value;
 
                 if (userEmail == null || userEmail == string.Empty)

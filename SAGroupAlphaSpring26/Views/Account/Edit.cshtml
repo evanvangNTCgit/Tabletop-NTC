@@ -49,8 +49,21 @@
                     </div>
 
                     <div class="mb-3">
-                    <label>Edit Currency:</label>
-                    <vc:currency-selection></vc:currency-selection>
+                    <label class="form-label">Edit Currency:</label>
+                        <select asp-for="UserCurrentCurrency">
+                            @foreach (var currency in Model.Currencies)
+                            {
+                                @if (currency.Key == Model.UserCurrentCurrency)
+                                {
+                                    <option value="@currency.Key" selected>@currency.Key | @currency.Value</option>
+                                }
+                                else
+                                {
+                                    <option value="@currency.Key">@currency.Key | @currency.Value</option>
+                                }
+                            }
+                        </select>
+                    <span asp-validation-for="UserCurrentCurrency" class="text-danger"></span>
                     </div>
 
                     <!-- Submit button - full width via d-grid gap-2 -->
