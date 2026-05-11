@@ -138,6 +138,8 @@ namespace SAGroupAlphaSpring26.Controllers
 
             List<Sale> UsersSales = this._dataService.GetUserSales(userId);
             UsersSales.ForEach(s => s.SaleLines.ForEach(async sl => sl.Price = await CurrencyConverter.GetHistoricalValueToUsd(user.Currency, sl.Price, s.Date)));
+            UsersSales.ForEach(s => s.SaleLines.ForEach(async sl => sl.Tax = await CurrencyConverter.GetHistoricalValueToUsd(user.Currency, sl.Tax, s.Date)));
+            UsersSales.ForEach(s => s.SaleLines.ForEach(async sl => sl.TotalCost = await CurrencyConverter.GetHistoricalValueToUsd(user.Currency, sl.TotalCost, s.Date)));
 
             return View(UsersSales);
         }
