@@ -20,7 +20,7 @@ namespace SAGroupAlphaSpring26.ApiServices
         /// <param name="price">Price of the item purchased in other currency.</param>
         /// <param name="date">Date of purchase.</param>
         /// <returns>Old currency purchase in USD value.</returns>
-        public async static Task<decimal> GetHistoricalValue(string currency, decimal price, DateTime date)
+        public async static Task<decimal> GetHistoricalValueToUsd(string currency, decimal price, DateTime date)
         {
             currency = currency.ToLower();
             if (currency == "usd")
