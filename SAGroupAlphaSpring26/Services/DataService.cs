@@ -958,6 +958,7 @@ namespace SAGroupAlphaSpring26.Services
         public List<Sale> GetUserSales(int userId)
         {
             return this._dataContext.Sales
+                .AsNoTracking()
                 .Where(sa => sa.UserID == userId)
                 .Include(sa => sa.SaleLines)
                 .ThenInclude(sl => sl.Piece)

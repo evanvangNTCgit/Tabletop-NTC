@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SAGroupAlphaSpring26.Models;
+using SAGroupAlphaSpring26.ApiServices;
+using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.Services;
 using System.Security.Claims;
-using SAGroupAlphaSpring26.Data;
 
 namespace SAGroupAlphaSpring26.ViewComponents
 {
@@ -18,8 +18,9 @@ namespace SAGroupAlphaSpring26.ViewComponents
         public IViewComponentResult Invoke()
         {
             var model = new CartViewModel();
-            List<CartItem> cartItems = new List<CartItem>();
+            List<CartItem> cartItems = new();
             List<CartItemSet> setItems = new();
+            User user = null;
 
             // auth check.
             if (User.Identity != null && User.Identity.IsAuthenticated)
@@ -28,7 +29,7 @@ namespace SAGroupAlphaSpring26.ViewComponents
                 string? userIdClaim = ((ClaimsPrincipal)User).FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (int.TryParse(userIdClaim, out int userId))
                 {
-
+                    user = _dataService.GetUser(userId);
                     cartItems = _dataService.GetCartItems(userId);
                     if (cartItems != null && cartItems.Count > 0)
                     {
@@ -40,6 +41,21 @@ namespace SAGroupAlphaSpring26.ViewComponents
                     {
                         model.Sets.AddRange(setItems);
                     }
+
+                    model.Pieces.ForEach(p =>
+                    {
+                        if (p.Piece != null)
+                        {
+                            p.Piece.Price = CurrencyConverter.GetValueFrom(user.Currency, p.Piece.Price);
+                        }
+                    });
+                    model.Sets.ForEach(s =>
+                    {
+                        if (s.Set != null)
+                        {
+                            s.Set.Price = CurrencyConverter.GetValueFrom(user.Currency, s.Set.Price);
+                        }
+                    });
                 }
             }
 

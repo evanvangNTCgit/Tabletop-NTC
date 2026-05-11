@@ -122,11 +122,13 @@ namespace SAGroupAlphaSpring26.Controllers
         }
 
         [HttpGet("salehistory")]
-        public IActionResult SaleHistory()
+        public async Task<IActionResult> SaleHistory()
         {
             int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            User user = this._dataService.GetUser(userId);
 
-            var UsersSales = this._dataService.GetUserSales(userId);
+            List<Sale> UsersSales = this._dataService.GetUserSales(userId);
+            UsersSales.ForEach(s => s.SaleLines.ForEach(async sl => sl.Price = await CurrencyConverter.HistoricalValue(user.Currency, sl.Price, s.Date)));
 
             return View(UsersSales);
         }
