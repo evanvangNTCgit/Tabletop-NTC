@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using SAGroupAlphaSpring26.ApiServices;
@@ -74,8 +75,22 @@ namespace SAGroupAlphaSpring26.Controllers
 
             StoreViewModel model = new StoreViewModel();
 
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var user = _dataService.GetUser(userId);
+
             // Base lists
-            var sets = _dataService.GetAllSets();
+            var sets = new List<Set>();
+
+            try
+            {
+                sets = _dataService.GetAllSetsWithConvertedCurrency(user.Currency);
+            } 
+            // API not working... Just get all the sets with USD.
+            catch (CurrencyCallException)
+            {
+                sets = _dataService.GetAllSets();
+            }
+
             var pieces = new List<Piece>();
 
             int currentUserId = _dataService.GetUserId(User);

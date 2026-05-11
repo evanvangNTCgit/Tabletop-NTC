@@ -1,6 +1,7 @@
-using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using SAGroupAlphaSpring26.ApiServices;
 using SAGroupAlphaSpring26.Data;
+using System.Security.Claims;
 
 namespace SAGroupAlphaSpring26.Services
 {
@@ -333,6 +334,23 @@ namespace SAGroupAlphaSpring26.Services
                 .Include(s => s.PiecesList!.Where(ps => ps.Piece.IsArchived == false))
                 .ThenInclude(ps => ps.Piece)
                 .ToList();
+        }
+
+        /// <summary>
+        /// Gets the sets with proper price conversions.
+        /// AsNoTracking() is added on this query make sure to use updateSet() for set updates.
+        /// </summary>
+        /// <param name="currency">Currency to convert with.</param>
+        /// <returns>Sets converted to users currency.</returns>
+        public List<Set> GetAllSetsWithConvertedCurrency(string currency)
+        {
+            var sets = this._dataContext.Sets
+    .Include(s => s.PiecesList!.Where(ps => ps.Piece.IsArchived == false))
+    .ThenInclude(ps => ps.Piece)
+    .AsNoTracking()
+    .ToList();
+            sets = CurrencyConverter.GetStoreItemsPriceConverted(sets, currency);
+            return sets;
         }
 
         // Get a user by their email address.
