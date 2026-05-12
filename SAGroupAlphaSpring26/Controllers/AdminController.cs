@@ -11,14 +11,14 @@ namespace SAGroupAlphaSpring26.Controllers
     {
         private readonly DataService _dataService;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ILogger<AdminController> _logger;
 
-        public AdminController(DataContext dc, IWebHostEnvironment webHostEnvironment)
+        public AdminController(DataContext dc, IWebHostEnvironment webHostEnvironment, ILogger<AdminController> logger)
         {
-            // This controller needs a dataservice since this is the 
-            // Controller ADMIN is using to use some CRUD operations.
             this._dataService = new DataService(dc);
 
             this._webHostEnvironment = webHostEnvironment;
+            this._logger = logger;
         }
         public IActionResult Index()
         {
@@ -28,16 +28,24 @@ namespace SAGroupAlphaSpring26.Controllers
         [HttpGet("AddPiece")]
         public IActionResult AddPiece()
         {
-            // This needs my piece view models so that it can see the different piece types.
-            PieceViewModel pvm = new();
-            pvm.PieceTypes = _dataService.GetPieceTypes();
+            try
+            {
+                // This needs my piece view models so that it can see the different piece types.
+                PieceViewModel pvm = new();
+                pvm.PieceTypes = _dataService.GetPieceTypes();
 
-            string pathForImages = Path.Combine(this._webHostEnvironment.WebRootPath, "images/");
-            pvm.ImagePaths = Directory.EnumerateFiles(pathForImages)
-                .Select(fn => Path.GetFileName(fn))
-                .ToList();
+                string pathForImages = Path.Combine(this._webHostEnvironment.WebRootPath, "images/");
+                pvm.ImagePaths = Directory.EnumerateFiles(pathForImages)
+                    .Select(fn => Path.GetFileName(fn))
+                    .ToList();
 
-            return View(pvm);
+                return View(pvm);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed to show AddPiece page for admin. {ex.Message}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost("AddPiece")]
@@ -99,11 +107,10 @@ namespace SAGroupAlphaSpring26.Controllers
                 // Use simply redirect since ASP.NET will rewrite / into %2 within the redirecttoaction function,
                 return Redirect($"/Piece/{pieceId}");
             }
-            catch
+            catch (Exception ex)
             {
-                // Dont add it and simply redirect.
-                // Goes to index action in home controller.
-                return RedirectToAction("Index", "Home");
+                _logger.LogInformation($"Failed to post piece changes for a piece: {pvm.Piece?.Name}. {ex.Message}");
+                return RedirectToAction(nameof(Index));
             }
         }
 
@@ -131,7 +138,8 @@ namespace SAGroupAlphaSpring26.Controllers
             }
             catch (Exception e)
             {
-                throw new Exception($"Failed to add piece type: {e.Message}");
+                _logger.LogInformation($"Failed to add a piece type: {pt.Name}. {e.Message}");
+                return RedirectToAction(nameof(Index));
             }
         }
 
@@ -161,9 +169,10 @@ namespace SAGroupAlphaSpring26.Controllers
                 }
                 return View(model);
             }
-            catch
+            catch (Exception ex)
             {
-                return RedirectToAction("Index", "Home");
+                _logger.LogInformation($"Failed to show edit set view. {ex.Message}");
+                return RedirectToAction(nameof(Index));
             }
         }
 
@@ -202,9 +211,10 @@ namespace SAGroupAlphaSpring26.Controllers
                 int SetId = setUpdated.Id;
                 return Redirect($"/Set/{SetId}");
             }
-            catch
+            catch (Exception ex)
             {
-                return RedirectToAction("Index", "Home");
+                _logger.LogInformation($"Failed to post edit set changes. {ex.Message}");
+                return RedirectToAction(nameof(Index));
             }
         }
 
@@ -212,19 +222,27 @@ namespace SAGroupAlphaSpring26.Controllers
         [HttpGet("EditPiece/{id:int}")]
         public IActionResult EditPiece(int id)
         {
-            var existingPiece = _dataService.GetPiece(id);
-            if (existingPiece == null) return NotFound();
+            try
+            {
+                var existingPiece = _dataService.GetPiece(id);
+                if (existingPiece == null) return NotFound();
 
-            // Creates a view model and adds the piece so that the view can populate the form with the existing data.
-            PieceViewModel pvm = new();
-            pvm.Piece = existingPiece;
-            pvm.PieceTypes = _dataService.GetPieceTypes();
+                // Creates a view model and adds the piece so that the view can populate the form with the existing data.
+                PieceViewModel pvm = new();
+                pvm.Piece = existingPiece;
+                pvm.PieceTypes = _dataService.GetPieceTypes();
 
-            string pathForImages = Path.Combine(_webHostEnvironment.WebRootPath, "images/");
-            pvm.ImagePaths = Directory.EnumerateFiles(pathForImages)
-                .Select(fn => Path.GetFileName(fn)).ToList();
+                string pathForImages = Path.Combine(_webHostEnvironment.WebRootPath, "images/");
+                pvm.ImagePaths = Directory.EnumerateFiles(pathForImages)
+                    .Select(fn => Path.GetFileName(fn)).ToList();
 
-            return View(pvm);
+                return View(pvm);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed to show edit piece page. {ex.Message}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         // Post for editing a piece.
@@ -265,9 +283,10 @@ namespace SAGroupAlphaSpring26.Controllers
                 // Use simply redirect since ASP.NET will rewrite / into %2 within the redirecttoaction function,
                 return Redirect($"/Piece/{pieceId}");
             }
-            catch
+            catch (Exception ex)
             {
-                return RedirectToAction("Index", "Home");
+                _logger.LogInformation($"Failed to post piece changes for {pvm.Piece?.Name}. {ex.Message}");
+                return RedirectToAction(nameof(Index));
             }
         }
 
@@ -329,31 +348,47 @@ namespace SAGroupAlphaSpring26.Controllers
         [HttpPost("edit-piecetype/{id:int}")]
         public IActionResult EditPieceType(PieceType pt)
         {
-            // If not valid send user back to view with the piece type for correction.
-            if (!ModelState.IsValid)
+            try
             {
-                return View(pt);
-            }
-            else
-            {
-                _dataService.UpdatePieceType(pt);
+                // If not valid send user back to view with the piece type for correction.
+                if (!ModelState.IsValid)
+                {
+                    return View(pt);
+                }
+                else
+                {
+                    _dataService.UpdatePieceType(pt);
 
-                // Send user back to view of piece types to see their changes.
-                return RedirectToAction(nameof(PieceTypes));
+                    // Send user back to view of piece types to see their changes.
+                    return RedirectToAction(nameof(PieceTypes));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed to post edit piece type changes for {pt.Name}. {ex.Message}");
+                return RedirectToAction(nameof(Index));
             }
         }
 
         [HttpGet("AddSet")]
         public IActionResult AddSet()
         {
-            SetViewModel svm = new();
-            svm.AvailablePieces = this._dataService.GetAllPieces();
+            try
+            {
+                SetViewModel svm = new();
+                svm.AvailablePieces = this._dataService.GetAllPieces();
 
-            string pathForImages = Path.Combine(this._webHostEnvironment.WebRootPath, "images/");
-            // Note: Images are already in Piece.ImagePath, but list for consistency if needed
-            // svm.ImagePaths = Directory.EnumerateFiles(pathForImages).Select(fn => Path.GetFileName(fn)).ToList();
+                string pathForImages = Path.Combine(this._webHostEnvironment.WebRootPath, "images/");
+                // Note: Images are already in Piece.ImagePath, but list for consistency if needed
+                // svm.ImagePaths = Directory.EnumerateFiles(pathForImages).Select(fn => Path.GetFileName(fn)).ToList();
 
-            return View(svm);
+                return View(svm);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed to show Add Set view. {ex.Message}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost("AddSet")]
@@ -373,6 +408,7 @@ namespace SAGroupAlphaSpring26.Controllers
             }
             catch (Exception e)
             {
+                _logger.LogInformation($"Failed to post a set for {svm.NewSet.Name}. {e.Message}");
                 ModelState.AddModelError("", e.Message);
                 svm.AvailablePieces = this._dataService.GetAllPieces();
                 return View(svm);
@@ -388,8 +424,16 @@ namespace SAGroupAlphaSpring26.Controllers
         [HttpPost("deletepiececonfirmation/{id:int}")]
         public IActionResult DeletePiece(int id)
         {
-            this._dataService.DeletePiece(id);
-            return RedirectToAction(nameof(Pieces));
+            try
+            {
+                this._dataService.DeletePiece(id);
+                return RedirectToAction(nameof(Pieces));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed to delete piece. {ex.Message}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpGet("deletesetconfirmation/{id:int}")]
@@ -401,35 +445,75 @@ namespace SAGroupAlphaSpring26.Controllers
         [HttpPost("deletesetconfirmation/{id:int}")]
         public IActionResult DeleteSet(int id)
         {
-            this._dataService.DeleteSet(id);
-            return RedirectToAction(nameof(Sets));
+            try
+            {
+                this._dataService.DeleteSet(id);
+                return RedirectToAction(nameof(Sets));
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogInformation($"Failed to delete set. {ex.Message}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpGet("RecoverPiece")]
         public IActionResult RecoverPiece()
         {
-            return View(this._dataService.GetDeletedPieces());
+            try
+            {
+                return View(this._dataService.GetDeletedPieces());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed to show Recover Piece page. {ex.Message}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpGet("RecoverPiece/{id:int}")]
         public IActionResult RecoverPiece(int id)
         {
-            this._dataService.RestorePiece(id);
+            try
+            {
+                this._dataService.RestorePiece(id);
 
-            return RedirectToAction(nameof(Pieces));
+                return RedirectToAction(nameof(Pieces));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed to recover a piece. {ex.Message}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpGet("RecoverSet")]
         public IActionResult RecoverSet()
         {
-            return View(this._dataService.GetDeletedSets());
+            try
+            {
+                return View(this._dataService.GetDeletedSets());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed to show Recover Set page. {ex.Message}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpGet("RecoverSet/{id:int}")]
         public IActionResult RecoverSet(int id)
         {
-            this._dataService.RestoreSet(id);
-            return RedirectToAction(nameof(Sets));
+            try
+            {
+                this._dataService.RestoreSet(id);
+                return RedirectToAction(nameof(Sets));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed to recover a set. {ex.Message}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         /// <summary>
