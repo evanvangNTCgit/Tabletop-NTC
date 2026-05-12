@@ -1,9 +1,10 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SAGroupAlphaSpring26.Models;
 using SAGroupAlphaSpring26.Services;
 using SAGroupAlphaSpring26.ViewModels;
+using System.Security.Claims;
+using static System.Collections.Specialized.BitVector32;
 
 namespace SAGroupAlphaSpring26.Controllers
 {
@@ -12,10 +13,12 @@ namespace SAGroupAlphaSpring26.Controllers
     public class MapController : Controller
     {
         private readonly DataService _dataService;
+        private readonly ILogger<MapController> _logger;
 
-        public MapController(DataService dataService)
+        public MapController(DataService dataService, ILogger<MapController> logger)
         {
             _dataService = dataService;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -74,107 +77,137 @@ namespace SAGroupAlphaSpring26.Controllers
         [Route("Map/MapTest/{id}/{sceneId?}")]
         public IActionResult MapTest(int id, int? sceneId)
         {
-            // now uses data service to get session data, this should get the tokens/pieces associated.
-            var session = _dataService.GetSession(id);
-
-            if (session == null)
+            try
             {
-                return NotFound();
+                // now uses data service to get session data, this should get the tokens/pieces associated.
+                var session = _dataService.GetSession(id);
+
+                if (session == null)
+                {
+                    return NotFound();
+                }
+
+                // Ensure at least one scene exists
+                if (!session.Scenes.Any())
+                {
+                    _dataService.AddScene(new Scene { SessionId = id, Name = "Default Scene" });
+                    session = _dataService.GetSession(id);
+                }
+
+                var currentScene = sceneId.HasValue
+                    ? session.Scenes.FirstOrDefault(s => s.Id == sceneId.Value)
+                    : session.Scenes.FirstOrDefault();
+
+                if (currentScene == null) currentScene = session.Scenes.First();
+
+                // Creates the map token for displaying the map on the screen.
+                // The map token should always be at ZIndex 0, and only one token should be the map per scene.
+                var mapToken = session.Tokens
+                    .FirstOrDefault(t => string.Equals(t.Piece?.PieceType?.Name, "Map", StringComparison.OrdinalIgnoreCase) && t.SceneId == currentScene.Id);
+
+                var viewModel = new MapScreenViewModel()
+                {
+                    CurrentSession = session,
+                    CurrentScene = currentScene,
+                    Scenes = session.Scenes,
+                    MapImagePath = mapToken != null ? mapToken.Piece!.ImagePath : "/images/BetaMap1.png",
+
+                    Tokens = session.Tokens
+                    .Where(t => t.Piece?.PieceType?.Name != "Map" && t.SceneId == currentScene.Id)
+                    .ToList()
+                };
+
+                var UserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (!int.TryParse(UserId, out int UserIdParse))
+                {
+                    // implement some sort of error handling...
+                }
+
+                viewModel.PlayablePieces = this._dataService.GetUserPieces(UserIdParse);
+
+                return View("~/Views/Map/VangMap.cshtml", viewModel);
             }
-
-            // Ensure at least one scene exists
-            if (!session.Scenes.Any())
+            catch (Exception ex)
             {
-                _dataService.AddScene(new Scene { SessionId = id, Name = "Default Scene" });
-                session = _dataService.GetSession(id);
+                try
+                {
+                    var session = _dataService.GetSession(id);
+                    _logger.LogInformation($"Failed to load map for session {session.Id}, {session.Name}, {ex.Message}");
+                } catch
+                {
+                    _logger.LogInformation($"Failed to load map for session, failed to load session data, {ex.Message}");
+                }
+                return RedirectToAction("Index", "Home");
             }
-
-            var currentScene = sceneId.HasValue
-                ? session.Scenes.FirstOrDefault(s => s.Id == sceneId.Value)
-                : session.Scenes.FirstOrDefault();
-
-            if (currentScene == null) currentScene = session.Scenes.First();
-
-            // Creates the map token for displaying the map on the screen.
-            // The map token should always be at ZIndex 0, and only one token should be the map per scene.
-            var mapToken = session.Tokens
-                .FirstOrDefault(t => string.Equals(t.Piece?.PieceType?.Name, "Map", StringComparison.OrdinalIgnoreCase) && t.SceneId == currentScene.Id);
-
-            var viewModel = new MapScreenViewModel()
-            {
-                CurrentSession = session,
-                CurrentScene = currentScene,
-                Scenes = session.Scenes,
-                MapImagePath = mapToken != null ? mapToken.Piece!.ImagePath : "/images/BetaMap1.png",
-
-                Tokens = session.Tokens
-                .Where(t => t.Piece?.PieceType?.Name != "Map" && t.SceneId == currentScene.Id)
-                .ToList()
-            };
-
-            var UserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!int.TryParse(UserId, out int UserIdParse))
-            {
-                // implement some sort of error handling...
-            }
-
-            viewModel.PlayablePieces = this._dataService.GetUserPieces(UserIdParse);
-
-            return View("~/Views/Map/VangMap.cshtml", viewModel);
         }
 
         // Displays the map for the players, uses session ID and Scene ID to display the correct map.
         [Route("Map/PlayerView/{sessionID}/{sceneId?}")]
         public IActionResult PlayerView(int sessionID, int? sceneId)
         {
-            var session = _dataService.GetSession(sessionID);
-
-            if (session == null)
+            try
             {
-                return NotFound("Session not found.");
+                var session = _dataService.GetSession(sessionID);
+
+                if (session == null)
+                {
+                    return NotFound("Session not found.");
+                }
+
+                var currentScene = sceneId.HasValue
+                    ? session.Scenes.FirstOrDefault(s => s.Id == sceneId.Value)
+                    : session.Scenes.FirstOrDefault();
+
+                if (currentScene == null)
+                {
+                    if (!session.Scenes.Any()) return NotFound("No scenes found for this session.");
+                    currentScene = session.Scenes.First();
+                }
+
+                // Compares strings and uses StringComparison.OrdinalIgnoreCase to ensure correct casing.
+                var mapToken = session.Tokens
+                    .FirstOrDefault(t => string.Equals(t.Piece?.PieceType?.Name, "Map", StringComparison.OrdinalIgnoreCase) && t.SceneId == currentScene.Id);
+
+                var viewModel = new MapScreenViewModel()
+                {
+                    CurrentSession = session,
+                    CurrentScene = currentScene,
+                    Scenes = session.Scenes,
+                    // Fallback to test map if no map token is found
+                    MapImagePath = mapToken?.Piece?.ImagePath ?? "/images/BetaMap1.png",
+
+                    // Filter out the map itself from the interactive tokens list
+                    Tokens = session.Tokens
+                        .Where(t => !string.Equals(t.Piece?.PieceType?.Name, "Map", StringComparison.OrdinalIgnoreCase) && t.SceneId == currentScene.Id)
+                        .ToList()
+                };
+
+                // Simplify User ID retrieval
+                var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (int.TryParse(userIdString, out int userId))
+                {
+                    viewModel.PlayablePieces = _dataService.GetUserPieces(userId);
+                }
+                else
+                {
+                    // Handle guest or unauthenticated user - perhaps an empty list?
+                    viewModel.PlayablePieces = new List<Piece>();
+                }
+
+                return View(viewModel);
             }
-
-            var currentScene = sceneId.HasValue
-                ? session.Scenes.FirstOrDefault(s => s.Id == sceneId.Value)
-                : session.Scenes.FirstOrDefault();
-
-            if (currentScene == null)
+            catch (Exception ex)
             {
-                if (!session.Scenes.Any()) return NotFound("No scenes found for this session.");
-                currentScene = session.Scenes.First();
+                try
+                {
+                    var session = _dataService.GetSession(sessionID);
+                    _logger.LogInformation($"Failed to load player view for session: {session.Id}, {session.Name}. {ex.Message}");
+                } catch
+                {
+                    _logger.LogInformation($"Failed to load player view for session, failed to load session info. {ex.Message}");
+                }
+                return RedirectToAction("Index", "Home");
             }
-
-            // Compares strings and uses StringComparison.OrdinalIgnoreCase to ensure correct casing.
-            var mapToken = session.Tokens
-                .FirstOrDefault(t => string.Equals(t.Piece?.PieceType?.Name, "Map", StringComparison.OrdinalIgnoreCase) && t.SceneId == currentScene.Id);
-
-            var viewModel = new MapScreenViewModel()
-            {
-                CurrentSession = session,
-                CurrentScene = currentScene,
-                Scenes = session.Scenes,
-                // Fallback to test map if no map token is found
-                MapImagePath = mapToken?.Piece?.ImagePath ?? "/images/BetaMap1.png",
-
-                // Filter out the map itself from the interactive tokens list
-                Tokens = session.Tokens
-                    .Where(t => !string.Equals(t.Piece?.PieceType?.Name, "Map", StringComparison.OrdinalIgnoreCase) && t.SceneId == currentScene.Id)
-                    .ToList()
-            };
-
-            // Simplify User ID retrieval
-            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (int.TryParse(userIdString, out int userId))
-            {
-                viewModel.PlayablePieces = _dataService.GetUserPieces(userId);
-            }
-            else
-            {
-                // Handle guest or unauthenticated user - perhaps an empty list?
-                viewModel.PlayablePieces = new List<Piece>();
-            }
-
-            return View(viewModel);
         }
 
 
