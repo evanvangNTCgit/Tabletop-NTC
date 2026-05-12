@@ -158,8 +158,7 @@ if (!isPlayerView) {
 
         if (selectedTokenId && !tokenData[selectedTokenId]) {
             selectedTokenId = null;
-            const panel = document.getElementById('token-info-panel');
-            if (panel) panel.style.display = 'none';
+            clearInfoPanel();
         } else {
             updateInfoPanel();
         }
@@ -500,8 +499,7 @@ if (!isPlayerView) {
 
                 if (selectedTokenId === htmlId) {
                     selectedTokenId = null;
-                    const panel = document.getElementById('token-info-panel');
-                    if (panel) panel.style.display = 'none';
+                    clearInfoPanel();
                 }
 
                 // Broadcast deletion to player view.
@@ -549,8 +547,7 @@ if (!isPlayerView) {
                 // Clear local state
                 tokenData = {};
                 selectedTokenId = null;
-                const panel = document.getElementById('token-info-panel');
-                if (panel) panel.style.display = 'none';
+                clearInfoPanel();
 
                 // Broadcast clear to player view by sending an empty syncAll
                 bc.postMessage({
