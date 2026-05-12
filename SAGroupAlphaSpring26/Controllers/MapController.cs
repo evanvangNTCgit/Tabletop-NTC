@@ -259,8 +259,9 @@ namespace SAGroupAlphaSpring26.Controllers
                 this._dataService.DeleteTokens(tokenIds);
                 return Ok();
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogInformation($"Failed to delete tokens for a session. {ex.Message}");
                 return BadRequest("Failed to delete tokens.");
             }
         }
@@ -276,6 +277,7 @@ namespace SAGroupAlphaSpring26.Controllers
             }
             catch (Exception ex)
             {
+                this._logger.LogInformation($"Failed to clear board for session: {sessionId}. {ex.Message}");
                 return BadRequest(ex.Message);
             }
         }
@@ -302,6 +304,7 @@ namespace SAGroupAlphaSpring26.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogInformation($"Failed to update the map background for session: {model.SessionId}. {ex.Message}");
                 return BadRequest(ex.Message);
             }
         }
@@ -310,29 +313,37 @@ namespace SAGroupAlphaSpring26.Controllers
         [HttpPost("Map/CreateScene")]
         public IActionResult CreateScene([FromBody] SceneModel model)
         {
-            if (model == null || model.SessionId <= 0 || string.IsNullOrEmpty(model.Name))
-                return BadRequest("Invalid scene data.");
-
-            var scene = new Scene
+            try
             {
-                SessionId = model.SessionId,
-                Name = model.Name
-            };
-            _dataService.AddScene(scene);
+                if (model == null || model.SessionId <= 0 || string.IsNullOrEmpty(model.Name))
+                    return BadRequest("Invalid scene data.");
 
-            // If a map was selected, set the selected map.
-            if (model.MapPieceId.HasValue && model.MapPieceId.Value > 0)
-            {
-                _dataService.UpdateSessionMap(model.SessionId, model.MapPieceId.Value, scene.Id);
+                var scene = new Scene
+                {
+                    SessionId = model.SessionId,
+                    Name = model.Name
+                };
+                _dataService.AddScene(scene);
+
+                // If a map was selected, set the selected map.
+                if (model.MapPieceId.HasValue && model.MapPieceId.Value > 0)
+                {
+                    _dataService.UpdateSessionMap(model.SessionId, model.MapPieceId.Value, scene.Id);
+                }
+
+                // If tokens were selected to be carried over, clone them to the new scene.
+                if (model.TokenIdsToClone != null && model.TokenIdsToClone.Any())
+                {
+                    _dataService.CloneTokensToScene(model.TokenIdsToClone, scene.Id);
+                }
+
+                return Json(new { id = scene.Id, name = scene.Name });
             }
-
-            // If tokens were selected to be carried over, clone them to the new scene.
-            if (model.TokenIdsToClone != null && model.TokenIdsToClone.Any())
+            catch (Exception ex)
             {
-                _dataService.CloneTokensToScene(model.TokenIdsToClone, scene.Id);
+                _logger.LogInformation($"Failed to Create a new scene for session: {model.SessionId}. {ex.Message}");
+                return BadRequest("Failed Scene Creation");
             }
-
-            return Json(new { id = scene.Id, name = scene.Name });
         }
 
         // Deletes a scene from the session by ID. Automatically deletes all tokens associated with that scene.
@@ -346,6 +357,7 @@ namespace SAGroupAlphaSpring26.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogInformation($"Failed to delete scene: {id}. {ex.Message}");
                 return BadRequest(ex.Message);
             }
         }
