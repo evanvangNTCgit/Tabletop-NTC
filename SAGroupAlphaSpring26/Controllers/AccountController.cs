@@ -336,6 +336,7 @@ namespace SAGroupAlphaSpring26.Controllers
                 _dataService.UpdateUserPassword(user, newPasswordHash);
 
                 TempData["SuccessMessage"] = "Your password has been changed successfully.";
+                _logger.LogInformation($"User: {user.Email} changed password at: {DateTime.Now}");
                 return RedirectToAction("ChangePassword");
             }
             catch (Exception ex)
