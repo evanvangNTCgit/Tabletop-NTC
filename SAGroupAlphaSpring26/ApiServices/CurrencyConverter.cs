@@ -109,7 +109,7 @@ namespace SAGroupAlphaSpring26.ApiServices
                     response = await _client.GetAsync(UsdValueURLFallback);
                     if(response == null)
                     {
-                        throw new CurrencyCallException("Failed to get USD values");
+                        throw new CurrencyCallException("Failed to get USD values. API likely down.");
                     }
                 }
                 var jsonReponse = await response.Content.ReadAsStringAsync();
