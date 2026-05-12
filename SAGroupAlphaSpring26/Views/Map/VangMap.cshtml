@@ -3,6 +3,9 @@
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
 <link rel="stylesheet" href="~/css/map-general.css" asp-append-version="true" />
 
+@* Outer wrapper: column flex that constrains toolbar + map row to the same width *@
+<div class="map-layout-wrapper" style="--zoom: 1; transform: scale(var(--zoom));">
+
 <div class="map-toolbar">
     <div class="toolbar-group">
         <button id="btn-undo" class="button-primary" disabled title="Undo"><i class="bi bi-arrow-counterclockwise"></i></button>
@@ -69,9 +72,9 @@
             </div>
             <div class="dropdown-menu-custom" id="tools-menu">
                 <div class="scene-items-container">
-                    <div class="scene-item tool-item" id="tool-token-info">
+                    @* <div class="scene-item tool-item" id="tool-token-info">
                         <i class="bi bi-info-circle me-2"></i> Token Info
-                    </div>
+                    </div> *@
                     <div class="scene-item tool-item" id="tool-session-notes">
                         <i class="bi bi-journal-text me-2"></i> Session Notes
                     </div>
@@ -97,40 +100,12 @@
     </div>
 </div>
 
-@* I created a wrapper div for the map and piece bar. *@
+<div class="map-row">
 
-<div class="map-layout-wrapper map-container" style="--zoom: 1; transform: scale(var(--zoom));">
 
-    @* I moved the piece bar before the map board. *@
-    <div class="piece-bar">
-        <h4 class="collection-header">Collection</h4>
-        <div class="token-list">
-            @foreach (var piece in Model.PlayablePieces)
-            {
-                // Image Paths currently /images/Cleric.png
-                // However must be ~/images/(filename).
-
-                // I assume we dont want he user to get a map?
-                if (piece.PieceType!.Name == "Map")
-                {
-                    continue;
-                }
-
-                String realImagePath = $"{piece.ImagePath}";
-
-                 <img src="@realImagePath"
-                      class="map-piece sidebar-piece"
-                      draggable="true"
-                      data-pieceid="@piece.Id.ToString()"
-                      data-piecename="@piece.Name"
-                      alt="@piece.Name"
-                      onerror="this.onerror=null; this.src='/images/default.png';" />
-            }
-        </div>
-    </div>
 
     <!-- https://stackoverflow.com/questions/26438388/maintain-div-aspect-ratio-according-to-height -->
-        <div class="map-container vang-map-board"
+        <div class="vang-map-board"
              id="map-board"
              data-role="dm">
 
@@ -163,22 +138,22 @@
         
         <div class="token-info-content">
             <div class="token-info-image-container">
-                <img id="token-info-image" src="" alt="Token Graphic" />
+                <img id="token-info-image" src="/images/default.png" alt="Token Image" />
             </div>
 
             <div>
                 <label for="token-info-name" class="token-info-label">Name:</label>
-                <input type="text" id="token-info-name" class="form-control token-info-input" />
+                <input type="text" id="token-info-name" class="form-control token-info-input" placeholder="Token Name" />
             </div>
 
             <div>
                 <label for="token-info-zindex" class="token-info-label">Z-Index:</label>
-                <input type="number" id="token-info-zindex" min="0" class="form-control token-info-input" />
+                <input type="number" id="token-info-zindex" min="0" class="form-control token-info-input" placeholder="Token Order" />
             </div>
 
             <div>
                 <label for="token-info-notes" class="token-info-label">Notes:</label>
-                <textarea id="token-info-notes" class="form-control token-info-input token-info-textarea"></textarea>
+                <textarea id="token-info-notes" class="form-control token-info-input token-info-textarea" placeholder="Add Token Notes"></textarea>
             </div>
 
             <div class="token-info-checkbox-container">
@@ -203,6 +178,8 @@
             </div>
         </div>
     </div>
+
+</div> @* End map-row *@
 
     @* Scene Wizard Modal, used for Managing/Creating Scenes *@
     <div class="modal-overlay" id="scene-wizard-overlay">
@@ -272,7 +249,31 @@
             </div>
         </div>
     </div>
+    @* Relocated Piece Bar (Collection) to the bottom *@
+    <div class="piece-bar">
+        <h4 class="collection-header">Collection</h4>
+        <div class="token-list">
+            @foreach (var piece in Model.PlayablePieces)
+            {
+                if (piece.PieceType!.Name == "Map")
+                {
+                    continue;
+                }
+
+                String realImagePath = $"{piece.ImagePath}";
+
+                 <img src="@realImagePath"
+                      class="map-piece sidebar-piece"
+                      draggable="true"
+                      data-pieceid="@piece.Id.ToString()"
+                      data-piecename="@piece.Name"
+                      alt="@piece.Name"
+                      onerror="this.onerror=null; this.src='/images/default.png';" />
+            }
+        </div>
+    </div>
 </div>
+
 
 <!-- Scripts start here -->
 @section Scripts {
