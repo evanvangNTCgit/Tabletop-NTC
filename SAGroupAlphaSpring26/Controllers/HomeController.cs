@@ -1,12 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using SAGroupAlphaSpring26.ApiServices;
-using SAGroupAlphaSpring26.Data;
-using SAGroupAlphaSpring26.Models;
 using SAGroupAlphaSpring26.Services;
-using System.Diagnostics;
 using System.Security.Claims;
 
 namespace SAGroupAlphaSpring26.Controllers
@@ -67,142 +63,158 @@ namespace SAGroupAlphaSpring26.Controllers
         [Route("Store")]
         public IActionResult Store(string sortOrder, string filter, string storeitemtype, int pageNumber, bool? showOwned)
         {
-
-            ViewData["NameSort"] = (sortOrder == "name_asc") ? "name_desc" : "name_asc";
-            ViewData["PriceSort"] = (sortOrder == "price_asc") ? "price_desc" : "price_asc";
-
-            ViewBag.ApplicationName = "SA Group Alpha Spring 2026";
-
-            StoreViewModel model = new StoreViewModel();
-
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            var user = _dataService.GetUser(userId);
-
-            // Base lists
-            var sets = new List<Set>();
-            var pieces = new List<Piece>();
-
             try
             {
-                sets = _dataService.GetAllSetsWithConvertedCurrency(user.Currency);
-            } 
-            // API not working... Just get all the sets with USD.
-            catch (CurrencyCallException)
-            {
-                sets = _dataService.GetAllSets();
-            }
+                ViewData["NameSort"] = (sortOrder == "name_asc") ? "name_desc" : "name_asc";
+                ViewData["PriceSort"] = (sortOrder == "price_asc") ? "price_desc" : "price_asc";
 
-            int currentUserId = _dataService.GetUserId(User);
-            bool includeOwned = showOwned.HasValue && showOwned.Value;
+                ViewBag.ApplicationName = "SA Group Alpha Spring 2026";
 
-            // Build pieces list (purchase-ranked, then owned/unowned based on inventory).
-            // Do this independently of which store toggle is currently selected.
-            if (currentUserId > 0)
-            {
-                var topUnownedPiecesStats = _dataService.GetTopUnownedPiecePurchaseStats(currentUserId);
+                StoreViewModel model = new StoreViewModel();
 
-                if (includeOwned)
+                var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var user = _dataService.GetUser(userId);
+
+                // Base lists
+                var sets = new List<Set>();
+                var pieces = new List<Piece>();
+
+                try
                 {
-                    var ownedPieces = _dataService.GetUserPieces(currentUserId);
+                    sets = _dataService.GetAllSetsWithConvertedCurrency(user.Currency);
+                }
+                // API not working... Just get all the sets with USD.
+                catch (CurrencyCallException)
+                {
+                    sets = _dataService.GetAllSets();
+                }
 
-                    // Purchase counts for owned pieces
-                    var allPurchaseStats = _dataService.GetPiecePurchaseStats();
-                    var purchaseDict = allPurchaseStats.ToDictionary(x => x.Piece.Id, x => x.TotalPurchased);
+                int currentUserId = _dataService.GetUserId(User);
+                bool includeOwned = showOwned.HasValue && showOwned.Value;
 
-                    var ownedStats = ownedPieces
-                        .Select(p => new PurchaseStatsViewModel
-                        {
-                            Piece = p,
-                            TotalPurchased = purchaseDict.ContainsKey(p.Id) ? purchaseDict[p.Id] : 0,
-                            PurchasedAmountTotal = 0m
-                        })
-                        .OrderByDescending(x => x.TotalPurchased)
-                        .ToList();
+                // Build pieces list (purchase-ranked, then owned/unowned based on inventory).
+                // Do this independently of which store toggle is currently selected.
+                if (currentUserId > 0)
+                {
+                    var topUnownedPiecesStats = _dataService.GetTopUnownedPiecePurchaseStats(currentUserId);
 
-                    var combined = ownedStats.Concat(topUnownedPiecesStats)
-                        .GroupBy(x => x.Piece.Id)
-                        .Select(g => g.First())
-                        .OrderByDescending(x => x.TotalPurchased)
-                        .ToList();
+                    if (includeOwned)
+                    {
+                        var ownedPieces = _dataService.GetUserPieces(currentUserId);
 
-                    pieces = combined.Select(x => x.Piece).ToList();
+                        // Purchase counts for owned pieces
+                        var allPurchaseStats = _dataService.GetPiecePurchaseStats();
+                        var purchaseDict = allPurchaseStats.ToDictionary(x => x.Piece.Id, x => x.TotalPurchased);
 
-                    pieces.ForEach(p => p.Price = CurrencyConverter.ConvertPriceToCurrency(user.Currency, p.Price));
+                        var ownedStats = ownedPieces
+                            .Select(p => new PurchaseStatsViewModel
+                            {
+                                Piece = p,
+                                TotalPurchased = purchaseDict.ContainsKey(p.Id) ? purchaseDict[p.Id] : 0,
+                                PurchasedAmountTotal = 0m
+                            })
+                            .OrderByDescending(x => x.TotalPurchased)
+                            .ToList();
 
-                    ViewData["PiecePurchaseCounts"] = combined.ToDictionary(x => x.Piece.Id, x => x.TotalPurchased);
+                        var combined = ownedStats.Concat(topUnownedPiecesStats)
+                            .GroupBy(x => x.Piece.Id)
+                            .Select(g => g.First())
+                            .OrderByDescending(x => x.TotalPurchased)
+                            .ToList();
+
+                        pieces = combined.Select(x => x.Piece).ToList();
+
+                        pieces.ForEach(p => p.Price = CurrencyConverter.ConvertPriceToCurrency(user.Currency, p.Price));
+
+                        ViewData["PiecePurchaseCounts"] = combined.ToDictionary(x => x.Piece.Id, x => x.TotalPurchased);
+                    }
+                    else
+                    {
+                        pieces = topUnownedPiecesStats.Select(x => x.Piece).ToList();
+                        pieces.ForEach(p => p.Price = CurrencyConverter.ConvertPriceToCurrency(user.Currency, p.Price));
+                        ViewData["PiecePurchaseCounts"] = topUnownedPiecesStats.ToDictionary(x => x.Piece.Id, x => x.TotalPurchased);
+                    }
                 }
                 else
                 {
-                    pieces = topUnownedPiecesStats.Select(x => x.Piece).ToList();
+                    // Not logged in or cannot determine user: fallback to all pieces.
+                    pieces = _dataService.GetPieces();
                     pieces.ForEach(p => p.Price = CurrencyConverter.ConvertPriceToCurrency(user.Currency, p.Price));
-                    ViewData["PiecePurchaseCounts"] = topUnownedPiecesStats.ToDictionary(x => x.Piece.Id, x => x.TotalPurchased);
                 }
+
+                // Apply text filter to both lists all the time.
+                if (!string.IsNullOrEmpty(filter))
+                {
+                    pieces = pieces.Where(p => p.Name.ToUpper().Contains(filter.ToUpper())).ToList();
+                    sets = sets.Where(s => s.Name.ToUpper().Contains(filter.ToUpper())).ToList();
+                }
+
+                // Apply sorting independently to both lists.
+                switch (sortOrder)
+                {
+                    case "name_asc":
+                        model.Pieces = pieces.OrderBy(p => p.Name).ToList();
+                        model.Sets = sets.OrderBy(s => s.Name).ToList();
+                        break;
+                    case "name_desc":
+                        model.Pieces = pieces.OrderByDescending(p => p.Name).ToList();
+                        model.Sets = sets.OrderByDescending(s => s.Name).ToList();
+                        break;
+                    case "price_desc":
+                        model.Pieces = pieces.OrderByDescending(p => p.Price).ToList();
+                        model.Sets = sets.OrderByDescending(s => s.Price).ToList();
+                        break;
+                    case "price_asc":
+                        model.Pieces = pieces.OrderBy(p => p.Price).ToList();
+                        model.Sets = sets.OrderBy(s => s.Price).ToList();
+                        break;
+                    default:
+                        model.Pieces = pieces;
+                        model.Sets = sets;
+                        break;
+                }
+
+
+                switch (storeitemtype)
+                {
+                    case "sets":
+                        model.Pieces.Clear();
+                        break;
+                    case "pieces":
+                        model.Sets.Clear();
+                        break;
+                    case "all":
+                        model.Sets = model.Sets;
+                        model.Pieces = model.Pieces;
+                        break;
+                    default:
+                        break;
+                }
+
+                if (pageNumber < 1)
+                {
+                    pageNumber = 1;
+                }
+
+                int pageSize = 4;
+                var PaginatedStoreModel = new PaginatedStoreViewModel(PaginatedSetList.Create(model.Sets, pageNumber, pageSize), PaginatedPieceList.Create(model.Pieces, pageNumber, pageSize));
+                PaginatedStoreModel.UserCurrency = user.Currency;
+                return View(PaginatedStoreModel);
             }
-            else
+            catch (Exception ex)
             {
-                // Not logged in or cannot determine user: fallback to all pieces.
-                pieces = _dataService.GetPieces();
-                pieces.ForEach(p => p.Price = CurrencyConverter.ConvertPriceToCurrency(user.Currency, p.Price));
+                try
+                {
+                    var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                    var user = _dataService.GetUser(userId);
+                    _logger.LogInformation($"Failed to show store for user: {user.Email}. {ex.Message}");
+                }
+                catch
+                {
+                    _logger.LogInformation($"Failed to show store for user, failed to load user info. {ex.Message}");
+                }
+                return RedirectToAction("Index", "Home");
             }
-
-            // Apply text filter to both lists all the time.
-            if (!string.IsNullOrEmpty(filter))
-            {
-                pieces = pieces.Where(p => p.Name.ToUpper().Contains(filter.ToUpper())).ToList();
-                sets = sets.Where(s => s.Name.ToUpper().Contains(filter.ToUpper())).ToList();
-            }
-
-            // Apply sorting independently to both lists.
-            switch (sortOrder)
-            {
-                case "name_asc":
-                    model.Pieces = pieces.OrderBy(p => p.Name).ToList();
-                    model.Sets = sets.OrderBy(s => s.Name).ToList();
-                    break;
-                case "name_desc":
-                    model.Pieces = pieces.OrderByDescending(p => p.Name).ToList();
-                    model.Sets = sets.OrderByDescending(s => s.Name).ToList();
-                    break;
-                case "price_desc":
-                    model.Pieces = pieces.OrderByDescending(p => p.Price).ToList();
-                    model.Sets = sets.OrderByDescending(s => s.Price).ToList();
-                    break;
-                case "price_asc":
-                    model.Pieces = pieces.OrderBy(p => p.Price).ToList();
-                    model.Sets = sets.OrderBy(s => s.Price).ToList();
-                    break;
-                default:
-                    model.Pieces = pieces;
-                    model.Sets = sets;
-                    break;
-            }
-
-
-            switch (storeitemtype)
-            {
-                case "sets":
-                    model.Pieces.Clear();
-                    break;
-                case "pieces":
-                    model.Sets.Clear();
-                    break;
-                case "all":
-                    model.Sets = model.Sets;
-                    model.Pieces = model.Pieces;
-                    break;
-                default:
-                    break;
-            }
-
-            if (pageNumber < 1)
-            {
-                pageNumber = 1;
-            }
-
-            int pageSize = 4;
-            var PaginatedStoreModel = new PaginatedStoreViewModel(PaginatedSetList.Create(model.Sets, pageNumber, pageSize), PaginatedPieceList.Create(model.Pieces, pageNumber, pageSize));
-            PaginatedStoreModel.UserCurrency = user.Currency;
-            return View(PaginatedStoreModel);
         }
         // Gets a specific piece by ID.
         [Route("Piece/{id}")]
