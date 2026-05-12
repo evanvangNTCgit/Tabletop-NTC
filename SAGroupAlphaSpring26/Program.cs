@@ -8,9 +8,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.ApiServices;
-
+using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+builder.Host.UseSerilog();
 
 // Add services to the container.
 builder.Services.AddScoped<SAGroupAlphaSpring26.Services.DataService>();
@@ -186,4 +191,16 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.Run();
+try
+{
+    Log.Information("NTC Tabletop is starting...");
+    app.Run();
+} catch (Exception ex)
+{
+    Log.Information($"NTC Table top exception. {ex.Message}");
+}
+finally
+{
+    Log.Information("NTC Tabletop is stopping...");
+    Log.CloseAndFlush();
+}
