@@ -1,4 +1,6 @@
-﻿using Azure;
+﻿using AspNetCoreGeneratedDocument;
+using Azure;
+using Serilog;
 using System.Text.Json;
 
 namespace SAGroupAlphaSpring26.ApiServices
@@ -22,31 +24,40 @@ namespace SAGroupAlphaSpring26.ApiServices
         /// <returns>Old currency purchase in USD value.</returns>
         public async static Task<decimal> GetHistoricalValueToUsd(string currency, decimal price, DateTime date)
         {
-            currency = currency.ToLower();
-            if (currency == "usd")
-                return price;
-            string formattedDate = date.ToString("yyyy-MM-dd"); // This is how the API likes the date.
-            string MainURL = $"https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@{formattedDate}/v1/currencies/usd.json";
-            string fallbackURL = $"https://{formattedDate}.currency-api.pages.dev/v1/currencies/usd.json";
-            HttpResponseMessage response = await _client.GetAsync(MainURL);
-            if (response == null)
+            try
             {
-                response = await _client.GetAsync(fallbackURL);
-                response.EnsureSuccessStatusCode();
-            }
-            var jsonReponse = await response.Content.ReadAsStringAsync();
-            var currencies = JsonSerializer.Deserialize<UsdCurrencyValueDTO>(jsonReponse);
-            foreach (var curr in currencies.Values)
-            {
-                if (curr.Key == currency)
+                currency = currency.ToLower();
+                if (currency == "usd")
+                    return price;
+                string formattedDate = date.ToString("yyyy-MM-dd"); // This is how the API likes the date.
+                string MainURL = $"https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@{formattedDate}/v1/currencies/usd.json";
+                string fallbackURL = $"https://{formattedDate}.currency-api.pages.dev/v1/currencies/usd.json";
+                HttpResponseMessage response = await _client.GetAsync(MainURL);
+                if (response == null)
                 {
-                    // When rounding currency its not always up, its standard .5 and above is rounded up. So like normal math.
-                    var convertedValue = Math.Round((price * curr.Value), 2);
-                    return convertedValue;
+                    response = await _client.GetAsync(fallbackURL);
+                    response.EnsureSuccessStatusCode();
                 }
+                var jsonReponse = await response.Content.ReadAsStringAsync();
+                var currencies = JsonSerializer.Deserialize<UsdCurrencyValueDTO>(jsonReponse);
+                foreach (var curr in currencies.Values)
+                {
+                    if (curr.Key == currency)
+                    {
+                        // When rounding currency its not always up, its standard .5 and above is rounded up. So like normal math.
+                        var convertedValue = Math.Round((price * curr.Value), 2);
+                        return convertedValue;
+                    }
+                }
+                // Still nothing? Currency likely not supported...
+                throw new Exception($"{currency} is not supported");
             }
-            // Still nothing? Currency likely not supported...
-            throw new Exception($"{currency} is not supported");
+            catch (Exception ex)
+            {
+                // Static serilog.
+                Log.Information($"Failed to convert historical currency purchase to USD: Currency: {currency}, Price: {price}, Date: {date}. {ex.Message}");
+                throw;
+            }
         }
 
         /// <summary>
@@ -57,26 +68,34 @@ namespace SAGroupAlphaSpring26.ApiServices
         /// <returns>Price converted from Usd to currency.</returns>
         public  static decimal ConvertPriceToCurrency(string currency, decimal UsdPrice)
         {
-            currency = currency.ToLower(); // Incase someone capitalizes it.
-            if (UsdValues != null)
+            try
             {
-                // Check each currency conversion and see if it can find the currency passed in by the paramter.
-                // If it cannot be found throw an exception.
-                foreach (var curr in UsdValues.Values)
+                currency = currency.ToLower(); // Incase someone capitalizes it.
+                if (UsdValues != null)
                 {
-                    if (curr.Key == currency)
+                    // Check each currency conversion and see if it can find the currency passed in by the paramter.
+                    // If it cannot be found throw an exception.
+                    foreach (var curr in UsdValues.Values)
                     {
-                        // When rounding currency its not always up, its standard .5 and above is rounded up. So like normal math.
-                        var convertedValue = Math.Round((UsdPrice * curr.Value), 2);
-                        return convertedValue;
+                        if (curr.Key == currency)
+                        {
+                            // When rounding currency its not always up, its standard .5 and above is rounded up. So like normal math.
+                            var convertedValue = Math.Round((UsdPrice * curr.Value), 2);
+                            return convertedValue;
+                        }
                     }
+                    // Okay nothing found in foreach loop... throw an exception.
+                    throw new Exception($"Following currency not supported:{currency}");
                 }
-                // Okay nothing found in foreach loop... throw an exception.
-                throw new Exception($"Following currency not supported:{currency}");
+                else
+                {
+                    throw new CurrencyCallException("Currency conversion failed");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                throw new CurrencyCallException("Currency conversion failed");
+                Log.Information($"Failed to convert a price to currency: Currency: {currency}, UsdPrice: {UsdPrice}. {ex.Message}");
+                throw;
             }
         }
 
@@ -88,14 +107,19 @@ namespace SAGroupAlphaSpring26.ApiServices
                 if (!response.IsSuccessStatusCode)
                 {
                     response = await _client.GetAsync(UsdValueURLFallback);
+                    if(response == null)
+                    {
+                        throw new CurrencyCallException("Failed to get USD values");
+                    }
                 }
                 var jsonReponse = await response.Content.ReadAsStringAsync();
                 var currencies = JsonSerializer.Deserialize<UsdCurrencyValueDTO>(jsonReponse);
                 UsdValues = currencies;
             }
-            catch
+            catch (Exception ex)
             {
-                // Cant make fetch must. make sure to do null checks in other methods.
+                Log.Information($"Failed to get USD values. {ex.Message}");
+                throw;
             }
         }
 
