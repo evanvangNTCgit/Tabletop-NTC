@@ -10,9 +10,12 @@ namespace SAGroupAlphaSpring26.Controllers
     public class ReportController : Controller
     {
         private readonly DataService _dataService;
-        public ReportController(DataContext dc) 
+        private readonly ILogger<ReportController> _logger;
+
+        public ReportController(DataContext dc, ILogger<ReportController> logger) 
         {
             this._dataService = new DataService(dc);
+            this._logger = logger;
         }
         public IActionResult Index()
         {
@@ -22,19 +25,35 @@ namespace SAGroupAlphaSpring26.Controllers
         [HttpGet("MostPurchasedPieces")]
         public IActionResult MostPurchasedPieces() 
         {
-            List<PurchaseStatsViewModel> saleLines = this._dataService.GetPiecePurchaseStats();
-            saleLines = saleLines.OrderByDescending(sl => sl.PurchasedAmountTotal).ToList();
+            try
+            {
+                List<PurchaseStatsViewModel> saleLines = this._dataService.GetPiecePurchaseStats();
+                saleLines = saleLines.OrderByDescending(sl => sl.PurchasedAmountTotal).ToList();
 
-            return View(saleLines);
+                return View(saleLines);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed to show most purchased piece report. {ex.Message}");
+                return RedirectToAction("Index", "Admin");
+            }
         }
 
         [HttpGet("MostPurchasedSets")]
         public IActionResult MostPurchasedSets()
         {
-            List<SetStatsViewModel> saleLines = this._dataService.GetSetPurchaseStats();
-            saleLines = saleLines.OrderByDescending(sl => sl.PurchasedAmountTotal).ToList();
+            try
+            {
+                List<SetStatsViewModel> saleLines = this._dataService.GetSetPurchaseStats();
+                saleLines = saleLines.OrderByDescending(sl => sl.PurchasedAmountTotal).ToList();
 
-            return View(saleLines);
+                return View(saleLines);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed to show most purchased sets report. {ex.Message}");
+                return RedirectToAction("Index", "Admin");
+            }
         }
     }
 }
