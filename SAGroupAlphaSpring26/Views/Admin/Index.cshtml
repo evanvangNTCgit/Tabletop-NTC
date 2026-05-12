@@ -54,3 +54,10 @@
 
 <p><a asp-controller="Home" asp-action="Index">Back to Home</a></p>
 
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const footer = document.getElementById('Footer');
+        if (footer) footer.style.display = 'none';
+    });
+</script>
+
