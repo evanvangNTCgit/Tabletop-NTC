@@ -235,7 +235,7 @@ textarea:-webkit-autofill:focus {
     }
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1299px) {
     :root {
         --toolbar-font: 0.8rem;
     }
