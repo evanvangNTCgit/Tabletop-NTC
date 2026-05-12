@@ -1,4 +1,8 @@
 ﻿@model IEnumerable<Piece>
+<div class="saBackground">
+    <h1>Add or Edit Pieces</h1>
+</div>
+<br />
 <div>
     <p>
         <a asp-controller="Admin" asp-action="AddPiece" class="btn-lg btn btn-outline-dark" style="background-color: mediumpurple" role="button">Add a piece</a> |
@@ -22,3 +26,9 @@
         }
     </table>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const footer = document.getElementById('Footer');
+        if (footer) footer.style.display = 'none';
+    });
+</script>

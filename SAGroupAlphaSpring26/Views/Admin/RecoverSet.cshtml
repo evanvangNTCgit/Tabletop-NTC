@@ -1,0 +1,24 @@
+﻿@model IEnumerable<Set>
+<div>
+    <h3>Restore a Set</h3>
+    <table class="table saBackground">
+        <tr>
+            <th>Name</th>
+            <th>Action</th>
+        </tr>
+        @foreach (Set s in Model)
+        {
+            <tr>
+                <td>@s.Name</td>
+                <td><a asp-controller="Admin" asp-action="RecoverSet" asp-route-id="@s.Id" class="btn btn-link">Restore</a></td>
+            </tr>
+        }
+    </table>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const footer = document.getElementById('Footer');
+        if (footer) footer.style.display = 'none';
+    });
+</script>

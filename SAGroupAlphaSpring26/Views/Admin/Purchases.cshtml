@@ -3,10 +3,10 @@
 @{
     ViewData["Title"] = "Purchase Statistics";
 }
-
-<h1>Purchase Statistics</h1>
-<p>This view shows all pieces and how many times they have been purchased across all sales.</p>
-
+<div class="saBackground">
+    <h1>Purchase Statistics</h1>
+    <p>This view shows all pieces and how many times they have been purchased across all sales.</p>
+</div>
 @if (Model.Any())
 {
     <div class="table-responsive">
@@ -39,5 +39,12 @@
 }
 else
 {
-    <p>No purchases found yet.</p>
+    <p class="saBackground">No purchases found yet.</p>
 }
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const footer = document.getElementById('Footer');
+        if (footer) footer.style.display = 'none';
+    });
+</script>

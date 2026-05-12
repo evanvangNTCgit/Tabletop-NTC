@@ -1,0 +1,90 @@
+@model EditProfileViewModel
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success mb-3">@TempData["SuccessMessage"]</div>
+}
+
+<!-- Edit Profile Form Container - Centered on page with Bootstrap grid -->
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <!-- Card Header - Gold background with dark text to match D&D theme -->
+            <div class="card-header" style="background: linear-gradient(180deg, #d4af37, #b8962e); border-bottom: 2px solid #f5d76e;">
+                <h2 class="mb-0" style="color: #1a120d;">Edit Profile</h2>
+            </div>
+            
+            <!-- Card Body - Contains the edit profile form with parchment background -->
+            <div class="card-body" style="background-color: #F5DEB3;">
+                <!-- Form submits to the Edit action in AccountController via POST -->
+                <form asp-action="Edit" method="post">
+                    <!-- Displays all model validation errors (except property-specific) -->
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <!-- First Name and Last Name in a row (2 columns on medium+ screens) -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <!-- Label uses Display Name attribute from ViewModel -->
+                            <label asp-for="FirstName" class="form-label"></label>
+                            <!-- Input binds to FirstName property, with client-side validation -->
+                            <input asp-for="FirstName" class="form-control" placeholder="Enter your first name" />
+                            <!-- Displays validation error message for FirstName -->
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="LastName" class="form-label"></label>
+                            <input asp-for="LastName" class="form-control" placeholder="Enter your last name" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <!-- Email Address field with email type for browser validation -->
+                    <div class="mb-3">
+                        <label asp-for="EmailAddress" class="form-label"></label>
+                        <input asp-for="EmailAddress" type="email" class="form-control" placeholder="Enter your email address" />
+                        <span asp-validation-for="EmailAddress" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                    <label class="form-label">Edit Currency:</label>
+                        <select asp-for="UserCurrentCurrency">
+                            @foreach (var currency in Model.Currencies)
+                            {
+                                @if (currency.Key == Model.UserCurrentCurrency)
+                                {
+                                    <option value="@currency.Key" selected>@currency.Key | @currency.Value</option>
+                                }
+                                else
+                                {
+                                    <option value="@currency.Key">@currency.Key | @currency.Value</option>
+                                }
+                            }
+                        </select>
+                    <span asp-validation-for="UserCurrentCurrency" class="text-danger"></span>
+                    </div>
+
+                    <!-- Submit button - full width via d-grid gap-2 -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+            
+<!-- Card Footer - Buttons for navigation -->
+            <div class="card-footer text-center" style="background-color: #F5DEB3; border-top: 1px solid #4a4a4a;">
+                <div class="d-grid gap-2" style="grid-template-columns: 1fr 1fr;">
+                    <a asp-controller="Account" asp-action="ChangePassword" class="btn btn-outline-dark">Change Password</a>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-dark">Return to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts section - renders client-side validation scripts -->
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

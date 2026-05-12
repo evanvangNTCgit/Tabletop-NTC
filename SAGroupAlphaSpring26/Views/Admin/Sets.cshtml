@@ -1,11 +1,17 @@
-﻿@model IEnumerable<Set>
+﻿@using System.Text
+@model IEnumerable<Set>
 @{
     // This is for the string to show that represents the piece in the set.
-    string piecesToShow = "";
+    StringBuilder stringBuilder = new();
 }
+<div class="saBackground">
+    <h1>Add or Edit Sets</h1>
+</div>
+<br />
 <div>
     <p>
-        <a asp-controller="Admin" asp-action="AddSet" class="btn-lg btn btn-outline-dark" style="background-color: mediumpurple" role="button">Add a set</a>
+        <a asp-controller="Admin" asp-action="AddSet" class="btn-lg btn btn-outline-dark" style="background-color: mediumpurple" role="button">Add a set</a> |
+        <a asp-controller="Admin" asp-action="RecoverSet" class="btn-lg btn btn-outline-dark" style="background-color: grey" role="button">Recover a set</a>
     </p>
     <table class="table saBackground">
         <tr>
@@ -18,16 +24,19 @@
             <tr class="saBackground">
                 <td>@item.Name</td>
                 <td>
-                    <a href="#" class="admin-edit-btn">Edit</a>
+                    <a asp-controller="admin" asp-action="editset" asp-route-id="@item.Id" class="admin-edit-btn">Edit</a> |
+                    <a asp-controller="admin" asp-action="deletesetconfirmation" asp-route-id="@item.Id" class="admin-delete-btn">Delete</a>
                 </td>
                 <td>
                     @if (item.PiecesList != null && item.PiecesList.Any())
                     {
                         foreach(var piece in item.PiecesList)
                         {
-                        piecesToShow += $"{piece.Piece.Name}, ";    
+                        // piecesToShow += $"{piece.Piece.Name}, ";   
+                        stringBuilder.Append($"{piece.Piece.Name}, ");
                         }
-                        <p>@piecesToShow</p>
+                        <p>@stringBuilder.ToString()</p>
+                        stringBuilder.Clear();
                     }
                     else
                     {
@@ -38,3 +47,16 @@
         }
     </table>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const footer = document.getElementById('Footer');
+        if (footer) footer.style.display = 'none';
+    });
+</script>

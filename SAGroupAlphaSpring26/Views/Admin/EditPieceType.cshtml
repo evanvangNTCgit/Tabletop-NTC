@@ -1,5 +1,7 @@
 ﻿@model PieceType
-<h2>Update Piece Type</h2>
+<div class="saBackground">
+    <h2>Update Piece Type</h2>
+</div>
 <div class="form-horizontal">
     <form method="post">
         <!-- Sending the piece type ID without user knowledge for proper processing in admin controller -->
@@ -15,3 +17,9 @@
         </p>
     </form>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const footer = document.getElementById('Footer');
+        if (footer) footer.style.display = 'none';
+    });
+</script>

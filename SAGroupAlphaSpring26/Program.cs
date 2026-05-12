@@ -2,13 +2,20 @@ global using SAGroupAlphaSpring26;
 global using SAGroupAlphaSpring26.Models;
 global using SAGroupAlphaSpring26.ViewModels;
 global using SAGroupAlphaSpring26.DTO;
+global using SAGroupAlphaSpring26.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SAGroupAlphaSpring26.Data;
-
+using SAGroupAlphaSpring26.ApiServices;
+using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+builder.Host.UseSerilog();
 
 // Add services to the container.
 builder.Services.AddScoped<SAGroupAlphaSpring26.Services.DataService>();
@@ -17,6 +24,8 @@ builder.Services.Configure<AppConfig>(builder.Configuration.GetSection("AppConfi
 
 // A password hasher 
 PasswordHasher<string> passwordHasher = new();
+
+
 
 // Adding the database for the EF core, and connecting it to the connection string in the appsettings.json file.
 // This is the DB that our C# classes will be stored in, and we will use EF core to interact with it.
@@ -60,6 +69,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 // This is required for my custom image uploading.
 builder.Services.AddSingleton<IWebHostEnvironment>(builder.Environment);
+
+// Have the user get USD values on program.cs to keep the method static and synchronous.
+CurrencyConverter.GetUsdValues();
 
 var app = builder.Build();
 
@@ -109,7 +121,7 @@ using (var scope = app.Services.CreateScope())
         // Seed local user if not exists
         if (!context.Users.Any(u => u.FirstName == "Local"))
         {
-            var localUser = new User { Id = 1, FirstName = "Local", LastName = "DM", PasswordHash = passwordHasher.HashPassword(null!, "Password123"), Email = "local@demo.com", IsAdmin = true };
+            var localUser = new User { Id = 1, FirstName = "Local", LastName = "DM", PasswordHash = passwordHasher.HashPassword(null!, "Password123"), Email = "local@demo.com", IsAdmin = true, Currency = "usd" };
             context.Users.Add(localUser);
             context.SaveChanges();
 
@@ -140,7 +152,7 @@ using (var scope = app.Services.CreateScope())
     {
         if (!context.Users.Any(u => u.FirstName == "Evan"))
         {
-            var azureUser = new User { Id = 2, FirstName = "Evan", LastName = "Vang", PasswordHash = passwordHasher.HashPassword(null!, "EvanPassword123"), Email = "evankvang@gmail.com", IsAdmin = false };
+            var azureUser = new User { Id = 2, FirstName = "Evan", LastName = "Vang", PasswordHash = passwordHasher.HashPassword(null!, "EvanPassword123"), Email = "evankvang@gmail.com", IsAdmin = false, Currency = "usd" };
             context.Users.Add(azureUser);
             context.SaveChanges();
 
@@ -179,4 +191,16 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.Run();
+try
+{
+    Log.Information("NTC Tabletop is starting...");
+    app.Run();
+} catch (Exception ex)
+{
+    Log.Information($"NTC Table top exception. {ex.Message}");
+}
+finally
+{
+    Log.Information("NTC Tabletop is stopping...");
+    Log.CloseAndFlush();
+}

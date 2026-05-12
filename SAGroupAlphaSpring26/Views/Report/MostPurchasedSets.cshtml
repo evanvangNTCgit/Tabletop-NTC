@@ -1,0 +1,30 @@
+﻿@using System.Text
+@model List<SetStatsViewModel>
+
+<div class="saBackground">
+    <h1>Most Purchased Sets</h1>
+</div>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var item in Model)
+    {
+        @if(item.Set != null)
+        {
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">@item.Set.Name</h5>
+                    <p class="card-text text-muted">
+                        Total Purchased: <strong>@item.TotalPurchased</strong>
+                            <br />
+                        Total Profit: <strong>$@item.PurchasedAmountTotal</strong>
+                    </p>
+                        <p class="card-text">
+                            <small class="text-muted d-block">Set Contains:</small>
+                            @string.Join(", ", item.Set.PiecesList.Select(p => p.Piece.Name))
+                        </p>
+                </div>
+            </div>
+        </div>
+        }
+    }
+</div>

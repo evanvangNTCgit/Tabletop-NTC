@@ -1,8 +1,13 @@
+@using SAGroupAlphaSpring26.Services
 @model CartViewModel
-<link rel="stylesheet" href="~/css/pages/cart.css" asp-append-version="true" />
 
-<h2>Cart</h2>
+@{
+    string dollarSign = DollarSignService.DollarSignCurrency(Model.UserCurrency);
+}
 
+<div class="saBackground">
+    <h2>Cart</h2>
+</div>
 @if (Model != null && (Model.Pieces.Count > 0 || Model.Sets.Count > 0))
 {
     <table class="table cart-table">
@@ -51,25 +56,18 @@
 
             <tr>
                 <td></td>
-                <td>                    <strong>Total: $@Html.Raw(totalPrice)</strong></td>
+                <td>                    <strong>Total: @dollarSign@Html.Raw(totalPrice)</strong></td>
                 <td>
                 </td>
                 <td></td>
             </tr>
         }
     </table>
-
-    @* <div class="mt-4">
-        <form asp-controller="Cart" asp-action="Checkout" method="post">
-            <button type="submit" class="button-primary">Purchase Items</button>
-        </form>
-    </div> *@
-
     <div>
         <a asp-controller="Cart" asp-action="ViewSale" class="btn btn-primary" role="button">Review Sale</a>
     </div>
 }
 else
 {
-    <p>It looks like your cart is empty. You should really add something...</p>
+    <p class="saBackground">It looks like your cart is empty. You should really add something...</p>
 }

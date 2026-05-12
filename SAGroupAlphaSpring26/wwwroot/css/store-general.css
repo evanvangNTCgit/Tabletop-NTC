@@ -86,3 +86,9 @@
     border: 1px solid #4a4a4a;
     color: #111827;
 }
+
+.store-next-prev-button {
+    margin: 10px;
+    background-color: #D4AF37;
+    font-size: important 25px;
+}

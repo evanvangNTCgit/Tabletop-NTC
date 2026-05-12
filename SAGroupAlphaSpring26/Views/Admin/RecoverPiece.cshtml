@@ -1,9 +1,9 @@
 ﻿@model IEnumerable<Piece>
 <div>
     <h3>Restore Piece</h3>
-    <table class="table">
+    <table class="table saBackground">
         <tr>
-            <th>Brand</th>
+            <th>Name</th>
             <th>Action</th>
         </tr>
         @foreach (Piece p in Model)
@@ -15,3 +15,10 @@
         }
     </table>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const footer = document.getElementById('Footer');
+        if (footer) footer.style.display = 'none';
+    });
+</script>

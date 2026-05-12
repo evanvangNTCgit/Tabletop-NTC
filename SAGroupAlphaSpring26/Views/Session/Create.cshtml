@@ -1,69 +1,66 @@
-﻿@model SAGroupAlphaSpring26.Models.Session
-
+@model SAGroupAlphaSpring26.Models.Session
 @{
     ViewData["Title"] = "Session Creation";
 }
 
-<body>
-    <div b-pbe4b1c5lp class="main-content">
+<div class="main-content">
+    <form asp-action="Create" method="post">
+        
+        <div class="text-center mb-5 header">
+            <h1 class="mb-0">Create New Session</h1>
+            <hr class="w-25 mx-auto" />
 
-        <div class="text-center mb-5">
-            <h1 class="mb-0">Session Creation</h1>
+            <input asp-for="Name"
+                   class="display-4 fw-bold text-center border-0 bg-transparent w-100"
+                   placeholder="Enter Session Name Here" />
+            <span asp-validation-for="Name" class="text-danger"></span>
         </div>
-        <form asp-action="Create" method="post">
-            <div class="card-body">
 
-                <!-- Session Name-->
-                <div class="text-center mb-5">
-                    <p class="lead">Session Name</p>
-                    <div class="p-3 border rounded bg-light">
-                        <textarea asp-for="Name"
-                                  class="form-control"
-                                  placeholder="Enter Name of your session. (Required)"
-                                  style="min-height: 50px; border: none; background: transparent;"></textarea>
-                        <span asp-validation-for="Name" class="text-danger"></span>
-                    </div>
-                    
-                    <!-- Session Notes-->
-                <div class="text-center mb-5">
-                    <p class="lead">Session Notes</p>
-                    <div class="p-3 border rounded bg-light">
+        <div class="card">
+            <div class="card-body">
+                <div class="text-center">
+                    <p class="lead">Notes</p>
+                    <div class="session-notes">
                         <textarea asp-for="Notes"
                                   class="form-control"
-                                  placeholder="Enter session notes(optional)"
-                                  style="min-height: 150px; border: none; background: transparent;"></textarea>
-
+                                  placeholder="Write Notes Here..."
+                                  style="min-height: 150px; border: none; background: transparent; box-shadow: none;"></textarea>
                     </div>
                 </div>
 
-                <div class="text-center mb-5">
-                    <h5>Map Selection</h5>
-                    <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px; width: 100%;">
-                        <!-- No Select Map Functions Available yet, just showing default dunction until later.-->
-                        <p>Default Dungeon Map will be assigned</p>
+                <div class="text-center mb-5 mt-4">
+                    <p class="lead">Map Selection (Optional)</p>
+                    <div class="session-notes d-flex align-items-center" style="min-height: 60px; padding: 0.5rem 1rem;">
+                        <select name="initialMapId" class="form-select" style="background-color: transparent; border: none; box-shadow: none; cursor: pointer;">
+                            <option value="" style="background-color: #F5DEB3; color: #111827;">-- Choose a Starting Map -- (Default if none)</option>
+                            @if (ViewBag.AvailableMaps != null)
+                            {
+                                foreach (var map in ViewBag.AvailableMaps)
+                                {
+                                    <option value="@map.Id" style="background-color: #F5DEB3; color: #111827;">@map.Name</option>
+                                }
+                            }
+                        </select>
                     </div>
                 </div>
 
-                <div class="d-grid gap-2 col-6 mx-auto">
-                    <button type="submit" class="btn btn-success btn-lg">
-                        Create Session
-                    </button>
-                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
-                        Cancel
-                    </a>
+                <div class="row justify-content-center g-3 col-8 mx-auto">
+                    <div class="col-md-6">
+                        <button type="submit" class="button-primary btn-lg w-100 shadow-sm">
+                            <i class="bi bi-save me-2"></i> Create Session
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <a asp-controller="Home" asp-action="Index" class="button-danger btn-lg w-100 shadow-sm d-inline-block text-center text-decoration-none">
+                            <i class="bi bi-x-circle me-2"></i> Cancel
+                        </a>
+                    </div>
                 </div>
             </div>
-        </form>
-
-        <div class="card-footer text-muted text-center mt-4">
-            Created on: @DateTime.Now.ToString("f")
         </div>
-    </div>
+    </form>
+</div>
 
-    @section Scripts {
-        @{
-            await Html.RenderPartialAsync("_ValidationScriptsPartial");
-        }
-    }
-
-</body>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

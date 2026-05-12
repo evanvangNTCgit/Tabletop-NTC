@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using SAGroupAlphaSpring26.ApiServices;
 using SAGroupAlphaSpring26.Data;
-using SAGroupAlphaSpring26.ViewModels;
 using System.Security.Claims;
 
 namespace SAGroupAlphaSpring26.Services
@@ -87,8 +87,10 @@ namespace SAGroupAlphaSpring26.Services
             {
                 var session = _dataContext.Sessions
                     .Where(s => s.IsArchived == false)
+                .Include(s => s.Scenes)
                 .Include(s => s.Tokens)
                     .ThenInclude(t => t.Piece)
+                        .ThenInclude(p => p!.PieceType)
                 .FirstOrDefault(s => s.Id == sessionId);
 
                 if (session == null)
@@ -112,6 +114,63 @@ namespace SAGroupAlphaSpring26.Services
                 .Where(s => s.IsArchived == false)
                 .OrderByDescending(s => s.LastUpdated)
                 .ToList();
+        }
+
+        // Gets scenes by session id.
+        public List<Scene> GetScenes(int sessionId)
+        {
+            return _dataContext.Scenes
+                .Where(s => s.SessionId == sessionId)
+                .ToList();
+        }
+
+        // Adds a scene to the session.
+        public Scene AddScene(Scene scene)
+        {
+            _dataContext.Scenes.Add(scene);
+            _dataContext.SaveChanges();
+            return scene;
+        }
+
+        // Clones a list of tokens to the new scene.
+        public void CloneTokensToScene(List<int> tokenIds, int targetSceneId)
+        {
+            var tokens = _dataContext.Tokens
+                .AsNoTracking()
+                .Where(t => tokenIds.Contains(t.Id))
+                .ToList();
+
+            foreach (var t in tokens)
+            {
+                var newToken = new Token
+                {
+                    Name = t.Name,
+                    PieceID = t.PieceID,
+                    SessionId = t.SessionId,
+                    SceneId = targetSceneId,
+                    X = t.X,
+                    Y = t.Y,
+                    ZIndex = t.ZIndex,
+                    Visibility = t.Visibility,
+                    Notes = t.Notes
+                };
+                _dataContext.Tokens.Add(newToken);
+            }
+            _dataContext.SaveChanges();
+        }
+
+        // Deletes a scene from the session, including all of its tokens.
+        public void DeleteScene(int sceneId)
+        {
+            var scene = _dataContext.Scenes
+                .Include(s => s.Tokens)
+                .FirstOrDefault(s => s.Id == sceneId);
+            if (scene != null)
+            {
+                _dataContext.Tokens.RemoveRange(scene.Tokens);
+                _dataContext.Scenes.Remove(scene);
+                _dataContext.SaveChanges();
+            }
         }
 
         // Update sessions.
@@ -151,6 +210,70 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
+        public void UpdateTokenPositions(List<TokenUpdateModel> updates)
+        {
+            foreach (var update in updates)
+            {
+                if (int.TryParse(update.Id, out int realTokenId))
+                {
+                    var token = this._dataContext.Tokens.Find(realTokenId);
+                    if (token != null)
+                    {
+                        token.X = update.X;
+                        token.Y = update.Y;
+                        token.ZIndex = update.zIndex;
+                        token.Visibility = update.Visibility;
+                        token.Name = update.Name;
+                        token.Notes = update.Notes;
+
+                        // Only update SceneId if a valid id is provided.
+                        if (update.SceneId.HasValue && update.SceneId.Value > 0)
+                        {
+                            token.SceneId = update.SceneId.Value;
+                        }
+
+                        var session = this.GetSession(token.SessionId);
+                        if (session != null) session.LastUpdated = DateTime.Now;
+                    }
+                }
+                else if (update.Id != null && update.Id.StartsWith("temp-"))
+                {
+                    var piece = this.GetPiece(update.PieceId);
+                    if (piece != null)
+                    {
+                        // Ensure we have a valid SceneId. Fallback sends us to first scene.
+                        int? targetSceneId = (update.SceneId.HasValue && update.SceneId.Value > 0)
+                                            ? update.SceneId.Value
+                                            : this.GetScenes(update.SessionID).FirstOrDefault()?.Id;
+
+                        this._dataContext.Tokens.Add(new Token
+                        {
+                            SessionId = update.SessionID,
+                            SceneId = targetSceneId,
+                            PieceID = update.PieceId,
+                            Name = piece.Name,
+                            X = update.X,
+                            Y = update.Y,
+                            ZIndex = update.zIndex,
+                            Visibility = update.Visibility,
+                            Notes = update.Notes
+                        });
+
+                        var session = this.GetSession(update.SessionID);
+                        if (session != null) session.LastUpdated = DateTime.Now;
+                    }
+                }
+            }
+            this._dataContext.SaveChanges();
+        }
+
+        public int GetMaxZIndexForSession(int sessionId)
+        {
+            return this._dataContext.Tokens
+                .Where(t => t.SessionId == sessionId)
+                .Max(t => (int?)t.ZIndex) ?? 0;
+        }
+
         public PieceType AddPieceType(PieceType pt)
         {
             try
@@ -172,7 +295,7 @@ namespace SAGroupAlphaSpring26.Services
                 .Include(p => p.PieceType).ToList();
         }
 
-        public void CreateSet(Set set, List<int> pieceIds)
+        public Set CreateSet(Set set, List<int> pieceIds)
         {
             try
             {
@@ -185,6 +308,8 @@ namespace SAGroupAlphaSpring26.Services
                 }
 
                 _dataContext.SaveChanges();
+
+                return set;
             }
             catch (Exception e)
             {
@@ -208,7 +333,31 @@ namespace SAGroupAlphaSpring26.Services
             return this._dataContext.Sets
                 .Include(s => s.PiecesList!.Where(ps => ps.Piece.IsArchived == false))
                 .ThenInclude(ps => ps.Piece)
+                .Where(s => s.IsArchived == false)
                 .ToList();
+        }
+
+        /// <summary>
+        /// Gets the sets with proper price conversions.
+        /// AsNoTracking() is added on this query make sure to use updateSet() for set updates.
+        /// </summary>
+        /// <param name="currency">Currency to convert with.</param>
+        /// <returns>Sets converted to users currency.</returns>
+        public List<Set> GetAllSetsWithConvertedCurrency(string currency)
+        {
+            var sets = this._dataContext.Sets
+                    .AsNoTracking()
+                    .Include(s => s.PiecesList!.Where(ps => ps.Piece.IsArchived == false))
+                    .ThenInclude(ps => ps.Piece)
+                    .ToList();
+
+            // Clone so that it does not affect the original sets.
+            //var json = JsonSerializer.Serialize(sets, new JsonSerializerOptions() { ReferenceHandler = ReferenceHandler.Preserve });
+            //var clonedSets = JsonSerializer.Deserialize<List<Set>>(json, new JsonSerializerOptions() { ReferenceHandler = ReferenceHandler.Preserve });
+            //clonedSets = CurrencyConverter.GetStoreItemsPriceConverted(clonedSets, currency);
+            sets = CurrencyConverter.GetStoreItemsPriceConverted(sets, currency);
+
+            return sets;
         }
 
         // Get a user by their email address.
@@ -255,6 +404,35 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
+        // Updates an existing user's information
+        public void UpdateUser(User user)
+        {
+            try
+            {
+                this._dataContext.Users.Update(user);
+                this._dataContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Failed to update user {user.FirstName}, {e.Message}");
+            }
+        }
+
+        // Updates a user's password
+        public void UpdateUserPassword(User user, string newPasswordHash)
+        {
+            try
+            {
+                user.PasswordHash = newPasswordHash;
+                this._dataContext.Users.Update(user);
+                this._dataContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Failed to update user password {user.FirstName}, {e.Message}");
+            }
+        }
+
         // Gets the user's id.
         public int GetUserId(ClaimsPrincipal user)
         {
@@ -263,16 +441,49 @@ namespace SAGroupAlphaSpring26.Services
         }
 
         // used to update a piece, specifically it's price and description, as name should stay the same.
-        public void UpdatePiece(Piece piece)
+        public Piece UpdatePiece(Piece piece)
         {
             try
             {
                 this._dataContext.Pieces.Update(piece);
                 this._dataContext.SaveChanges();
+                return piece;
             }
             catch (Exception e)
             {
                 throw new Exception($"Error updating piece {piece.Id}: {e.Message}");
+            }
+        }
+
+        public Set UpdateSet(Set set)
+        {
+            try
+            {
+                // First get the old piecesets for that set and delete them.
+                List<PieceSets> oldPieceSets = this._dataContext.PieceSets
+                    .Where(ps => ps.SetId == set.Id)
+                    .ToList();
+
+                foreach (PieceSets oldPieceSet in oldPieceSets)
+                {
+                    this._dataContext.Remove(oldPieceSet);
+                }
+
+                // Now we can add the new piecesets.
+                foreach (PieceSets newPieceSets in set.PiecesList)
+                {
+                    this._dataContext.PieceSets.Add(newPieceSets);
+                }
+
+                this._dataContext.Update(set);
+
+                this._dataContext.SaveChanges();
+
+                return set;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to update set\n{ex.Message}");
             }
         }
 
@@ -369,6 +580,13 @@ namespace SAGroupAlphaSpring26.Services
                 .ToList();
         }
 
+        public List<Set> GetDeletedSets()
+        {
+            return this._dataContext.Sets
+                .Where(s => s.IsArchived == true)
+                .ToList();
+        }
+
         // Deletes a list of tokens by ID. The Javascript saves each deleted token's ID, then sends it to the mapcontroller, then calls this function to delete them from the database.
         public void DeleteTokens(List<int> tokenIds)
         {
@@ -387,6 +605,74 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
+        public void ClearSessionTokens(int sessionId, int sceneId)
+        {
+            var sessionTokens = this._dataContext.Tokens
+                .Include(t => t.Piece)
+                .ThenInclude(p => p!.PieceType)
+                .Where(t => t.SessionId == sessionId && t.SceneId == sceneId && t.Piece!.PieceType!.Name != "Map")
+                .ToList();
+
+            this._dataContext.Tokens.RemoveRange(sessionTokens);
+
+            var session = this.GetSession(sessionId);
+            if (session != null) session.LastUpdated = DateTime.Now;
+
+            this._dataContext.SaveChanges();
+        }
+
+        // Updates the session's map. (adding a map piece to the session or updating the session's current scene.)
+        public string UpdateSessionMap(int sessionId, int pieceId, int? sceneId = null)
+        {
+            var piece = this._dataContext.Pieces.Include(p => p.PieceType).FirstOrDefault(p => p.Id == pieceId);
+            if (piece == null || piece.PieceType!.Name != "Map") throw new Exception("Invalid piece or piece is not a map");
+
+            if (!sceneId.HasValue)
+            {
+                var firstScene = this._dataContext.Scenes.FirstOrDefault(s => s.SessionId == sessionId);
+                if (firstScene == null)
+                {
+                    firstScene = new Scene { SessionId = sessionId, Name = "Default Scene" };
+                    this._dataContext.Scenes.Add(firstScene);
+                    this._dataContext.SaveChanges();
+                }
+                sceneId = firstScene.Id;
+            }
+
+            var mapToken = this._dataContext.Tokens
+                .Include(t => t.Piece)
+                .ThenInclude(p => p!.PieceType)
+                .FirstOrDefault(t => t.SessionId == sessionId && t.SceneId == sceneId && t.Piece!.PieceType!.Name == "Map");
+
+            if (mapToken != null)
+            {
+                mapToken.PieceID = pieceId;
+                mapToken.Name = piece.Name;
+            }
+            else
+            {
+                this._dataContext.Tokens.Add(new Token
+                {
+                    SessionId = sessionId,
+                    SceneId = sceneId,
+                    PieceID = pieceId,
+                    Name = piece.Name,
+                    X = 0,
+                    Y = 0,
+                    ZIndex = 0,
+                    Visibility = true
+                });
+            }
+
+            var session = this.GetSession(sessionId);
+            if (session != null) session.LastUpdated = DateTime.Now;
+
+            this._dataContext.SaveChanges();
+
+            return piece.ImagePath;
+        }
+
+        // Deletes a piece by Id.
         public void DeletePiece(int id)
         {
             try
@@ -403,6 +689,25 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
+        // Deletes set
+        public void DeleteSet(int id)
+        {
+            try
+            {
+                var set = this._dataContext.Sets.FirstOrDefault(p => p.Id == id);
+
+                set!.IsArchived = true;
+
+                this._dataContext.Update(set);
+                this._dataContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to archive piece\n${ex.Message}");
+            }
+        }
+
+        // Restores a piece by Id.
         public void RestorePiece(int id)
         {
             try
@@ -417,7 +722,24 @@ namespace SAGroupAlphaSpring26.Services
             {
                 throw new Exception($"Failed to restore piece {id} Likely does not exist\n{ex.Message}");
             }
+        }
 
+        // Restores Set by Id
+        public void RestoreSet(int id)
+        {
+            try
+            {
+                var set = this._dataContext.Sets.FirstOrDefault(p => p.Id == id);
+
+                set!.IsArchived = false;
+
+                this._dataContext.Update(set);
+                this._dataContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to restore piece {id} Likely does not exist\n{ex.Message}");
+            }
         }
 
         public CartItem GetCartItem(int userId, int pieceId)
@@ -456,6 +778,16 @@ namespace SAGroupAlphaSpring26.Services
             }
         }
 
+        public List<CartItem> GetCartItemsNoTracking(int userId)
+        {
+            return this._dataContext.CartItems
+                .AsNoTracking()
+                .Where(ci => ci.UserId == userId)
+                .Where(ci => ci.IsArchived == false)
+                .Include(ci => ci.Piece)
+                .ToList();
+        }
+
         public List<CartItem> GetCartItems(int userId)
         {
             return this._dataContext.CartItems
@@ -465,7 +797,19 @@ namespace SAGroupAlphaSpring26.Services
                 .ToList();
         }
 
-        public List<CartItemSet> GetCartItemSet(int userId)
+        public List<CartItemSet> GetCartItemsSetNoTracking(int userId)
+        {
+            return this._dataContext.CartItemSets
+                .AsNoTracking()
+                .Where(cis => cis.UserId == userId)
+                .Where(cis => cis.IsArchived == false)
+                .Include(cis => cis.Set)
+                .ThenInclude(s => s.PiecesList)
+                .ThenInclude(pl => pl.Piece)
+                .ToList();
+        }
+
+        public List<CartItemSet> GetCartItemSets(int userId)
         {
             return this._dataContext.CartItemSets
                 .Where(cis => cis.UserId == userId)
@@ -535,7 +879,7 @@ namespace SAGroupAlphaSpring26.Services
                 .Where(cis => cis.IsArchived == false)
                 .Where(cis => cis.SetId == setId)
                 .FirstOrDefault()!;
-            if(alreadyInCart != null)
+            if (alreadyInCart != null)
             {
                 return;
             }
@@ -586,43 +930,59 @@ namespace SAGroupAlphaSpring26.Services
         {
             try
             {
-                // Get pieces from the cart
+                // First get the users cart items and cart item sets.
                 var cartItems = this.GetCartItems(userId);
-                foreach (var item in cartItems)
+                var cartSets = this.GetCartItemSets(userId);
+
+                // We can iterate over a list of pieces, then add it to user cart.
+                List<Piece> pieces = new();
+
+                foreach (CartItem p in cartItems)
                 {
-                    // If user doesn't already own it, add it
-                    if (!this._dataContext.UserPieces.Any(up => up.UserId == userId && up.PieceId == item.PieceId))
+                    if (p.Piece != null)
                     {
-                        this._dataContext.UserPieces.Add(new UserPieces { UserId = userId, PieceId = item.PieceId });
+                        if (pieces.Contains(p.Piece))
+                            continue;
+
+                        pieces.Add(p.Piece);
                     }
-                    // Archive the cart item
-                    item.IsArchived = true;
-                    this._dataContext.Update(item);
+
+                    // Now archive/remove the cart item.
+                    p.IsArchived = true;
                 }
-
-                // Get sets from the cart
-                // We need to retrieve the sets with the PiecesList included to get the PieceIds
-                var cartSets = this._dataContext.CartItemSets
-                    .Where(cis => cis.UserId == userId && cis.IsArchived == false)
-                    .Include(cis => cis.Set)
-                    .ThenInclude(s => s!.PiecesList)
-                    .ToList();
-
-                foreach (var setItem in cartSets)
+                foreach (CartItemSet cis in cartSets)
                 {
-                    // Add all pieces from the set to the user account
-                    if (setItem.Set != null && setItem.Set.PiecesList != null)
+                    // If the set or pieces list is null for some reason just go to next iteration.
+                    if (cis.Set == null || cis.Set.PiecesList == null)
+                        continue;
+
+                    // Now for each set in the cart iterate over the pieces list and add to the pieces list.
+                    foreach (PieceSets p in cis.Set.PiecesList)
                     {
-                        foreach (var pieceSet in setItem.Set.PiecesList)
+                        if (p.Piece != null)
                         {
-                            if (!this._dataContext.UserPieces.Any(up => up.UserId == userId && up.PieceId == pieceSet.PieceId))
-                            {
-                                this._dataContext.UserPieces.Add(new UserPieces { UserId = userId, PieceId = pieceSet.PieceId });
-                            }
+                            // If the pieces already contains the piece, continue.
+                            if (pieces.Contains(p.Piece))
+                                continue;
+
+                            pieces.Add(p.Piece);
                         }
                     }
-                    setItem.IsArchived = true;
-                    this._dataContext.Update(setItem);
+
+                    // Now archive/remove the cart item.
+                    cis.IsArchived = true;
+                }
+
+                // Now get the users current pieces...
+                List<Piece> usersCurrentPieces = this.GetUserPieces(userId);
+
+                // Now check to see what pieces user already owns and remove that off of the piece list made from reading user cart.
+                pieces = pieces.Where(p => !usersCurrentPieces.Any(ucp => ucp.Id == p.Id)).ToList();
+
+                // NOW we can add to the UserPieces table.
+                foreach (Piece p in pieces)
+                {
+                    this._dataContext.UserPieces.Add(new UserPieces { PieceId = p.Id, UserId = userId });
                 }
 
                 this._dataContext.SaveChanges();
@@ -632,10 +992,10 @@ namespace SAGroupAlphaSpring26.Services
                 throw new Exception($"Failed to checkout cart for user {userId}: {ex.Message}");
             }
         }
-    
+
         public void AddSale(Sale sale)
         {
-            foreach (SaleLine sl in sale.SaleLines) 
+            foreach (SaleLine sl in sale.SaleLines)
             {
                 // So EF does not freak out.
                 sl.Piece = null;
@@ -646,9 +1006,10 @@ namespace SAGroupAlphaSpring26.Services
             this._dataContext.SaveChanges();
         }
 
-        public List<Sale> GetUserSales(int userId) 
+        public List<Sale> GetUserSales(int userId)
         {
             return this._dataContext.Sales
+                .AsNoTracking()
                 .Where(sa => sa.UserID == userId)
                 .Include(sa => sa.SaleLines)
                 .ThenInclude(sl => sl.Piece)
@@ -660,14 +1021,97 @@ namespace SAGroupAlphaSpring26.Services
             return _dataContext.SaleLines
                 .Include(sl => sl.Piece)
                 .ThenInclude(p => p.PieceType)
+                .Where(pi => pi.SetID == null) // I would like the ones that are not in a set.
                 .GroupBy(sl => sl.PieceID)
-                .Select(g => new PurchaseStatsViewModel 
-                { 
-                    Piece = g.First().Piece, 
-                    TotalPurchased = g.Count() 
+                .Select(g => new PurchaseStatsViewModel
+                {
+                    Piece = g.First().Piece,
+                    TotalPurchased = g.Count(),
+                    PurchasedAmountTotal = g.Sum(g => g.Price)
                 })
                 .OrderByDescending(x => x.TotalPurchased)
                 .ToList();
+        }
+
+        // Returns most purchased pieces (not in sets) for the given user, excluding pieces the user already owns.
+        // Important: the returned Piece list is based on the Pieces table (not SaleLines) and uses purchase counts from SaleLines.
+        public List<PurchaseStatsViewModel> GetTopUnownedPiecePurchaseStats(int userId)
+        {
+            var ownedPieceIds = _dataContext.UserPieces
+                .Where(up => up.UserId == userId)
+                .Select(up => up.PieceId)
+                .ToList();
+
+            // Purchase counts come from SaleLines (pieces not in sets).
+            var purchaseStats = _dataContext.SaleLines
+                .Where(sl => sl.SetID == null)
+                .Where(sl => sl.PieceID.HasValue)
+                .GroupBy(sl => sl.PieceID!.Value)
+                .Select(g => new
+                {
+                    PieceId = g.Key,
+                    TotalPurchased = g.Count(),
+                    PurchasedAmountTotal = g.Sum(x => x.Price)
+                });
+
+            // Pieces come from Pieces table; we left-join purchaseStats so unpurchased (0) pieces can still show.
+            var query = _dataContext.Pieces
+                .Where(p => p.IsArchived == false)
+                .Where(p => !ownedPieceIds.Contains(p.Id))
+                .GroupJoin(
+                    purchaseStats,
+                    p => p.Id,
+                    s => s.PieceId,
+                    (p, stats) => new { Piece = p, Stats = stats.FirstOrDefault() })
+                .Select(x => new PurchaseStatsViewModel
+                {
+                    Piece = x.Piece,
+                    TotalPurchased = x.Stats == null ? 0 : x.Stats.TotalPurchased,
+                    PurchasedAmountTotal = x.Stats == null ? 0 : x.Stats.PurchasedAmountTotal
+                })
+                .OrderByDescending(x => x.TotalPurchased);
+
+            return query.ToList();
+        }
+
+
+
+        public List<SetStatsViewModel> GetSetPurchaseStats()
+        {
+            return _dataContext.SaleLines
+                .Where(sl => sl.SetID != null || sl.SetID > 0)
+                .Include(sl => sl.Set)
+                .ThenInclude(s => s.PiecesList)
+                .ThenInclude(pl => pl.Piece)
+                .GroupBy(sl => sl.SetID)
+                .Select(g => new SetStatsViewModel
+                {
+                    Set = g.First().Set,
+                    // Count unique SaleIDs associated with this SetID
+                    TotalPurchased = g.Select(sl => sl.SaleID).Distinct().Count(),
+
+                    PurchasedAmountTotal = g.First().Set.Price * g.Select(sl => sl.SaleID).Distinct().Count()
+                })
+                .OrderByDescending(x => x.TotalPurchased)
+                .ToList();
+        }
+
+        public List<SaleLine> GetAllSaleLines()
+        {
+            return this._dataContext.SaleLines
+                .Include(sl => sl.Piece)
+                .Include(sl => sl.Set)
+                .ToList();
+        }
+
+        public bool UserOwnsPiece(int userId, int PieceId)
+        {
+            var piece = this._dataContext.UserPieces
+                .Where(up => up.PieceId == PieceId)
+                .Where(up => up.UserId == userId)
+                .FirstOrDefault();
+
+            return piece != null;
         }
 
         /// <summary>
@@ -703,6 +1147,7 @@ namespace SAGroupAlphaSpring26.Services
                 .Where(t => t.Session != null && !t.Session!.IsArchived)
                 .Count();
         }
-
     }
 }
+
+

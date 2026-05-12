@@ -1,5 +1,5 @@
-﻿@model CartViewModel
-
+﻿@using SAGroupAlphaSpring26.Services
+@model CartViewModel
 @* Since CartItem.cs doesn't have a quantity field, 
    we count the number of items in the list... *@
 @{
@@ -20,11 +20,13 @@
     {
         totalValue += Model.Sets.Sum(s => s.Set!.Price);
     }
+
+    string dollarSign = DollarSignService.DollarSignCurrency(Model.UserCurrency);
 }
 
 <li>
     <a asp-controller="Cart" asp-action="ViewCart" class="nav-button" role="button">
-        🛒 Cart (@itemCount) $@totalValue.ToString("F2")
+        🛒 Cart (@itemCount) @dollarSign@totalValue.ToString("F2")
     </a>
 </li>
 

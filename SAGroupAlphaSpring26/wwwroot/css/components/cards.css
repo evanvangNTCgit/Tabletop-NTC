@@ -13,9 +13,16 @@
 
 .saBackground {
     background-color: #F5DEB3;
-    border-radius: 10px;
     border: 1px solid #4a4a4a;
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 5px;
 }
+
+    .saBackground th,
+    .saBackground td {
+        padding: 12px 16px;
+    }
 
 .card {
     background-color: #F5DEB3;

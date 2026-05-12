@@ -19,7 +19,7 @@
         pieceInCart = true;
     }
 
-    var usersSetsInCart = dataService.GetCartItemSet(userId);
+    var usersSetsInCart = dataService.GetCartItemsSetNoTracking(userId);
     // Okay so loop and see if the current piece is already in a set that they have in cart currently.
     foreach(CartItemSet set in usersSetsInCart)
     {
@@ -29,6 +29,7 @@
                 setInCartContainsPiece = true;
         }
     }
+    bool userOwnsPiece = dataService.UserOwnsPiece(userId, Model.Id);
 }
 
 @if(Model != null)
@@ -39,28 +40,35 @@
         <p style="font-size: 20px;">@Model.Description</p>
         <p style="font-size: 20px;">Price: $@Model.Price</p>
     </section>
-
-    @if (setInCartContainsPiece)
+    @if (userOwnsPiece)
     {
-        <p class="text-warning" style="background-color: black; padding: 1px;">You already have a set in your cart that contains this piece.</p>
-        <form method="POST" asp-controller="cart" asp-action="addtocart" asp-route-id="@Model.Id">
-            <p>
-                <button type="submit" class="btn btn-primary" role="button">Add to cart</button>
-            </p>
-        </form>
-    }
-    else if (!pieceInCart)
-    {
-        <form method="POST" asp-controller="cart" asp-action="addtocart" asp-route-id="@Model.Id">
-            <p>
-                <button type="submit" class="btn btn-primary" role="button">Add to cart</button>
-            </p>
-        </form>
+        <p>You already own this piece.</p>
+        <a class="btn btn-primary" asp-area="" asp-controller="Home" asp-action="Store">Store</a>
     }
     else
     {
-        <p>This piece is already in your cart.</p>
-        <a class="btn btn-primary" asp-area="" asp-controller="Home" asp-action="Store">Store</a>
+        @if (setInCartContainsPiece)
+        {
+            <p class="text-warning" style="background-color: black; padding: 1px;">You already have a set in your cart that contains this piece.</p>
+            <form method="POST" asp-controller="cart" asp-action="addtocart" asp-route-id="@Model.Id">
+                <p>
+                    <button type="submit" class="btn btn-primary" role="button">Add to cart</button>
+                </p>
+            </form>
+        }
+        else if (!pieceInCart)
+        {
+            <form method="POST" asp-controller="cart" asp-action="addtocart" asp-route-id="@Model.Id">
+                <p>
+                    <button type="submit" class="btn btn-primary" role="button">Add to cart</button>
+                </p>
+            </form>
+        }
+        else
+        {
+            <p>This piece is already in your cart.</p>
+            <a class="btn btn-primary" asp-area="" asp-controller="Home" asp-action="Store">Store</a>
+        }
     }
 } else
 {

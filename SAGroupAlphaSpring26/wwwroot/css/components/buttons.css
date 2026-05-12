@@ -21,6 +21,16 @@
     transform: translateY(-1px);
 }
 
+.button-primary:disabled {
+    background: #696969;
+    border-color: #a0a0a0;
+    color: #a0a0a0;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+    pointer-events: none;
+}
+
 .button-success {
     background: linear-gradient(180deg, #d4af37, #b8962e);
     border: 1px solid #f5d76e;
@@ -115,4 +125,3 @@
     color: #fff;
     text-decoration: none;
 }
-

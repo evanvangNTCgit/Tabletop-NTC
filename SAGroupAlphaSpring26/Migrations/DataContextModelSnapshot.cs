@@ -311,6 +311,42 @@ namespace SAGroupAlphaSpring26.Migrations
                     b.ToTable("SaleLines");
                 });
 
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.Scene", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SessionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SessionId");
+
+                    b.ToTable("Scenes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Default Scene",
+                            SessionId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Default Scene",
+                            SessionId = 2
+                        });
+                });
+
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Session", b =>
                 {
                     b.Property<int>("Id")
@@ -332,7 +368,6 @@ namespace SAGroupAlphaSpring26.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserId")
@@ -349,7 +384,7 @@ namespace SAGroupAlphaSpring26.Migrations
                         {
                             Id = 1,
                             IsArchived = false,
-                            LastUpdated = new DateTime(2026, 4, 14, 11, 48, 5, 721, DateTimeKind.Local).AddTicks(1127),
+                            LastUpdated = new DateTime(2026, 5, 10, 18, 48, 45, 588, DateTimeKind.Local).AddTicks(5073),
                             Name = "Test Session",
                             Notes = "Local Test Session",
                             UserId = 1
@@ -358,7 +393,7 @@ namespace SAGroupAlphaSpring26.Migrations
                         {
                             Id = 2,
                             IsArchived = false,
-                            LastUpdated = new DateTime(2026, 4, 14, 11, 48, 5, 721, DateTimeKind.Local).AddTicks(1131),
+                            LastUpdated = new DateTime(2026, 5, 10, 18, 48, 45, 588, DateTimeKind.Local).AddTicks(5078),
                             Name = "Test Session 2",
                             Notes = "Local Test Session 2",
                             UserId = 1
@@ -372,9 +407,6 @@ namespace SAGroupAlphaSpring26.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Discount")
-                        .HasColumnType("decimal(5,4)");
 
                     b.Property<bool>("IsArchived")
                         .HasColumnType("bit");
@@ -394,7 +426,6 @@ namespace SAGroupAlphaSpring26.Migrations
                         new
                         {
                             Id = 1,
-                            Discount = 0.1m,
                             IsArchived = false,
                             Name = "Evans Beginner Pack",
                             Price = 0.00m
@@ -420,6 +451,9 @@ namespace SAGroupAlphaSpring26.Migrations
                     b.Property<int>("PieceID")
                         .HasColumnType("int");
 
+                    b.Property<int?>("SceneId")
+                        .HasColumnType("int");
+
                     b.Property<int>("SessionId")
                         .HasColumnType("int");
 
@@ -439,6 +473,8 @@ namespace SAGroupAlphaSpring26.Migrations
 
                     b.HasIndex("PieceID");
 
+                    b.HasIndex("SceneId");
+
                     b.HasIndex("SessionId");
 
                     b.ToTable("Tokens");
@@ -450,6 +486,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             Name = "Default Dungeon",
                             Notes = "",
                             PieceID = 1,
+                            SceneId = 1,
                             SessionId = 1,
                             Visibility = true,
                             X = 0m,
@@ -462,6 +499,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             Name = "Cleric",
                             Notes = "",
                             PieceID = 2,
+                            SceneId = 1,
                             SessionId = 1,
                             Visibility = true,
                             X = 50m,
@@ -474,6 +512,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             Name = "Goblin Chief",
                             Notes = "",
                             PieceID = 3,
+                            SceneId = 1,
                             SessionId = 1,
                             Visibility = true,
                             X = 50m,
@@ -486,6 +525,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             Name = "Basic Chest",
                             Notes = "",
                             PieceID = 4,
+                            SceneId = 1,
                             SessionId = 1,
                             Visibility = false,
                             X = 50m,
@@ -498,6 +538,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             Name = "Beta Dungeon",
                             Notes = "",
                             PieceID = 6,
+                            SceneId = 2,
                             SessionId = 2,
                             Visibility = true,
                             X = 0m,
@@ -510,6 +551,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             Name = "Cleric",
                             Notes = "",
                             PieceID = 2,
+                            SceneId = 2,
                             SessionId = 2,
                             Visibility = true,
                             X = 50m,
@@ -522,6 +564,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             Name = "Cleric",
                             Notes = "",
                             PieceID = 2,
+                            SceneId = 2,
                             SessionId = 2,
                             Visibility = true,
                             X = 50m,
@@ -534,6 +577,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             Name = "Cleric",
                             Notes = "",
                             PieceID = 2,
+                            SceneId = 2,
                             SessionId = 2,
                             Visibility = true,
                             X = 50m,
@@ -546,6 +590,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             Name = "Goblin Chief",
                             Notes = "",
                             PieceID = 3,
+                            SceneId = 2,
                             SessionId = 2,
                             Visibility = true,
                             X = 50m,
@@ -561,6 +606,12 @@ namespace SAGroupAlphaSpring26.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("usd");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -589,20 +640,22 @@ namespace SAGroupAlphaSpring26.Migrations
                         new
                         {
                             Id = 1,
+                            Currency = "usd",
                             Email = "local@demo.com",
                             FirstName = "Local",
                             IsAdmin = true,
                             LastName = "DM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOo4mhuDm2R7rOsGbN9glHmkDUMZIeM+e2OHLgDPzcVBI2x7V3GMOF4uEr2FLLAN1w=="
+                            PasswordHash = "AQAAAAIAAYagAAAAEIhKJBYXkJawtvygYWDCdzn65iVm0EgH7mXwccKuCVbD/rpCob4eFxNF4wzLwH80rA=="
                         },
                         new
                         {
                             Id = 2,
+                            Currency = "usd",
                             Email = "evankvang@gmail.com",
                             FirstName = "Evan",
                             IsAdmin = false,
                             LastName = "Vang",
-                            PasswordHash = "AQAAAAIAAYagAAAAED/gmvbkG61Zn3N16R4ClGqB85/9PxJ3Db+XsqA+LzgNWyUGiv+Uvf1uvRX65CjTzA=="
+                            PasswordHash = "AQAAAAIAAYagAAAAEIbUSYTJaRCrwoox4Cy9PUi83pQBimulE0PEyirdKmVn6fBsj1Ipzurv3k3nC7DoXw=="
                         });
                 });
 
@@ -757,6 +810,17 @@ namespace SAGroupAlphaSpring26.Migrations
                     b.Navigation("Set");
                 });
 
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.Scene", b =>
+                {
+                    b.HasOne("SAGroupAlphaSpring26.Models.Session", "Session")
+                        .WithMany("Scenes")
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Session");
+                });
+
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Session", b =>
                 {
                     b.HasOne("SAGroupAlphaSpring26.Models.User", "User")
@@ -776,6 +840,10 @@ namespace SAGroupAlphaSpring26.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SAGroupAlphaSpring26.Models.Scene", "Scene")
+                        .WithMany("Tokens")
+                        .HasForeignKey("SceneId");
+
                     b.HasOne("SAGroupAlphaSpring26.Models.Session", "Session")
                         .WithMany("Tokens")
                         .HasForeignKey("SessionId")
@@ -783,6 +851,8 @@ namespace SAGroupAlphaSpring26.Migrations
                         .IsRequired();
 
                     b.Navigation("Piece");
+
+                    b.Navigation("Scene");
 
                     b.Navigation("Session");
                 });
@@ -827,8 +897,15 @@ namespace SAGroupAlphaSpring26.Migrations
                     b.Navigation("SaleLines");
                 });
 
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.Scene", b =>
+                {
+                    b.Navigation("Tokens");
+                });
+
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Session", b =>
                 {
+                    b.Navigation("Scenes");
+
                     b.Navigation("Tokens");
                 });
 

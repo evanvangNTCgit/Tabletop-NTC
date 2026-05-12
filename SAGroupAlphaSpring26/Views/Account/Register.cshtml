@@ -7,13 +7,13 @@
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card shadow">
-            <!-- Card Header - Blue background with white text -->
-            <div class="card-header bg-primary text-white">
-                <h2 class="mb-0">Create an Account</h2>
+            <!-- Card Header - Gold background with dark text to match D&D theme -->
+            <div class="card-header" style="background: linear-gradient(180deg, #d4af37, #b8962e); border-bottom: 2px solid #f5d76e;">
+                <h2 class="mb-0" style="color: #1a120d;">Create an Account</h2>
             </div>
             
-            <!-- Card Body - Contains the registration form -->
-            <div class="card-body">
+            <!-- Card Body - Contains the registration form with parchment background -->
+            <div class="card-body" style="background-color: #F5DEB3;">
                 <!-- Form submits to the Register action in AccountController via POST -->
                 <form asp-action="Register" method="post">
                     <!-- Displays all model validation errors (except property-specific) -->
@@ -64,8 +64,8 @@
                 </form>
             </div>
             
-            <!-- Card Footer - Link to login page for existing users -->
-            <div class="card-footer text-center">
+<!-- Card Footer - Link to login page for existing users -->
+            <div class="card-footer text-center" style="background-color: #F5DEB3; border-top: 1px solid #4a4a4a;">
                 <p class="mb-0">Already have an account? <a asp-action="Login">Sign in here</a></p>
             </div>
         </div>

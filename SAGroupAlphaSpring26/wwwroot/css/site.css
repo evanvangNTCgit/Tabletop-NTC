@@ -4,6 +4,10 @@
     font-family: 'Knights Quest';
     src: url('../fonts/Knights_Quest.ttf') format('truetype');
 }
+main {
+    font-variant-numeric: proportional-nums;
+}
+
 
 body {
     background-image: url('../images/Paper-Background.jpg');
@@ -15,6 +19,7 @@ body {
     color: #111827;
     /* dark text for tan paper bg */
     letter-spacing: 2px;
+    font-variant-numeric: proportional-nums;
 }
 
 h1,
@@ -97,6 +102,8 @@ input[type="password"] {
     border-radius: 10px;
     border: 1px solid #4a4a4a;
 }
+
+
 
 .card {
     background-color: #F5DEB3;
@@ -205,7 +212,7 @@ input[type="password"] {
 
 .session-notes {
     width: 100%;
-    min-height: 400px;
+    min-height: 200px;
     border-radius: 8px;
     border: 1px solid #4a4a4a;
     padding: 1rem;
@@ -373,6 +380,7 @@ input[type="password"] {
     user-select: none;
     width: 5%;
     height: 5%;
+    border-radius: 8px;
 }
 
 .draggable-token:hover {
@@ -980,4 +988,54 @@ input[type="password"] {
     background-position-y: 10%;
     position: relative;
     height: 75vh;
+}
+
+.saBackground2 {
+    border-radius: 10px;
+    border: 1px solid #4a4a4a;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+/* =========================================
+   SESSION FORMS
+========================================= */
+.session-card-header {
+    background: linear-gradient(180deg, #d4af37, #b8962e);
+    border-bottom: 2px solid #f5d76e;
+}
+
+.session-card-title {
+    color: #1a120d;
+}
+
+.session-card-body, .session-card-footer {
+    background-color: #F5DEB3;
+}
+
+.session-card-footer {
+    border-top: 1px solid #4a4a4a;
+}
+
+.session-input-wrapper {
+    background-color: #fff8dc;
+    border-color: #4a4a4a;
+}
+
+.session-textarea {
+    border: none;
+    background: transparent;
+    font-family: sans-serif;
+}
+
+.session-textarea-sm {
+    min-height: 50px;
+}
+
+.session-textarea-lg {
+    min-height: 150px;
+}
+
+.session-select {
+    background: transparent;
+    border: 1px solid #4a4a4a;
+    font-family: sans-serif;
 }

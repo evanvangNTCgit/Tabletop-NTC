@@ -1,0 +1,36 @@
+﻿@model CurrencyViewModel
+
+@if(Model != null){
+<select onchange="handleUserCurrencySelection(this.value)">
+    @foreach (var currency in Model.Currencies)
+    {
+        @if(currency.Key != Model.CurrentChoice)
+        {
+        <option value="@currency.Key">@currency.Key | @currency.Value</option>
+        }
+        else
+        {
+            <option value="@currency.Key" selected>@currency.Key | @currency.Value</option>
+        }
+    }
+</select>
+
+<script>
+    const handleUserCurrencySelection = (curr) => {
+            const userEmail = '@Model.UserEmail';
+        const submission = {
+            Currency: curr,
+                UserEmail: userEmail
+        };
+        console.log(userEmail);
+        console.table(submission);
+            fetch('/account/changeusercurrency', {
+                method: "POST",
+                body: JSON.stringify(submission),
+                headers: {
+                    "Content-type": "application/json"
+                }
+            })
+    }
+</script>
+}

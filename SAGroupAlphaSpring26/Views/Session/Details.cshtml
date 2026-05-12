@@ -1,4 +1,4 @@
-﻿@model SAGroupAlphaSpring26.Models.Session
+@model SAGroupAlphaSpring26.Models.Session
 
 @{
     ViewData["Title"] = string.IsNullOrEmpty(Model.Name) ? $"Session {Model.Id}" : Model.Name;
@@ -20,8 +20,8 @@
 
         <div class="card">
             <div class="card-body">
-                <div class="text-center mb-5">
-                    <p class="lead">Session Notes</p>
+                <div class="text-center">
+                    <p class="lead">Notes</p>
                     <div class="session-notes">
                         <textarea asp-for="Notes"
                                   class="form-control"
@@ -31,10 +31,7 @@
                 </div>
 
                 <div class="text-center mb-5">
-                    <h5>Current Map Preview</h5>
-                    <div class="card text-center d-flex align-items-center justify-content-center p-3" style="height: 200px; width: 100%;">
-                        <p>Map Preview Area</p>
-                    </div>
+                    @await Component.InvokeAsync("MapPreview", new { sessionId = Model.Id })
                 </div>
 
                 <div class="row justify-content-center g-3 col-8 mx-auto">
@@ -52,6 +49,7 @@
                         </a>
                     </div>
                 </div>
+            </div>
             </div>
         </form>
     

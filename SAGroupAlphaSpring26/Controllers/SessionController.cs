@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SAGroupAlphaSpring26.Models;
 using SAGroupAlphaSpring26.Services;
 using System.Security.Claims;
 
@@ -12,10 +11,12 @@ namespace SAGroupAlphaSpring26.Controllers
     public class SessionController : Controller
     {
         private readonly DataService _dataService;
+        private readonly ILogger<SessionController> _logger;
 
-        public SessionController(DataService dataService)
+        public SessionController(DataService dataService, ILogger<SessionController> logger)
         {
             _dataService = dataService;
+            _logger = logger;
         }
 
         [Route("/{userId}")]
@@ -38,8 +39,9 @@ namespace SAGroupAlphaSpring26.Controllers
 
                 return View(session);
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogInformation($"Failed to show session details for session: {id}. {ex.Message}");
                 return NotFound();
             }
         }
@@ -49,48 +51,110 @@ namespace SAGroupAlphaSpring26.Controllers
         [HttpGet("create")]
         public IActionResult Create()
         {
-            return View(new Session());
+            try
+            {
+                // Gets all of the pieces the user owns, where the piece type is "Map"
+                var userId = _dataService.GetUserId(User);
+                ViewBag.AvailableMaps = _dataService.GetUserPieces(userId)
+                    .Where(p => p.PieceType?.Name == "Map")
+                    .ToList();
+
+                return View(new Session());
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    var userId = _dataService.GetUserId(User);
+                    User user = _dataService.GetUser(userId);
+                    _logger.LogInformation($"Failed to show create session view for user: {user.Email}. {ex.Message}");
+                }
+                catch
+                {
+                    _logger.LogInformation($"Failed to show create session for user, failed to load user info. {ex.Message}");
+                }
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         // Posts the created sessions information.
         [Authorize]
         [HttpPost("create")]
-        public IActionResult Create(Session session)
+        public IActionResult Create(Session session, int? initialMapId)
         {
-            // Gets user id using the get user id data service.
-            session.UserId = _dataService.GetUserId(User);
+            try
+            {
+                // Gets user id using the get user id data service.
+                session.UserId = _dataService.GetUserId(User);
 
-            // time of creation.
-            session.LastUpdated = DateTime.Now;
+                // time of creation.
+                session.LastUpdated = DateTime.Now;
 
-            // adds the session to the database.
-            _dataService.AddSession(session);
+                // adds the session to the database.
+                _dataService.AddSession(session);
 
-            return RedirectToAction("Details", new { id = session.Id });
+                // Set the initial map if selected
+                if (initialMapId.HasValue && initialMapId.Value > 0)
+                {
+                    try
+                    {
+                        _dataService.UpdateSessionMap(session.Id, initialMapId.Value);
+                    }
+                    catch (Exception)
+                    {
+                        // Fallback to default if there is an issue with the selected map
+                    }
+                }
+
+                return RedirectToAction("Details", new { id = session.Id });
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    // Gets user id using the get user id data service.
+                    var userId = _dataService.GetUserId(User);
+                    User user = _dataService.GetUser(userId);
+                    _logger.LogInformation($"Failed to create a session for user: {user.Email}. {ex.Message}");
+                }
+                catch
+                {
+                    _logger.LogInformation($"Failed to create a session for user, failed to load user info. {ex.Message}");
+                }
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         [HttpPost("edit")]
         public IActionResult Edit(Session session)
         {
-            var existingSession = _dataService.GetSession(session.Id);
-
-            if (existingSession == null)
+            try
             {
-                return NotFound($"Could not find a session with ID {session.Id}");
+                var existingSession = _dataService.GetSession(session.Id);
+
+                if (existingSession == null)
+                {
+                    return NotFound($"Could not find a session with ID {session.Id}");
+                }
+
+                existingSession.Name = session.Name;
+
+                existingSession.Notes = session.Notes;
+
+                // updates timestamp.
+                existingSession.LastUpdated = DateTime.Now;
+
+                // Updates the existing session.
+                _dataService.UpdateSession(existingSession);
+
+                // Redirect back to Details to see the saved changes
+                return RedirectToAction("Details", new { id = session.Id });
             }
-
-            existingSession.Name = session.Name;
-
-            existingSession.Notes = session.Notes;
-
-            // updates timestamp.
-            existingSession.LastUpdated = DateTime.Now;
-
-            // Updates the existing session.
-            _dataService.UpdateSession(existingSession);
-
-            // Redirect back to Details to see the saved changes
-            return RedirectToAction("Details", new { id = session.Id });
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed to edit session: {session.Id}, {session.Name}. {ex.Message}");
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         [HttpPost("editNotes")]
@@ -113,41 +177,69 @@ namespace SAGroupAlphaSpring26.Controllers
         [HttpPost("delete/{id}"), ActionName("Delete")]
         public IActionResult DeleteSessionConfirmed(int id)
         {
-            var session = _dataService.GetSession(id);
-            if (session != null)
+            try
             {
-                // Checks if the user owns the session, just to be safe.
-                if (session.UserId == _dataService.GetUserId(User))
+                var session = _dataService.GetSession(id);
+                if (session != null)
                 {
-                    _dataService.DeleteSession(id);
+                    // Checks if the user owns the session, just to be safe.
+                    if (session.UserId == _dataService.GetUserId(User))
+                    {
+                        _dataService.DeleteSession(id);
+                    }
                 }
-            }
 
-            // Redirect back to user index page.
-            return RedirectToAction("Index", "Home");
+                // Redirect back to user index page.
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed to delete session: {id}. {ex.Message}");
+                // Redirect back to user index page.
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         [HttpGet("RecoverSession")]
-        public IActionResult RecoverSession() 
+        public IActionResult RecoverSession()
         {
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            if(userId == null)
+            try
             {
-                // Redirect back to sign in
-                // Maybe not signed in?
-                return RedirectToAction("Account", "Login");
+                string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+                if (userId == null)
+                {
+                    // Redirect back to sign in
+                    // Maybe not signed in?
+                    return RedirectToAction("Account", "Login");
+                }
+                List<Session> archivedSessions = this._dataService.GetDeletedSessions(int.Parse(userId));
+                return View(archivedSessions);
             }
-            List<Session> archivedSessions = this._dataService.GetDeletedSessions(int.Parse(userId));
-            return View(archivedSessions);
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed to show Recover Session. {ex.Message}");
+                // Redirect back to user index page.
+                return RedirectToAction("Index", "Home");
+
+            }
         }
 
         [HttpGet("RecoverSessionConfirm")]
         public IActionResult RecoverSessionConfirm(int id)
         {
-            this._dataService.RestoreSession(id);
+            try
+            {
+                this._dataService.RestoreSession(id);
 
-            // Redirect back to user index page.
-            return RedirectToAction("Index", "Home");
+                // Redirect back to user index page.
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed to recover session: {id}. {ex.Message}");
+                // Redirect back to user index page.
+                return RedirectToAction("Index", "Home");
+            }
         }
     }
 }

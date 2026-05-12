@@ -1,70 +1,132 @@
-﻿@model SAGroupAlphaSpring26.ViewModels.StoreViewModel
+﻿﻿@* @model SAGroupAlphaSpring26.ViewModels.StoreViewModel *@
+@using SAGroupAlphaSpring26.Services
+@model PaginatedStoreViewModel
 
 @{
     ViewData["Title"] = "Store Page";
+
+    string dollarsign = DollarSignService.DollarSignCurrency(Model.UserCurrency);
 }
-<link rel="stylesheet" href="~/css/pages/store.css" asp-append-version="true" />
-
-<div class="text-center">
+<div class="text-center justify-content-center" style="margin-bottom: 20px;">
     <h1>Welcome to @ViewBag.ApplicationName!</h1>
+    <table class="saBackground" style="">
+        <tr>
+            <th>
+                <!--                                                                  Setting the sort route (gets passed from controller)     Also keepin the filter route so user can do both. -->
+                <p>Sort by: <a asp-controller="Home" asp-action="Store" asp-route-sortOrder='@ViewData["PriceSort"]' asp-route-pageNumber="@Context.Request.Query["pageNumber"]" asp-route-filter='@Context.Request.Query["filter"]' asp-route-storeitemtype='@Context.Request.Query["storeitemtype"]'>Price</a></p>
+            </th>
+            <th>
+                <p>Sort by: <a asp-controller="Home" asp-action="Store" asp-route-sortOrder='@ViewData["NameSort"]' asp-route-pageNumber="@Context.Request.Query["pageNumber"]" asp-route-filter='@Context.Request.Query["filter"]' asp-route-storeitemtype='@Context.Request.Query["storeitemtype"]'>Name</a></p>
+            </th>
+        </tr>
+        <tr>
+            <td><partial name="_SearchPartial" /></td>
+            <td><partial name="_SetsPiecePartial" /></td>
+        </tr>
+    </table>
 
-    <h1 style="margin-top: 20px">Sets</h1>
+    @if(Model.PaginatedSets.SetsList.Count <= 0 && Model.PaginatedPieces.PiecesList.Count <= 0)
+    {
+        <p class="bg-warning" style="font-size: 25px;">Nothing seemed to fit your filter(s), please modify your search.</p>
+    }
+
+    @if (Model.PaginatedSets.SetsList.Count > 0)
+    {
+        <h1>Sets</h1>
+    
     <div class="store-grid">
-        @foreach (var set in Model.Sets)
+        @foreach (var set in Model.PaginatedSets.SetsList)
         {
             decimal totalPrice = set.PiecesList?.Sum(ps => ps.Piece.Price) ?? 0m;
-            @* decimal discountedPrice = totalPrice * (1 - set.Discount); *@
             <div class="store-item store-set-item">
                 <h3>@set.Name</h3>
                 <p>Pieces (@(set.PiecesList?.Count ?? 0)): @string.Join(", ", set.PiecesList?.Select(ps => ps.Piece.Name) ?? Enumerable.Empty<string>())</p>
-                <p>Total: $@set.Price.ToString("F2")</p>
-                @* <p>Discounted (@((set.Discount * 100).ToString("F1") + "%")): $@discountedPrice.ToString("F2")</p> *@
-                <!-- Placeholder for owned pieces discount -->
-                @* <p class="text-muted">Owned pieces discount: $0.00 (TODO)</p> *@
-                @* <button class="button-primary">View</button> *@
+                    <p class="numberspacing">Total: @dollarsign@set.Price.ToString("F2")</p>
                 <div>
                     <a class="button-primary" asp-controller="Home" asp-action="Set" asp-route-id="@set.Id">View</a>
                 </div>
             </div>
         }
     </div>
+    }
 
-    @foreach (var typeGroup in Model.Pieces.GroupBy(p => p.PieceTypeID))
-    {
-        <h2>@GetTypeName(typeGroup.Key)</h2>
-        <div class="store-grid">
-            @foreach (var piece in typeGroup)
-            {
+    @if(Model.PaginatedPieces.PiecesList.Count > 0){
+                <h1 style="margin-top: 20px">Pieces</h1>
+
+     <!-- https://getbootstrap.com/docs/4.4/layout/grid/ --> 
+        <div class="row row-cols-2 row-cols-md-4">
+@foreach (Piece piece in Model.PaginatedPieces.PiecesList)
+        {
+            <div class="col">
                 <!-- Updated the img src tag to include the /images folder. Added onerror so that the imagepath defaults to our placeholder image.-->
-                <div class="store-item">
+                <div class="store-item" style="margin: 5px;">
                     <!-- Sets the image path. | "onerror" sets image to default.png | this.onerror=null prevents infinite looping. -->
-                    <img src="@piece.ImagePath" alt="@piece.Name" 
-                    onerror="this.onerror=null; this.src='/images/default.png';" />
+                    <img src="@piece.ImagePath" alt="@piece.Name"
+                         onerror="this.onerror=null; this.src='/images/default.png';" />
 
                     <h3>@piece.Name</h3>
-                    <p>@piece.Description</p>
-                    <p>Price: $@piece.Price</p>
-                    @* <button class="button-primary">View</button> *@
+
+                        @if(!string.IsNullOrEmpty(piece.Description) && piece.Description.Count() >= 25)
+                        {
+                            <p>@piece.Description.Substring(0, 25)...</p>
+                        } else
+                        {
+                            <p>@piece.Description</p>
+                        }
+                    @* Purchase count is stored temporarily on the view model via ViewData (see controller) *@
+                    @if (ViewData["PiecePurchaseCounts"] is System.Collections.Generic.Dictionary<int, int> purchaseCounts && purchaseCounts.TryGetValue(piece.Id, out var purchaseCount))
+                    {
+                        <p class="numberspacing">Purchased: @purchaseCount</p>
+                    }
+
+                        <p class="numberspacing">Price: @dollarsign@piece.Price</p>
                     <div>
-                    <a class="button-primary" asp-controller="Home" asp-action="Piece" asp-route-id="@piece.Id">View</a>
+                        <a class="button-primary" asp-controller="Home" asp-action="Piece" asp-route-id="@piece.Id">View</a>
                     </div>
                 </div>
+            </div>
+        }
+    </div>
+    }
+    <div class="d-flex justify-content-center">
+            @if (Model.PaginatedPieces.HasPreviousPage)
+            {
+                    <form method="GET" asp-controller="Home" asp-action="Store">
+                        <input type="hidden" name="pageNumber" value=@(Model.PaginatedPieces.PageIndex - 1) class="w-100" />
+                        <input type="hidden" name="sortOrder" value='@Context.Request.Query["sortOrder"]' class="w-100" />
+                        <input type="hidden" name="storeitemtype" value='@Context.Request.Query["storeitemtype"]' class="w-100" />
+                        <input type="hidden" name="filter" value='@Context.Request.Query["filter"]' class="w-100" />
+                        <input type="hidden" name="showOwned" value='@Context.Request.Query["showOwned"]' class="w-100" />
+                        <input type="submit" value="Previous" class="btn-primary store-next-prev-button" />
+                    </form>
+            } else if (Model.PaginatedSets.HasPreviousPage) {
+                <form method="GET" asp-controller="Home" asp-action="Store">
+                        <input type="hidden" name="pageNumber" value=@(Model.PaginatedSets.PageIndex - 1) class="w-100" />
+                        <input type="hidden" name="sortOrder" value='@Context.Request.Query["sortOrder"]' class="w-100" />
+                        <input type="hidden" name="storeitemtype" value='@Context.Request.Query["storeitemtype"]' class="w-100" />
+                <input type="submit" value="Previous" class="btn-primary store-next-prev-button" />
+                    </form>
             }
-        </div>
-    }
+            @if (Model.PaginatedPieces.HasNextPage)
+            {
+                    <form method="GET" asp-controller="Home" asp-action="Store">
+                        <input type="hidden" name="pageNumber" value=@(Model.PaginatedPieces.PageIndex + 1) class="w-100" />
+                        <input type="hidden" name="sortOrder" value='@Context.Request.Query["sortOrder"]' class="w-100" />
+                        <input type="hidden" name="storeitemtype" value='@Context.Request.Query["storeitemtype"]' class="w-100" />
+                        <input type="hidden" name="showOwned" value='@Context.Request.Query["showOwned"]' class="w-100" />
+                        <input type="submit" value="Next" class="btn-primary store-next-prev-button" />
+                    </form>
+            } else if (Model.PaginatedSets.HasNextPage)
+            {
+                    <form method="GET" asp-controller="Home" asp-action="Store">
+                        <input type="hidden" name="pageNumber" value=@(Model.PaginatedSets.PageIndex + 1) class="w-100" />
+                        <input type="hidden" name="sortOrder" value='@Context.Request.Query["sortOrder"]' class="w-100" />
+                        <input type="hidden" name="storeitemtype" value='@Context.Request.Query["storeitemtype"]' class="w-100" />
+                <input type="submit" value="Next" class="btn-primary store-next-prev-button" />
+                    </form>
+            }
+            <br/>
+    </div>
+                <em>Page: @Context.Request.Query["pageNumber"]</em>
+
 </div>
-
-@functions {
-    private string GetTypeName(int typeId)
-    {
-        return typeId switch
-        {
-            1 => "Enemies",
-            2 => "Maps",
-            3 => "Characters",
-            4 => "Shops & Interactables",
-            _ => "Misc"
-        };
-    }
-}
-

@@ -1,0 +1,17 @@
+﻿<form method="GET" asp-controller="Home" asp-action="Store" class="form-inline my-2 my-lg-0">
+    <div class="input-group">
+
+        <input type="hidden" name="sortOrder" value='@Context.Request.Query["sortOrder"]' class="w-100" />
+        <input type="hidden" name="filter" value='@Context.Request.Query["filter"]' class="w-100" />
+        <input type="hidden" name="pageNumber" value='1' class="w-100" />
+        <div class="input-group-append">
+            <button type="submit" name="storeitemtype" value="sets" class="btn btn-primary">Sets</button>
+            <button type="submit" name="storeitemtype" value="pieces" class="btn btn-primary">Pieces</button>
+            <button type="submit" name="storeitemtype" value="all" class="btn btn-primary">all</button>
+
+            <!-- Owned toggle (works with other filters) -->
+            <button type="submit" name="showOwned" value="false" class="btn btn-outline-primary">Unowned</button>
+            <button type="submit" name="showOwned" value="true" class="btn btn-outline-primary">Owned</button>
+        </div>
+    </div>
+</form>

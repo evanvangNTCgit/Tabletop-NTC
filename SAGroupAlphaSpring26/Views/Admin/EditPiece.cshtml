@@ -1,7 +1,9 @@
-﻿@using System.Text
+﻿﻿@using System.Text
 @model PieceViewModel
 
-<h2>Edit Piece</h2>
+<div class="saBackground">
+    <h2>Edit Piece</h2>
+</div>
 <div class="form-horizontal">
     <form method="post" enctype="multipart/form-data">
         <input type="hidden" asp-for="Piece.Id" />
@@ -14,7 +16,7 @@
         <br />
 
         <div class="form-group">
-            <label asp-for="Piece.Description">Not Required: Description Of Piece </label>
+            <label asp-for="Piece.Description">(Not Required) Description Of Piece </label>
             <input asp-for="Piece.Description" />
             <span asp-validation-for="Piece.Description" />
         </div>
@@ -72,3 +74,9 @@
         </p>
     </form>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const footer = document.getElementById('Footer');
+        if (footer) footer.style.display = 'none';
+    });
+</script>
