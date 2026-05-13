@@ -142,12 +142,12 @@ namespace SAGroupAlphaSpring26.Controllers
         }
 
         // Displays the map for the players, uses session ID and Scene ID to display the correct map.
-        [Route("Map/PlayerView/{sessionID}/{sceneId?}")]
-        public IActionResult PlayerView(int sessionID, int? sceneId)
+        [Route("Map/PlayerView/{id}/{sceneId?}")]
+        public IActionResult PlayerView(int id, int? sceneId)
         {
             try
             {
-                var session = _dataService.GetSession(sessionID);
+                var session = _dataService.GetSession(id);
 
                 if (session == null)
                 {
@@ -200,7 +200,7 @@ namespace SAGroupAlphaSpring26.Controllers
             {
                 try
                 {
-                    var session = _dataService.GetSession(sessionID);
+                    var session = _dataService.GetSession(id);
                     _logger.LogInformation($"Failed to load player view for session: {session.Id}, {session.Name}. {ex.Message}");
                 } catch
                 {

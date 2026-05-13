@@ -24,9 +24,6 @@ builder.Services.Configure<AppConfig>(builder.Configuration.GetSection("AppConfi
 
 // A password hasher 
 PasswordHasher<string> passwordHasher = new();
-
-
-
 // Adding the database for the EF core, and connecting it to the connection string in the appsettings.json file.
 // This is the DB that our C# classes will be stored in, and we will use EF core to interact with it.
 // Using MySQL for local development

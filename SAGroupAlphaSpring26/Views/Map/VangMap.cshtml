@@ -94,6 +94,7 @@
                asp-action="Playerview"
                target="_blank"
                asp-route-id="@Model.CurrentSession.Id"
+               asp-route-sceneId="@Model.CurrentScene?.Id"
                class="button-success player-view-btn ms-2">
             <i class="bi bi-eye me-1"></i> Player View
         </a>

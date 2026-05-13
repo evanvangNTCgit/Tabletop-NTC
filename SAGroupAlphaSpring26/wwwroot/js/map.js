@@ -158,8 +158,7 @@ if (!isPlayerView) {
 
         if (selectedTokenId && !tokenData[selectedTokenId]) {
             selectedTokenId = null;
-            const panel = document.getElementById('token-info-panel');
-            if (panel) panel.style.display = 'none';
+            clearInfoPanel();
         } else {
             updateInfoPanel();
         }
@@ -381,9 +380,11 @@ if (!isPlayerView) {
                             if (res.ok) {
                                 if (isActive) {
                                     // If we deleted the scene we are on, go back to the first session.
+                                    bc.postMessage({ action: 'reload' });
                                     window.location.href = `/Map/MapTest/${sessionId}`;
                                 } else {
                                     // Otherwise just reload the window/page.
+                                    bc.postMessage({ action: 'reload' });
                                     window.location.reload();
                                 }
                             } else {
@@ -500,8 +501,7 @@ if (!isPlayerView) {
 
                 if (selectedTokenId === htmlId) {
                     selectedTokenId = null;
-                    const panel = document.getElementById('token-info-panel');
-                    if (panel) panel.style.display = 'none';
+                    clearInfoPanel();
                 }
 
                 // Broadcast deletion to player view.
@@ -549,8 +549,7 @@ if (!isPlayerView) {
                 // Clear local state
                 tokenData = {};
                 selectedTokenId = null;
-                const panel = document.getElementById('token-info-panel');
-                if (panel) panel.style.display = 'none';
+                clearInfoPanel();
 
                 // Broadcast clear to player view by sending an empty syncAll
                 bc.postMessage({
@@ -1012,6 +1011,8 @@ if (!isPlayerView) {
                 // Silent Save followed by manual navigation because auto-navigation was causing problems with switching scenes.
                 saveTokenPositions(tokenData, sessionId, tokensToDelete, null, null, true).then(() => {
                     hasUnsavedChanges = false;
+                    // Switches player view to the new scene.
+                    bc.postMessage({ action: 'reload', sceneId: pendingSceneId });
                     window.location.href = newUrl;
                 });
             }
@@ -1068,6 +1069,8 @@ if (!isPlayerView) {
                 })
                 .then(res => res.json())
                 .then(data => {
+                    // Switches player view to the new scene.
+                    bc.postMessage({ action: 'reload', sceneId: data.id });
                     window.location.href = window.location.origin + `/Map/MapTest/${sessionId}/${data.id}`;
                 })
                 .catch(err => {
@@ -1083,6 +1086,8 @@ if (!isPlayerView) {
             if (confirm("Are you sure you want to delete the current scene and all its tokens?")) {
                 fetch(`/Map/DeleteScene/${window.currentSceneId}`, { method: 'POST' })
                     .then(() => {
+                        // Switches player view.
+                        bc.postMessage({ action: 'reload' });
                         window.location.href = window.location.origin + `/Map/MapTest/${sessionId}`;
                     });
             }
