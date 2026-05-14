@@ -158,8 +158,7 @@ if (!isPlayerView) {
 
         if (selectedTokenId && !tokenData[selectedTokenId]) {
             selectedTokenId = null;
-            const panel = document.getElementById('token-info-panel');
-            if (panel) panel.style.display = 'none';
+            clearInfoPanel();
         } else {
             updateInfoPanel();
         }
@@ -205,6 +204,31 @@ if (!isPlayerView) {
 
     // Initializes the map, adds event listeners to the tokens.
     document.addEventListener('DOMContentLoaded', () => {
+
+        // Controls the scaling of the map and the panels around it for different screen sizes.
+        const mapRow = document.querySelector('.map-row');
+        if (mapBoard && mapRow) {
+            const syncScale = () => {
+                const size = mapBoard.offsetHeight; // Map is square, so height = width
+                if (size === 0) return;
+
+                const root = document.documentElement;
+                mapRow.style.setProperty('--map-height', `${size}px`);
+                mapRow.style.setProperty('--sidebar-width', `${size * 0.12}px`);
+                mapRow.style.setProperty('--panel-width', `${size * 0.35}px`);
+                mapRow.style.setProperty('--piece-size', `${size * 0.08}px`);
+                mapRow.style.setProperty('--panel-font-size', `${Math.max(10, size * 0.02)}px`);
+                mapRow.style.setProperty('--header-font-size', `${Math.max(12, size * 0.025)}px`);
+                mapRow.style.setProperty('--input-padding', `${Math.max(4, size * 0.01)}px`);
+            };
+
+            const ro = new ResizeObserver(syncScale);
+            ro.observe(mapBoard);
+            syncScale();
+
+            // Also sync on window resize.
+            window.addEventListener('resize', syncScale);
+        }
 
         // --- Dropdown Menu Logic ---
         const sceneTrigger = document.getElementById('scene-trigger');
@@ -270,14 +294,13 @@ if (!isPlayerView) {
 
                 const id = item.id;
                 if (id === 'tool-token-info') {
-                    const tokenPanel = document.getElementById('token-info-panel');
-                    if (tokenPanel) tokenPanel.style.display = (tokenPanel.style.display === 'block') ? 'none' : 'block';
+                    // Panel is now permanent, was toggle before.
                 } else if (id === 'tool-session-notes') {
-                    const notesPanel = document.getElementById('session-notes-panel');
-                    if (notesPanel) notesPanel.style.display = (notesPanel.style.display === 'flex') ? 'none' : 'flex';
+                    const sessionPanel = document.getElementById('session-notes-panel');
+                    if (sessionPanel) sessionPanel.style.display = (sessionPanel.style.display === 'flex') ? 'none' : 'flex';
                 } else if (id === 'tool-delete-area') {
                     const deleteArea = document.getElementById('delete-area');
-                    if (deleteArea) deleteArea.style.display = (deleteArea.style.display === 'none') ? 'flex' : 'none';
+                    if (deleteArea) deleteArea.style.display = (deleteArea.style.display === 'block') ? 'none' : 'block';
                 }
 
                 if (toolsMenu) toolsMenu.style.display = 'none';
@@ -357,9 +380,11 @@ if (!isPlayerView) {
                             if (res.ok) {
                                 if (isActive) {
                                     // If we deleted the scene we are on, go back to the first session.
+                                    bc.postMessage({ action: 'reload' });
                                     window.location.href = `/Map/MapTest/${sessionId}`;
                                 } else {
                                     // Otherwise just reload the window/page.
+                                    bc.postMessage({ action: 'reload' });
                                     window.location.reload();
                                 }
                             } else {
@@ -476,8 +501,7 @@ if (!isPlayerView) {
 
                 if (selectedTokenId === htmlId) {
                     selectedTokenId = null;
-                    const panel = document.getElementById('token-info-panel');
-                    if (panel) panel.style.display = 'none';
+                    clearInfoPanel();
                 }
 
                 // Broadcast deletion to player view.
@@ -525,8 +549,7 @@ if (!isPlayerView) {
                 // Clear local state
                 tokenData = {};
                 selectedTokenId = null;
-                const panel = document.getElementById('token-info-panel');
-                if (panel) panel.style.display = 'none';
+                clearInfoPanel();
 
                 // Broadcast clear to player view by sending an empty syncAll
                 bc.postMessage({
@@ -763,15 +786,33 @@ if (!isPlayerView) {
         }
     };
 
-    // Updates the InfoPanel based on currently selected token. Panel is hidden if no token is selected.
+    // Clears the InfoPanel and displays default values/placeholder text and image.
+    const clearInfoPanel = () => {
+        const img = document.getElementById('token-info-image');
+        if (img) img.src = "/images/default.png";
+
+        document.getElementById('token-info-name').value = "";
+        document.getElementById('token-info-zindex').value = "";
+        document.getElementById('token-info-notes').value = "";
+        document.getElementById('token-info-visibility').checked = true;
+    };
+
+    // Updates the InfoPanel based on currently selected token.
     const updateInfoPanel = () => {
         const panel = document.getElementById('token-info-panel');
-        if (!panel || !selectedTokenId) return;
+        if (!panel) return;
+
+        if (!selectedTokenId) {
+            clearInfoPanel();
+            return;
+        }
 
         const data = tokenData[selectedTokenId];
-        if (!data) return;
+        if (!data) {
+            clearInfoPanel();
+            return;
+        }
 
-        panel.style.display = 'block';
         document.getElementById('token-info-image').src = data.src;
         document.getElementById('token-info-name').value = data.name || "";
         document.getElementById('token-info-zindex').value = data.zIndex || 1;
@@ -879,8 +920,7 @@ if (!isPlayerView) {
                 if (tokenEl) tokenEl.remove();
 
                 selectedTokenId = null;
-                const panel = document.getElementById('token-info-panel');
-                if (panel) panel.style.display = 'none';
+                clearInfoPanel();
 
                 // Broadcast deletion to player view.
                 bc.postMessage({
@@ -929,6 +969,7 @@ if (!isPlayerView) {
         });
 
         // Dropdown used to change and manage scenes.
+        const switchOverlay = document.getElementById('switch-confirm-overlay');
         const btnSwitchSave = document.getElementById('btn-switch-save');
         const btnSwitchNoSave = document.getElementById('btn-switch-nosave');
         const btnSwitchCancel = document.getElementById('btn-switch-cancel');
@@ -971,6 +1012,8 @@ if (!isPlayerView) {
                 // Silent Save followed by manual navigation because auto-navigation was causing problems with switching scenes.
                 saveTokenPositions(tokenData, sessionId, tokensToDelete, null, null, true).then(() => {
                     hasUnsavedChanges = false;
+                    // Switches player view to the new scene.
+                    bc.postMessage({ action: 'reload', sceneId: pendingSceneId });
                     window.location.href = newUrl;
                 });
             }
@@ -1027,6 +1070,8 @@ if (!isPlayerView) {
                 })
                 .then(res => res.json())
                 .then(data => {
+                    // Switches player view to the new scene.
+                    bc.postMessage({ action: 'reload', sceneId: data.id });
                     window.location.href = window.location.origin + `/Map/MapTest/${sessionId}/${data.id}`;
                 })
                 .catch(err => {
@@ -1042,6 +1087,8 @@ if (!isPlayerView) {
             if (confirm("Are you sure you want to delete the current scene and all its tokens?")) {
                 fetch(`/Map/DeleteScene/${window.currentSceneId}`, { method: 'POST' })
                     .then(() => {
+                        // Switches player view.
+                        bc.postMessage({ action: 'reload' });
                         window.location.href = window.location.origin + `/Map/MapTest/${sessionId}`;
                     });
             }

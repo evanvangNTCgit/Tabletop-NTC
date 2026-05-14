@@ -61,6 +61,56 @@ namespace SAGroupAlphaSpring26.ApiServices
         }
 
         /// <summary>
+        /// Gets the value from USD to the users currency. 
+        /// For example they buy a 5 USD piece in march 2024. And 1 USD is 100 pesos. it should return 500 pesos.
+        /// </summary>
+        /// <param name="currency">Currency.</param>
+        /// <param name="usdPrice">Price in USD.</param>
+        /// <param name="date">Date of sale.</param>
+        /// <returns></returns>
+        public async static Task<decimal> GetHistoricalValueFromUsd(string currency, decimal usdPrice, DateTime date)
+        {
+            try
+            {
+                currency = currency.ToLower();
+                if (currency == "usd")
+                    return usdPrice;
+
+                string formattedDate = date.ToString("yyyy-MM-dd"); // This is how the API likes the date.
+                string MainURL = $"https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@{formattedDate}/v1/currencies/usd.json";
+                string fallbackURL = $"https://{formattedDate}.currency-api.pages.dev/v1/currencies/usd.json";
+
+                HttpResponseMessage response = await _client.GetAsync(MainURL);
+                if (response == null || !response.IsSuccessStatusCode)
+                {
+                    response = await _client.GetAsync(fallbackURL);
+                    response.EnsureSuccessStatusCode();
+                }
+
+                var jsonReponse = await response.Content.ReadAsStringAsync();
+                var currencies = JsonSerializer.Deserialize<UsdCurrencyValueDTO>(jsonReponse);
+                foreach (var curr in currencies.Values)
+                {
+                    if (curr.Key == currency)
+                    {
+                        // When rounding currency its not always up, its standard .5 and above is rounded up. So like normal math.
+                        var convertedValue = Math.Round((usdPrice * curr.Value), 2);
+                        return convertedValue;
+                    }
+                }
+
+                // Still nothing? Currency likely not supported...
+                throw new Exception($"{currency} is not supported");
+            }
+            catch (Exception ex)
+            {
+                // Static serilog.
+                Log.Information($"Failed to convert historical USD purchase to {currency}: USD Price: {usdPrice}, Date: {date}. {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Turns the value from USD currency to user currency.
         /// </summary>
         /// <param name="currency">ABBREVIATED CURRENCY (aud for example).</param>

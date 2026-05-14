@@ -16,6 +16,17 @@ body {
     color: #111827;
     /* dark text for tan paper bg */
     letter-spacing: 2px;
+    min-height: 100vh;
+    flex-direction: column;
+    margin: 0;
+    display: flex;
+}
+
+#FooterStyle{
+    bottom:0;
+    width: 100%;
+    background-color: black;
+    padding: 5px;
 }
 
 h1,

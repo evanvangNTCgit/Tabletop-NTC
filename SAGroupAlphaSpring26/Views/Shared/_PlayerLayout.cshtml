@@ -19,77 +19,8 @@
     <link rel="stylesheet" href="~/SAGroupAlphaSpring26.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/jqueryui/themes/base/jquery-ui.css" />
 </head>
-<body>
-    <!-- Sidebar -->
-    <nav class="sidebar">
-        <a class="brand">
-            NTC Tabletop Map
-        </a>
+<body class="player-view">
 
-        <ul class="nav-list">
-            <!-- I doubt we also would need this in the player view... -->
-            @* @if (!User.Identity?.IsAuthenticated ?? true)
-            {
-                <li>
-                    <a class="nav-button signin" asp-area="" asp-controller="Account" asp-action="Login">
-                        Sign In
-                    </a>
-                </li>
-            }
-            <li>
-                <a class="nav-button" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-            </li>
-            <li>
-                <a class="nav-button" asp-area="" asp-controller="Home" asp-action="Store">Store</a>
-            </li>
-
-
-            @if (User.Identity?.IsAuthenticated ?? false)
-            {
-                <li>
-                    <form asp-controller="Account" asp-action="Logout" method="post">
-                        <button type="submit" class="nav-button logout">Logout</button>
-                    </form>
-                </li>
-            } *@
-
-            
-            <!-- I feel like the player view does not need to know about the admin actions.-->
-            @* @if (User.Identity!.IsAuthenticated && User.IsInRole("Admin"))
-            {
-                <li>
-                    <div class="user-greeting">Hello, @User.Identity.Name</div>
-                </li>
-
-                <li>
-                    <div class="admin-section">
-                        <div class="dropdown">
-                            <a class="admin-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" id="adminDropdown">
-                                <span>Admin</span> <i class="bi bi-caret-down-fill"></i>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="adminDropdown">
-                                <li>
-                                    <a asp-controller="Admin" asp-action="Pieces" class="dropdown-item" role="button">Pieces</a>
-                                </li>
-                                <li>
-                                    <a asp-controller="Admin" asp-action="PieceTypes" class="dropdown-item" role="button">Piece Types</a>
-                                </li>
-                                <li>
-                                    <a asp-controller="Admin" asp-action="Sets" class="dropdown-item" role="button">Sets</a>
-                                </li>
-                                <li>
-                                    <a asp-controller="Admin" asp-action="AddPieceType" class="dropdown-item" role="button">Add a Piece Type</a>
-                                </li>
-                                <li>
-                                    <a asp-controller="Admin" asp-action="AddSet" class="dropdown-item" role="button">Add a Set</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </li>
-            } *@
-        </ul>
-    </nav>
 
     <!-- Main Content -->
     <div class="main-content">
