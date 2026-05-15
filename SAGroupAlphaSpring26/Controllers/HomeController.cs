@@ -221,6 +221,18 @@ namespace SAGroupAlphaSpring26.Controllers
         public IActionResult Piece(int id)
         {
             var model = _dataService.GetPiece(id);
+
+            try
+            {
+                var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var user = _dataService.GetUser(userId);
+                model.Price = CurrencyConverter.ConvertPriceToCurrency(user.Currency, model.Price);
+            }
+            catch
+            {
+                // Just dont display the price conversion.
+            }
+
             return View(model);
         }
 
@@ -229,6 +241,18 @@ namespace SAGroupAlphaSpring26.Controllers
         public IActionResult Set(int id)
         {
             var model = _dataService.GetSet(id);
+
+            try
+            {
+                var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var user = _dataService.GetUser(userId);
+                model.Price = CurrencyConverter.ConvertPriceToCurrency(user.Currency, model.Price);
+            }
+            catch
+            {
+                // Just dont display the price conversion.
+            }
+
             return View(model);
         }
 

@@ -19,3 +19,10 @@
         if (footer) footer.style.display = 'none';
     });
 </script>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -969,6 +969,7 @@ if (!isPlayerView) {
         });
 
         // Dropdown used to change and manage scenes.
+        const switchOverlay = document.getElementById('switch-confirm-overlay');
         const btnSwitchSave = document.getElementById('btn-switch-save');
         const btnSwitchNoSave = document.getElementById('btn-switch-nosave');
         const btnSwitchCancel = document.getElementById('btn-switch-cancel');
