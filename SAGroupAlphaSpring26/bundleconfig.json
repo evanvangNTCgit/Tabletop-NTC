@@ -10,5 +10,65 @@
     "inputFiles": [
       "wwwroot/js/site.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/css/letterspacing.min.css",
+    "inputFiles": [
+      "wwwroot/css/letterspacing.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/map-general.min.css",
+    "inputFiles": [
+      "wwwroot/css/map-general.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/store-general.min.css",
+    "inputFiles": [
+      "wwwroot/css/store-general.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/components/base.min.css",
+    "inputFiles": [
+      "wwwroot/css/components/base.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/components/buttons.min.css",
+    "inputFiles": [
+      "wwwroot/css/components/buttons.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/components/cards.min.css",
+    "inputFiles": [
+      "wwwroot/css/components/cards.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/components/forms.min.css",
+    "inputFiles": [
+      "wwwroot/css/components/forms.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/components/layout.min.css",
+    "inputFiles": [
+      "wwwroot/css/components/layout.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/components/nav.min.css",
+    "inputFiles": [
+      "wwwroot/css/components/nav.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/components/utilities.min.css",
+    "inputFiles": [
+      "wwwroot/css/components/utilities.css"
+    ]
   }
 ]
