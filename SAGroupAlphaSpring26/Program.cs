@@ -1,15 +1,14 @@
 global using SAGroupAlphaSpring26;
-global using SAGroupAlphaSpring26.Models;
-global using SAGroupAlphaSpring26.ViewModels;
 global using SAGroupAlphaSpring26.DTO;
 global using SAGroupAlphaSpring26.Interfaces;
+global using SAGroupAlphaSpring26.Models;
+global using SAGroupAlphaSpring26.ViewModels;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using SAGroupAlphaSpring26.Data;
 using SAGroupAlphaSpring26.ApiServices;
+using SAGroupAlphaSpring26.Data;
 using Serilog;
-using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 Log.Logger = new LoggerConfiguration()
@@ -63,6 +62,19 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         // a new expiration time any time it processes a request which is more than halfway through the expiration window.
         options.SlidingExpiration = true;
     });
+
+if (builder.Environment.IsDevelopment())
+{
+    // Dont minify in development
+    builder.Services.AddWebOptimizer(minifyJavaScript: false, minifyCss: false);
+} else
+{
+    builder.Services.AddWebOptimizer(pipeline =>
+    {
+        pipeline.MinifyJsFiles("js/map.js", "js/mapAPI.js", "js/piece-usage.js", "js/PlayerMapFunctions.js");
+    });
+}
+
 
 // This is required for my custom image uploading.
 builder.Services.AddSingleton<IWebHostEnvironment>(builder.Environment);
@@ -177,6 +189,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Use minified JS files.
+app.UseWebOptimizer();
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -192,7 +206,8 @@ try
 {
     Log.Information("NTC Tabletop is starting...");
     app.Run();
-} catch (Exception ex)
+}
+catch (Exception ex)
 {
     Log.Information($"NTC Table top exception. {ex.Message}");
 }
