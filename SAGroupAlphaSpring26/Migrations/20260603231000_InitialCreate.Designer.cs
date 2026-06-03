@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SAGroupAlphaSpring26.Data;
@@ -12,40 +11,85 @@ using SAGroupAlphaSpring26.Data;
 namespace SAGroupAlphaSpring26.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20260314172756_additionOfManyToManyModels")]
-    partial class additionOfManyToManyModels
+    [Migration("20260603231000_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.16")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.16");
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.CartItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PieceId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PieceId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CartItems");
+                });
+
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.CartItemSet", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SetId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SetId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CartItemSets");
+                });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Piece", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ImagePath")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("PieceTypeID")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -62,6 +106,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             Id = 1,
                             Description = "No description provided",
                             ImagePath = "/images/testMap.png",
+                            IsArchived = false,
                             Name = "Default Dungeon",
                             PieceTypeID = 2,
                             Price = 0.00m
@@ -71,6 +116,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             Id = 2,
                             Description = "No description provided",
                             ImagePath = "/images/Cleric.png",
+                            IsArchived = false,
                             Name = "Cleric",
                             PieceTypeID = 1,
                             Price = 0.00m
@@ -80,6 +126,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             Id = 3,
                             Description = "No description provided",
                             ImagePath = "/images/GoblinChief.png",
+                            IsArchived = false,
                             Name = "Goblin Chief",
                             PieceTypeID = 5,
                             Price = 0.00m
@@ -89,6 +136,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             Id = 4,
                             Description = "No description provided",
                             ImagePath = "/images/chest.png",
+                            IsArchived = false,
                             Name = "Basic Chest",
                             PieceTypeID = 4,
                             Price = 0.00m
@@ -98,19 +146,30 @@ namespace SAGroupAlphaSpring26.Migrations
                             Id = 5,
                             Description = "No description provided",
                             ImagePath = "/images/bardTest.png",
+                            IsArchived = false,
                             Name = "Bard",
                             PieceTypeID = 1,
                             Price = 0.00m
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Description = "No description provided",
+                            ImagePath = "/images/BetaMap1.png",
+                            IsArchived = false,
+                            Name = "Beta Dungeon",
+                            PieceTypeID = 2,
+                            Price = 5.00m
                         });
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.PieceSets", b =>
                 {
                     b.Property<int>("PieceId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("SetId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("PieceId", "SetId");
 
@@ -135,13 +194,11 @@ namespace SAGroupAlphaSpring26.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -189,15 +246,13 @@ namespace SAGroupAlphaSpring26.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("UserID")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -210,18 +265,26 @@ namespace SAGroupAlphaSpring26.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("PieceID")
-                        .HasColumnType("int");
+                    b.Property<int?>("PieceID")
+                        .IsRequired()
+                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("SaleID")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("SetID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("Tax")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("TotalCost")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -229,30 +292,68 @@ namespace SAGroupAlphaSpring26.Migrations
 
                     b.HasIndex("SaleID");
 
+                    b.HasIndex("SetID");
+
                     b.ToTable("SaleLines");
+                });
+
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.Scene", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SessionId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SessionId");
+
+                    b.ToTable("Scenes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Default Scene",
+                            SessionId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Default Scene",
+                            SessionId = 2
+                        });
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Session", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<bool>("IsArchived")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTime>("LastUpdated")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -264,7 +365,8 @@ namespace SAGroupAlphaSpring26.Migrations
                         new
                         {
                             Id = 1,
-                            LastUpdated = new DateTime(2026, 3, 14, 12, 27, 56, 417, DateTimeKind.Local).AddTicks(9750),
+                            IsArchived = false,
+                            LastUpdated = new DateTime(2026, 6, 3, 18, 9, 57, 880, DateTimeKind.Local).AddTicks(2618),
                             Name = "Test Session",
                             Notes = "Local Test Session",
                             UserId = 1
@@ -272,7 +374,8 @@ namespace SAGroupAlphaSpring26.Migrations
                         new
                         {
                             Id = 2,
-                            LastUpdated = new DateTime(2026, 3, 14, 12, 27, 56, 417, DateTimeKind.Local).AddTicks(9754),
+                            IsArchived = false,
+                            LastUpdated = new DateTime(2026, 6, 3, 18, 9, 57, 880, DateTimeKind.Local).AddTicks(2622),
                             Name = "Test Session 2",
                             Notes = "Local Test Session 2",
                             UserId = 1
@@ -283,13 +386,14 @@ namespace SAGroupAlphaSpring26.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -302,6 +406,7 @@ namespace SAGroupAlphaSpring26.Migrations
                         new
                         {
                             Id = 1,
+                            IsArchived = false,
                             Name = "Evans Beginner Pack",
                             Price = 0.00m
                         });
@@ -311,35 +416,42 @@ namespace SAGroupAlphaSpring26.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("PieceID")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("SceneId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("SessionId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("Visibility")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
-                    b.Property<decimal>("X")
+                    b.Property<double>("X")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("Y")
+                    b.Property<double>("Y")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("ZIndex")
+                    b.Property<int>("ZIndex")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PieceID");
+
+                    b.HasIndex("SceneId");
 
                     b.HasIndex("SessionId");
 
@@ -350,100 +462,118 @@ namespace SAGroupAlphaSpring26.Migrations
                         {
                             Id = 1,
                             Name = "Default Dungeon",
+                            Notes = "",
                             PieceID = 1,
+                            SceneId = 1,
                             SessionId = 1,
                             Visibility = true,
-                            X = 0m,
-                            Y = 0m,
-                            ZIndex = 0m
+                            X = 0.0,
+                            Y = 0.0,
+                            ZIndex = 0
                         },
                         new
                         {
                             Id = 2,
                             Name = "Cleric",
+                            Notes = "",
                             PieceID = 2,
+                            SceneId = 1,
                             SessionId = 1,
                             Visibility = true,
-                            X = 50m,
-                            Y = 15m,
-                            ZIndex = 3m
+                            X = 50.0,
+                            Y = 15.0,
+                            ZIndex = 3
                         },
                         new
                         {
                             Id = 3,
                             Name = "Goblin Chief",
+                            Notes = "",
                             PieceID = 3,
+                            SceneId = 1,
                             SessionId = 1,
                             Visibility = true,
-                            X = 50m,
-                            Y = 5m,
-                            ZIndex = 1m
+                            X = 50.0,
+                            Y = 5.0,
+                            ZIndex = 1
                         },
                         new
                         {
                             Id = 4,
                             Name = "Basic Chest",
+                            Notes = "",
                             PieceID = 4,
+                            SceneId = 1,
                             SessionId = 1,
                             Visibility = false,
-                            X = 50m,
-                            Y = 10m,
-                            ZIndex = 2m
+                            X = 50.0,
+                            Y = 10.0,
+                            ZIndex = 2
                         },
                         new
                         {
                             Id = 5,
-                            Name = "Default Dungeon",
-                            PieceID = 1,
+                            Name = "Beta Dungeon",
+                            Notes = "",
+                            PieceID = 6,
+                            SceneId = 2,
                             SessionId = 2,
                             Visibility = true,
-                            X = 0m,
-                            Y = 0m,
-                            ZIndex = 0m
+                            X = 0.0,
+                            Y = 0.0,
+                            ZIndex = 0
                         },
                         new
                         {
                             Id = 6,
                             Name = "Cleric",
+                            Notes = "",
                             PieceID = 2,
+                            SceneId = 2,
                             SessionId = 2,
                             Visibility = true,
-                            X = 50m,
-                            Y = 15m,
-                            ZIndex = 3m
+                            X = 50.0,
+                            Y = 15.0,
+                            ZIndex = 3
                         },
                         new
                         {
                             Id = 7,
                             Name = "Cleric",
+                            Notes = "",
                             PieceID = 2,
+                            SceneId = 2,
                             SessionId = 2,
                             Visibility = true,
-                            X = 50m,
-                            Y = 5m,
-                            ZIndex = 1m
+                            X = 50.0,
+                            Y = 5.0,
+                            ZIndex = 1
                         },
                         new
                         {
                             Id = 8,
                             Name = "Cleric",
+                            Notes = "",
                             PieceID = 2,
+                            SceneId = 2,
                             SessionId = 2,
                             Visibility = true,
-                            X = 50m,
-                            Y = 10m,
-                            ZIndex = 2m
+                            X = 50.0,
+                            Y = 10.0,
+                            ZIndex = 2
                         },
                         new
                         {
                             Id = 9,
                             Name = "Goblin Chief",
+                            Notes = "",
                             PieceID = 3,
+                            SceneId = 2,
                             SessionId = 2,
                             Visibility = true,
-                            X = 50m,
-                            Y = 5m,
-                            ZIndex = 1m
+                            X = 50.0,
+                            Y = 5.0,
+                            ZIndex = 1
                         });
                 });
 
@@ -451,28 +581,32 @@ namespace SAGroupAlphaSpring26.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("usd");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsAdmin")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -482,30 +616,32 @@ namespace SAGroupAlphaSpring26.Migrations
                         new
                         {
                             Id = 1,
+                            Currency = "usd",
                             Email = "local@demo.com",
                             FirstName = "Local",
                             IsAdmin = true,
                             LastName = "DM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEP2QYspcgDrGhpAHTJLUBGZBosTnzFkCHEo+iLOB5z8x27T/kTJpPjjlQfkJHD2Zug=="
+                            PasswordHash = "AQAAAAIAAYagAAAAECqEDkrcNfdbUyFqF53LBQbbNTQoOIfGr0vla7BYRSUEeUNcdo4gcKdrLF6Ou2EskA=="
                         },
                         new
                         {
                             Id = 2,
+                            Currency = "usd",
                             Email = "evankvang@gmail.com",
                             FirstName = "Evan",
                             IsAdmin = false,
                             LastName = "Vang",
-                            PasswordHash = "AQAAAAIAAYagAAAAEE1pEf8L7Sx8abRWrXGlWZEUXR+irLNoVb6Vv4F9MP8bLSGVdvBBs/lQMd2Sm/vTgg=="
+                            PasswordHash = "AQAAAAIAAYagAAAAEHKAAqNfVAmGbRDksGjtXUid6fWJKhEHi7St6RAjSazyNpIx1O0FLgrwjmsA4+tNAw=="
                         });
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.UserPieces", b =>
                 {
                     b.Property<int>("PieceId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("PieceId", "UserId");
 
@@ -538,7 +674,50 @@ namespace SAGroupAlphaSpring26.Migrations
                         {
                             PieceId = 5,
                             UserId = 1
+                        },
+                        new
+                        {
+                            PieceId = 6,
+                            UserId = 1
                         });
+                });
+
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.CartItem", b =>
+                {
+                    b.HasOne("SAGroupAlphaSpring26.Models.Piece", "Piece")
+                        .WithMany("CartItems")
+                        .HasForeignKey("PieceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SAGroupAlphaSpring26.Models.User", "User")
+                        .WithMany("CartItems")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Piece");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.CartItemSet", b =>
+                {
+                    b.HasOne("SAGroupAlphaSpring26.Models.Set", "Set")
+                        .WithMany("CartItemSets")
+                        .HasForeignKey("SetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SAGroupAlphaSpring26.Models.User", "User")
+                        .WithMany("CartItemSets")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Set");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Piece", b =>
@@ -585,7 +764,7 @@ namespace SAGroupAlphaSpring26.Migrations
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.SaleLine", b =>
                 {
                     b.HasOne("SAGroupAlphaSpring26.Models.Piece", "Piece")
-                        .WithMany()
+                        .WithMany("SaleLines")
                         .HasForeignKey("PieceID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -596,9 +775,26 @@ namespace SAGroupAlphaSpring26.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SAGroupAlphaSpring26.Models.Set", "Set")
+                        .WithMany("SaleLines")
+                        .HasForeignKey("SetID");
+
                     b.Navigation("Piece");
 
                     b.Navigation("Sale");
+
+                    b.Navigation("Set");
+                });
+
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.Scene", b =>
+                {
+                    b.HasOne("SAGroupAlphaSpring26.Models.Session", "Session")
+                        .WithMany("Scenes")
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Session");
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Session", b =>
@@ -620,6 +816,10 @@ namespace SAGroupAlphaSpring26.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SAGroupAlphaSpring26.Models.Scene", "Scene")
+                        .WithMany("Tokens")
+                        .HasForeignKey("SceneId");
+
                     b.HasOne("SAGroupAlphaSpring26.Models.Session", "Session")
                         .WithMany("Tokens")
                         .HasForeignKey("SessionId")
@@ -627,6 +827,8 @@ namespace SAGroupAlphaSpring26.Migrations
                         .IsRequired();
 
                     b.Navigation("Piece");
+
+                    b.Navigation("Scene");
 
                     b.Navigation("Session");
                 });
@@ -652,7 +854,11 @@ namespace SAGroupAlphaSpring26.Migrations
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Piece", b =>
                 {
+                    b.Navigation("CartItems");
+
                     b.Navigation("Owners");
+
+                    b.Navigation("SaleLines");
 
                     b.Navigation("Sets");
                 });
@@ -667,18 +873,33 @@ namespace SAGroupAlphaSpring26.Migrations
                     b.Navigation("SaleLines");
                 });
 
+            modelBuilder.Entity("SAGroupAlphaSpring26.Models.Scene", b =>
+                {
+                    b.Navigation("Tokens");
+                });
+
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Session", b =>
                 {
+                    b.Navigation("Scenes");
+
                     b.Navigation("Tokens");
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.Set", b =>
                 {
+                    b.Navigation("CartItemSets");
+
                     b.Navigation("PiecesList");
+
+                    b.Navigation("SaleLines");
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.User", b =>
                 {
+                    b.Navigation("CartItemSets");
+
+                    b.Navigation("CartItems");
+
                     b.Navigation("OwnedPieces");
 
                     b.Navigation("Sessions");

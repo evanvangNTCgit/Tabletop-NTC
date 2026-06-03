@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SAGroupAlphaSpring26.Data;
 
@@ -16,28 +15,22 @@ namespace SAGroupAlphaSpring26.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.16")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
-
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.16");
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.CartItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsArchived")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("PieceId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -52,18 +45,16 @@ namespace SAGroupAlphaSpring26.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsArchived")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("SetId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -78,26 +69,24 @@ namespace SAGroupAlphaSpring26.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ImagePath")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsArchived")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("PieceTypeID")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -174,10 +163,10 @@ namespace SAGroupAlphaSpring26.Migrations
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.PieceSets", b =>
                 {
                     b.Property<int>("PieceId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("SetId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("PieceId", "SetId");
 
@@ -202,13 +191,11 @@ namespace SAGroupAlphaSpring26.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -256,15 +243,13 @@ namespace SAGroupAlphaSpring26.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("UserID")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -277,28 +262,26 @@ namespace SAGroupAlphaSpring26.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<int?>("PieceID")
                         .IsRequired()
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("SaleID")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int?>("SetID")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("Tax")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("TEXT");
 
                     b.Property<decimal>("TotalCost")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -315,16 +298,14 @@ namespace SAGroupAlphaSpring26.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("SessionId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -351,27 +332,25 @@ namespace SAGroupAlphaSpring26.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsArchived")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(false);
 
                     b.Property<DateTime>("LastUpdated")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -384,7 +363,7 @@ namespace SAGroupAlphaSpring26.Migrations
                         {
                             Id = 1,
                             IsArchived = false,
-                            LastUpdated = new DateTime(2026, 5, 10, 18, 48, 45, 588, DateTimeKind.Local).AddTicks(5073),
+                            LastUpdated = new DateTime(2026, 6, 3, 18, 9, 57, 880, DateTimeKind.Local).AddTicks(2618),
                             Name = "Test Session",
                             Notes = "Local Test Session",
                             UserId = 1
@@ -393,7 +372,7 @@ namespace SAGroupAlphaSpring26.Migrations
                         {
                             Id = 2,
                             IsArchived = false,
-                            LastUpdated = new DateTime(2026, 5, 10, 18, 48, 45, 588, DateTimeKind.Local).AddTicks(5078),
+                            LastUpdated = new DateTime(2026, 6, 3, 18, 9, 57, 880, DateTimeKind.Local).AddTicks(2622),
                             Name = "Test Session 2",
                             Notes = "Local Test Session 2",
                             UserId = 1
@@ -404,16 +383,14 @@ namespace SAGroupAlphaSpring26.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsArchived")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -436,37 +413,35 @@ namespace SAGroupAlphaSpring26.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Notes")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("PieceID")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int?>("SceneId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("SessionId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("Visibility")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
-                    b.Property<decimal>("X")
+                    b.Property<double>("X")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("Y")
+                    b.Property<double>("Y")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("ZIndex")
+                    b.Property<int>("ZIndex")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -489,9 +464,9 @@ namespace SAGroupAlphaSpring26.Migrations
                             SceneId = 1,
                             SessionId = 1,
                             Visibility = true,
-                            X = 0m,
-                            Y = 0m,
-                            ZIndex = 0m
+                            X = 0.0,
+                            Y = 0.0,
+                            ZIndex = 0
                         },
                         new
                         {
@@ -502,9 +477,9 @@ namespace SAGroupAlphaSpring26.Migrations
                             SceneId = 1,
                             SessionId = 1,
                             Visibility = true,
-                            X = 50m,
-                            Y = 15m,
-                            ZIndex = 3m
+                            X = 50.0,
+                            Y = 15.0,
+                            ZIndex = 3
                         },
                         new
                         {
@@ -515,9 +490,9 @@ namespace SAGroupAlphaSpring26.Migrations
                             SceneId = 1,
                             SessionId = 1,
                             Visibility = true,
-                            X = 50m,
-                            Y = 5m,
-                            ZIndex = 1m
+                            X = 50.0,
+                            Y = 5.0,
+                            ZIndex = 1
                         },
                         new
                         {
@@ -528,9 +503,9 @@ namespace SAGroupAlphaSpring26.Migrations
                             SceneId = 1,
                             SessionId = 1,
                             Visibility = false,
-                            X = 50m,
-                            Y = 10m,
-                            ZIndex = 2m
+                            X = 50.0,
+                            Y = 10.0,
+                            ZIndex = 2
                         },
                         new
                         {
@@ -541,9 +516,9 @@ namespace SAGroupAlphaSpring26.Migrations
                             SceneId = 2,
                             SessionId = 2,
                             Visibility = true,
-                            X = 0m,
-                            Y = 0m,
-                            ZIndex = 0m
+                            X = 0.0,
+                            Y = 0.0,
+                            ZIndex = 0
                         },
                         new
                         {
@@ -554,9 +529,9 @@ namespace SAGroupAlphaSpring26.Migrations
                             SceneId = 2,
                             SessionId = 2,
                             Visibility = true,
-                            X = 50m,
-                            Y = 15m,
-                            ZIndex = 3m
+                            X = 50.0,
+                            Y = 15.0,
+                            ZIndex = 3
                         },
                         new
                         {
@@ -567,9 +542,9 @@ namespace SAGroupAlphaSpring26.Migrations
                             SceneId = 2,
                             SessionId = 2,
                             Visibility = true,
-                            X = 50m,
-                            Y = 5m,
-                            ZIndex = 1m
+                            X = 50.0,
+                            Y = 5.0,
+                            ZIndex = 1
                         },
                         new
                         {
@@ -580,9 +555,9 @@ namespace SAGroupAlphaSpring26.Migrations
                             SceneId = 2,
                             SessionId = 2,
                             Visibility = true,
-                            X = 50m,
-                            Y = 10m,
-                            ZIndex = 2m
+                            X = 50.0,
+                            Y = 10.0,
+                            ZIndex = 2
                         },
                         new
                         {
@@ -593,9 +568,9 @@ namespace SAGroupAlphaSpring26.Migrations
                             SceneId = 2,
                             SessionId = 2,
                             Visibility = true,
-                            X = 50m,
-                            Y = 5m,
-                            ZIndex = 1m
+                            X = 50.0,
+                            Y = 5.0,
+                            ZIndex = 1
                         });
                 });
 
@@ -603,34 +578,32 @@ namespace SAGroupAlphaSpring26.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Currency")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("TEXT")
                         .HasDefaultValue("usd");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsAdmin")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -645,7 +618,7 @@ namespace SAGroupAlphaSpring26.Migrations
                             FirstName = "Local",
                             IsAdmin = true,
                             LastName = "DM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEIhKJBYXkJawtvygYWDCdzn65iVm0EgH7mXwccKuCVbD/rpCob4eFxNF4wzLwH80rA=="
+                            PasswordHash = "AQAAAAIAAYagAAAAECqEDkrcNfdbUyFqF53LBQbbNTQoOIfGr0vla7BYRSUEeUNcdo4gcKdrLF6Ou2EskA=="
                         },
                         new
                         {
@@ -655,17 +628,17 @@ namespace SAGroupAlphaSpring26.Migrations
                             FirstName = "Evan",
                             IsAdmin = false,
                             LastName = "Vang",
-                            PasswordHash = "AQAAAAIAAYagAAAAEIbUSYTJaRCrwoox4Cy9PUi83pQBimulE0PEyirdKmVn6fBsj1Ipzurv3k3nC7DoXw=="
+                            PasswordHash = "AQAAAAIAAYagAAAAEHKAAqNfVAmGbRDksGjtXUid6fWJKhEHi7St6RAjSazyNpIx1O0FLgrwjmsA4+tNAw=="
                         });
                 });
 
             modelBuilder.Entity("SAGroupAlphaSpring26.Models.UserPieces", b =>
                 {
                     b.Property<int>("PieceId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("PieceId", "UserId");
 

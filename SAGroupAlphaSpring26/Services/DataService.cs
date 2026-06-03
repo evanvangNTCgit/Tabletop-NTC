@@ -1051,7 +1051,8 @@ namespace SAGroupAlphaSpring26.Services
                 {
                     PieceId = g.Key,
                     TotalPurchased = g.Count(),
-                    PurchasedAmountTotal = g.Sum(x => x.Price)
+                    // Cast to double? before summing, then cast back to decimal if needed
+                    PurchasedAmountTotal = (decimal)g.Sum(x => (double?)x.Price)
                 });
 
             // Pieces come from Pieces table; we left-join purchaseStats so unpurchased (0) pieces can still show.
