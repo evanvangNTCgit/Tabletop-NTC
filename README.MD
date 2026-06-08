@@ -76,8 +76,4 @@ The main app settings are in `SAGroupAlphaSpring26/appsettings.json` and include
 - Evan Vang — evang8@students.ntc.edu
 - Max Oesterreicher — moesterreicher@students.ntc.edu
 - Tristan Jackson — tjackson@students.ntc.edu
-
-## Useful Links
-- Repository: `https://dev.azure.com/ntcsaa/_git/saa-spring26`
-- Board: `https://dev.azure.com/ntcsaa/saa-spring26/_sprints/taskboard/saa-spring26%20Team/saa-spring26/Sprint%201`
-- Slack channel: `#sa-team-a`
+(Please note that these emails are school issued emails. These are not personal emails. For contacting Evan Vang you can do so @ evankvang@gmail.com)
